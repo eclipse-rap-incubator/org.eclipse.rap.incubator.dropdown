@@ -11,8 +11,10 @@
 
 package org.eclipse.rap.addons.dropdown;
 
-import org.eclipse.rap.addons.dropdown.DropDown;
+import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.application.AbstractEntryPoint;
+import org.eclipse.rap.rwt.client.service.JavaScriptExecutor;
+import org.eclipse.rap.rwt.lifecycle.WidgetUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -22,6 +24,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Widget;
 
 
 public class DropDownDemo extends AbstractEntryPoint {
@@ -75,9 +78,9 @@ public class DropDownDemo extends AbstractEntryPoint {
         } );
       }
     } );
-    createButton( parent, "client listener", new Listener() {
+    createButton( parent, "setItems", new Listener() {
       public void handleEvent( Event event ) {
-        // TODO
+        evalJS( ref( dropdown ) + ".setItems( [ 'a', 'b', 'c' ] );" );
       }
     } );
   }
@@ -86,6 +89,24 @@ public class DropDownDemo extends AbstractEntryPoint {
     Button show = new Button( composite, SWT.PUSH );
     show.setText( text );
     show.addListener( SWT.Selection, listener);
+  }
+
+  protected void evalJS( String string ) {
+    JavaScriptExecutor jsex = RWT.getClient().getService( JavaScriptExecutor.class );
+    jsex.execute( string );
+  }
+
+  private String ref( Object object ) {
+    String result = "rap.getObject( '";
+    if( object instanceof Widget ) {
+      result += WidgetUtil.getId( ( Widget )object );
+    } else if( object instanceof DropDown ) {
+      result += ( ( DropDown )object ).getProtocolId();
+    } else {
+      throw new RuntimeException();
+    }
+    result += "')";
+    return result;
   }
 
 }

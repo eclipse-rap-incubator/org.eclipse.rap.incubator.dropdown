@@ -18,6 +18,7 @@ var shell;
 var widget;
 var dropdown;
 var popup;
+var viewer;
 
 rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
 
@@ -55,9 +56,18 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       assertFalse( popup.isSeeable() );
     },
 
+    testConstructor_CreatesViewerInPopup : function() {
+      assertTrue( viewer instanceof rwt.widgets.base.BasicList );
+      assertIdentical( popup, viewer.getParent() );
+    },
+
+    testConstructor_PositionsViewer : function() {
+      assertEquals( 0, viewer.getLeft() );
+      assertEquals( 0, viewer.getTop() );
+    },
+
     testShow_MakesPopUpVisible : function() {
-      dropdown.show();
-      TestUtil.flush();
+      prepare();
 
       assertTrue( popup.isSeeable() );
     },
@@ -65,16 +75,13 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
     testShow_CalledBeforeCreatedMakesPopUpVisible : function() {
       this.createExample();
 
-      dropdown.show();
-      TestUtil.flush();
-      TestUtil.flush();
+      prepare();
 
       assertTrue( popup.isSeeable() );
     },
 
     testHide_MakesPopUpInvisible : function() {
-      dropdown.show();
-      TestUtil.flush();
+      prepare();
 
       dropdown.hide();
       TestUtil.flush();
@@ -83,34 +90,47 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
     },
 
     testShow_PositionsPopUp : function() {
-      dropdown.show();
-      TestUtil.flush();
+      prepare();
 
       assertEquals( 20, popup.getLeft() );
       assertEquals( 70, popup.getTop() );
     },
 
     testShow_SetsPopUpWidth : function() {
-      dropdown.show();
-      TestUtil.flush();
+      prepare();
 
       assertEquals( 100, popup.getWidth() );
     },
 
-    testDetroy_DisposesDropDown : function() {
+    testShow_LayoutsViewer : function() {
+      prepare();
+
+      assertEquals( popup.getInnerWidth(), viewer.getWidth() );
+      assertEquals( popup.getInnerHeight(), viewer.getHeight() );
+    },
+
+    testSetItems_SetsItemsOnViewer : function() {
+      prepare();
+
+      dropdown.setItems( [ "a", "b", "c" ] );
+
+      assertEquals( [ "a", "b", "c" ], getViewerItems() );
+    },
+
+    testDestroy_DisposesDropDown : function() {
       dropdown.destroy();
 
       assertTrue( dropdown.isDisposed() );
     },
 
-    testDetroy_DisposesPopup : function() {
+    testDestroy_DisposesPopup : function() {
       dropdown.destroy();
       TestUtil.flush();
 
       assertTrue( popup.isDisposed() );
     },
 
-    testDetroy_ClearsReferences : function() {
+    testDestroy_ClearsReferences : function() {
       var privateObj = dropdown._;
       dropdown.destroy();
 
@@ -125,11 +145,27 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       widget.setDimension( 100, 30 );
       dropdown = new rwt.dropdown.DropDown( widget );
       popup = dropdown._.popup;
+      viewer = dropdown._.viewer;
     }
 
   }
 
 } );
+
+var prepare = function() {
+  dropdown.show();
+  TestUtil.flush();
+  TestUtil.flush();
+};
+
+var getViewerItems = function() {
+  var result = [];
+  var items = viewer.getItems();
+  for( var i = 0; i < items.length; i++ ) {
+    result[ i ] = items[ i ].getLabel();
+  }
+  return result;
+};
 
 
 }());

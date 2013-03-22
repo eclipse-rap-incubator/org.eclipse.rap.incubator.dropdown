@@ -17,6 +17,7 @@
   rwt.dropdown.DropDown = function( linkedControl ) {
     this._ = {};
     this._.popup = createPopup();
+    this._.viewer = createViewer( this._.popup );
     this._.linkedControl = linkedControl;
     linkedControl.addEventListener( "appear", onAppear, this );
     this._.visibility = false;
@@ -40,6 +41,8 @@
         this._.popup.positionRelativeTo( this._.linkedControl, 0, yOffset );
         this._.popup.setWidth( this._.linkedControl.getWidth() );
         this._.popup.show();
+        this._.viewer.setDimension( this._.popup.getInnerWidth(), this._.popup.getInnerHeight() );
+        this._.viewer.setItemDimensions( "100%", 30 ); // testing only
       }
     },
 
@@ -47,6 +50,10 @@
       checkDisposed( this );
       this._.visibility = false;
       this._.popup.hide();
+    },
+
+    setItems : function( items ) {
+      this._.viewer.setItems( items );
     },
 
     destroy : function() {
@@ -83,6 +90,13 @@
     // just for testing:
     result.setHeight( 50 );
     result.setRestrictToPageOnOpen( false );
+    return result;
+  };
+
+  var createViewer = function( parent ) {
+    var result = new rwt.widgets.base.BasicList( false );
+    result.setLocation( 0, 0 );
+    result.setParent( parent );
     return result;
   };
 

@@ -25,6 +25,7 @@ public final class DropDownResources {
   };
 
   private static final String LOCAL_PATH = "rwt/dropdown/";
+  private static final boolean DEBUG = true;
 
   public static void ensure() {
     ensureRegistered();
@@ -32,6 +33,9 @@ public final class DropDownResources {
   }
 
   private static void ensureRegistered() {
+    if( DEBUG && RWT.getResourceManager().isRegistered( SCRIPTS[ 0 ] ) ) {
+      deregister();
+    }
     if( !RWT.getResourceManager().isRegistered( SCRIPTS[ 0 ] ) ) {
       try {
         register();
@@ -56,6 +60,12 @@ public final class DropDownResources {
       } finally {
         inputStream.close();
       }
+    }
+  }
+
+  private static void deregister() {
+    for( String script : SCRIPTS ) {
+      RWT.getResourceManager().unregister( script );
     }
   }
 
