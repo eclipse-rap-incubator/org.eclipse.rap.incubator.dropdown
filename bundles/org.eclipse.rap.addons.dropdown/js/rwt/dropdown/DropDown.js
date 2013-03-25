@@ -88,7 +88,7 @@
     result.setBorder( defaultBorder );
     result.setBackgroundColor( "#ffffff" );
     // just for testing:
-    result.setHeight( 50 );
+    result.setHeight( 150 );
     result.setRestrictToPageOnOpen( false );
     return result;
   };
