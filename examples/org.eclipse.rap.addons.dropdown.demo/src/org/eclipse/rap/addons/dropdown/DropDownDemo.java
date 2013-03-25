@@ -100,8 +100,6 @@ public class DropDownDemo extends AbstractEntryPoint {
     String result = "rap.getObject( '";
     if( object instanceof Widget ) {
       result += WidgetUtil.getId( ( Widget )object );
-    } else if( object instanceof DropDown ) {
-      result += ( ( DropDown )object ).getProtocolId();
     } else {
       throw new RuntimeException();
     }

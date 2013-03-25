@@ -17,7 +17,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import org.eclipse.rap.addons.dropdown.DropDown;
+import org.eclipse.rap.rwt.internal.remote.RemoteObjectImpl;
 import org.eclipse.rap.rwt.lifecycle.PhaseId;
 import org.eclipse.rap.rwt.lifecycle.WidgetUtil;
 import org.eclipse.rap.rwt.remote.Connection;
@@ -32,6 +32,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 
+@SuppressWarnings("restriction")
 public class DropDown_Test {
 
   private Display display;
@@ -47,7 +48,7 @@ public class DropDown_Test {
     Shell shell = new Shell( display );
     text = new Text( shell, SWT.NONE );
     Fixture.fakeNewRequest();
-    remoteObject = mock( RemoteObject.class );
+    remoteObject = mock( RemoteObjectImpl.class );
     connection = mock( Connection.class );
     when( connection.createRemoteObject( anyString() ) ).thenReturn( remoteObject );
     Fixture.fakeConnection( connection );

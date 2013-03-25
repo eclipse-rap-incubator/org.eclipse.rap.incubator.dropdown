@@ -13,39 +13,56 @@ package org.eclipse.rap.addons.dropdown;
 
 import org.eclipse.rap.addons.dropdown.internal.resources.DropDownResources;
 import org.eclipse.rap.rwt.RWT;
+import org.eclipse.rap.rwt.internal.protocol.IClientObjectAdapter;
 import org.eclipse.rap.rwt.internal.remote.RemoteObjectImpl;
+import org.eclipse.rap.rwt.lifecycle.WidgetAdapter;
 import org.eclipse.rap.rwt.lifecycle.WidgetUtil;
 import org.eclipse.rap.rwt.remote.RemoteObject;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.internal.widgets.WidgetAdapterImpl;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Widget;
 
 @SuppressWarnings("restriction")
-public class DropDown {
+public class DropDown extends Widget {
 
   private static final String REMOTE_TYPE = "rwt.dropdown.DropDown";
   private RemoteObject remoteObject;
   private boolean disposed = false;
+  private Object widgetAdapter;
 
-  public DropDown( Control control ) {
+  public DropDown( Control parent ) {
+    super( parent, 0 );
     DropDownResources.ensure();
-    remoteObject = RWT.getUISession().getConnection().createRemoteObject( REMOTE_TYPE );
-    remoteObject.set( "linkedControl", WidgetUtil.getId( control ) );
-    control.addListener( SWT.Dispose, new Listener() {
+    getRemoteObject().set( "linkedControl", WidgetUtil.getId( parent ) );
+    parent.addListener( SWT.Dispose, new Listener() {
       public void handleEvent( Event event ) {
         DropDown.this.dispose();
       }
     } );
   }
 
-  /**
-   * <b>NOT API</b>: Only implemented to allow early testing
-   */
-  public String getProtocolId() {
-    return ( ( RemoteObjectImpl )remoteObject ).getId();
+  @Override
+  @SuppressWarnings("unchecked")
+  public <T> T getAdapter( Class<T> adapter ) {
+    T result;
+    if( adapter == IClientObjectAdapter.class || adapter == WidgetAdapter.class ) {
+      // TODO [tb] : This way of getting the right id into the WidgetAdapter is obviously
+      //             not ideal. Revise once Bug 397602 (Render operations in the order of their
+      //             occurrence) is fixed.
+      if( widgetAdapter == null ) {
+        widgetAdapter = new WidgetAdapterImpl( getProtocolId() );
+      }
+      result = ( T )widgetAdapter;
+    } else {
+      result = super.getAdapter( adapter );
+    }
+    return result;
   }
 
+  @Override
   public void dispose() {
     remoteObject.destroy();
     remoteObject = null;
@@ -67,5 +84,18 @@ public class DropDown {
       throw new IllegalStateException( "DropDown is disposed" );
     }
   }
+
+  private String getProtocolId() {
+    return ( ( RemoteObjectImpl )getRemoteObject() ).getId();
+  }
+
+  private RemoteObject getRemoteObject() {
+    if( remoteObject == null ) {
+      remoteObject = RWT.getUISession().getConnection().createRemoteObject( REMOTE_TYPE );
+    }
+    return remoteObject;
+  }
+
+
 
 }
