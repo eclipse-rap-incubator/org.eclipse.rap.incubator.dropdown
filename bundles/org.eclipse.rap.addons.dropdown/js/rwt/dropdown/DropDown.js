@@ -25,6 +25,10 @@
 
   rwt.dropdown.DropDown.prototype = {
 
+    setItems : function( items ) {
+      this._.viewer.setItems( items );
+    },
+
     setVisibility : function( value ) {
       if( value ) {
         this.show();
@@ -52,8 +56,23 @@
       this._.popup.hide();
     },
 
-    setItems : function( items ) {
-      this._.viewer.setItems( items );
+    setData : function( key, value ) {
+      if( !this._.widgetData ) {
+        this._.widgetData = {};
+      }
+      if( arguments.length === 1 && key instanceof Object ) {
+        rwt.util.Objects.mergeWith( this._.widgetData, key );
+      } else {
+        this._.widgetData[ key ] = value;
+      }
+    },
+
+    getData : function( key ) {
+      if( !this._.widgetData ) {
+        return null;
+      }
+      var data = this._.widgetData[ key ];
+      return data === undefined ? null : data;
     },
 
     destroy : function() {

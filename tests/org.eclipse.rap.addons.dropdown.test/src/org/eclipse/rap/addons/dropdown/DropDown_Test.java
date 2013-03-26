@@ -11,12 +11,20 @@
 
 package org.eclipse.rap.addons.dropdown;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.Map;
+
+import org.eclipse.rap.rwt.client.Client;
+import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteList;
 import org.eclipse.rap.rwt.internal.remote.RemoteObjectImpl;
 import org.eclipse.rap.rwt.lifecycle.PhaseId;
 import org.eclipse.rap.rwt.lifecycle.WidgetUtil;
@@ -27,9 +35,11 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.json.JSONException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 
 
 @SuppressWarnings("restriction")
@@ -92,6 +102,31 @@ public class DropDown_Test {
   }
 
   @Test
+  public void testSetData_RendersDataInWhiteList() throws JSONException {
+    Fixture.fakePhase( PhaseId.PROCESS_ACTION );
+
+    fakeWidgetDataWhiteList( new String[]{ "foo", "bar" } );
+
+    dropdown.setData( "foo", "bar" );
+
+    @SuppressWarnings("rawtypes")
+    ArgumentCaptor< Map > argument = ArgumentCaptor.forClass( Map.class );
+    verify( remoteObject ).set( eq( "data" ), argument.capture() );
+    assertEquals( "bar", argument.getValue().get( "foo" ) );
+  }
+
+  @Test
+  public void testSetData_DoesNotRenderDataNotInWhiteList() throws JSONException {
+    Fixture.fakePhase( PhaseId.PROCESS_ACTION );
+
+    fakeWidgetDataWhiteList( new String[]{ "foo", "bar" } );
+
+    dropdown.setData( "fool", "bar" );
+
+    verify( remoteObject, never() ).set( eq( "data" ), any() );
+  }
+
+  @Test
   public void testShow_ThrowsExceptionIfDisposed() {
     dropdown.dispose();
     try {
@@ -118,4 +153,16 @@ public class DropDown_Test {
       // expected
     }
   }
+
+  ///////////
+  // Helper
+
+  public static void fakeWidgetDataWhiteList( String[] keys ) {
+    WidgetDataWhiteList service = mock( WidgetDataWhiteList.class );
+    when( service.getKeys() ).thenReturn( keys );
+    Client client = mock( Client.class );
+    when( client.getService( WidgetDataWhiteList.class ) ).thenReturn( service );
+    Fixture.fakeClient( client );
+  }
+
 }

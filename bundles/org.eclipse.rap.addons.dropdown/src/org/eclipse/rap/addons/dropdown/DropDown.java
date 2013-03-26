@@ -11,8 +11,13 @@
 
 package org.eclipse.rap.addons.dropdown;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.rap.addons.dropdown.internal.resources.DropDownResources;
 import org.eclipse.rap.rwt.RWT;
+import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteList;
 import org.eclipse.rap.rwt.internal.protocol.IClientObjectAdapter;
 import org.eclipse.rap.rwt.internal.remote.RemoteObjectImpl;
 import org.eclipse.rap.rwt.lifecycle.WidgetAdapter;
@@ -69,6 +74,12 @@ public class DropDown extends Widget {
     disposed = true;
   }
 
+  @Override
+  public void setData( String key, Object value ) {
+    super.setData( key, value );
+    renderData( key, value );
+  }
+
   public void show() {
     checkDisposed();
     remoteObject.set( "visibility", true );
@@ -96,6 +107,17 @@ public class DropDown extends Widget {
     return remoteObject;
   }
 
-
+  private void renderData( String key, Object value ) {
+    // TODO [tb] : could be optimized using a PhaseListener
+    //             This implementation assumes the client merges the new values with the existing
+    //             ones, which is the case in the WebClient
+    WidgetDataWhiteList service = RWT.getClient().getService( WidgetDataWhiteList.class );
+    String[] dataKeys = service == null ? null : service.getKeys();
+    if( dataKeys != null && Arrays.asList( dataKeys ).contains( key ) ) {
+      Map<Object, Object> data = new HashMap<Object, Object>();
+      data.put( key, value );
+      remoteObject.set( "data", data );
+    }
+  }
 
 }

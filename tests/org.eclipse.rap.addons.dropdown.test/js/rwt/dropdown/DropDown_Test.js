@@ -66,6 +66,20 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       assertEquals( 0, viewer.getTop() );
     },
 
+    testSetData_SetDataWithTwoParameters : function() {
+      dropdown.setData( "foo", "bar" );
+
+      assertEquals( "bar", dropdown.getData( "foo" ) );
+    },
+
+    testSetData_SetDataWithMap : function() {
+      dropdown.setData( "x", "y" );
+      dropdown.setData( { "foo" : "bar" } );
+
+      assertEquals( "y", dropdown.getData( "x" ) );
+      assertEquals( "bar", dropdown.getData( "foo" ) );
+    },
+
     testShow_MakesPopUpVisible : function() {
       prepare();
 
