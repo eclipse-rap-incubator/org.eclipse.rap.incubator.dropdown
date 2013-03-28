@@ -45,6 +45,7 @@ public class DropDownDemo extends AbstractEntryPoint {
     WidgetDataWhiteList list = RWT.getClient().getService( WidgetDataWhiteList.class );
     list.setKeys( new String[]{ "dropdown", "text", "nations" } );
     createText( parent );
+    createDropDown( text );
     createTestControls( new Composite( parent, SWT.NONE ) );
   }
 
@@ -53,11 +54,22 @@ public class DropDownDemo extends AbstractEntryPoint {
     GridData gridData = new GridData( 200, 23 );
     gridData.verticalAlignment = SWT.TOP;
     text.setLayoutData( gridData );
+    addTextClientListener( text );
+  }
+
+  private void createDropDown( Text text ) {
     dropdown = new DropDown( text );
-    text.setData( "dropdown", WidgetUtil.getId( dropdown ) );
     dropdown.setData( "text", WidgetUtil.getId( text ) );
     dropdown.setData( "nations", getClientData( "Nations" ) );
-    addTextClientListener( text );
+    text.setData( "dropdown", WidgetUtil.getId( dropdown ) );
+    addDropDownClientListener( dropdown );
+  }
+
+  private void addDropDownClientListener( DropDown dropdown ) {
+    String script
+      = readTextContent( "/org/eclipse/rap/addons/dropdown/DropDownEventHandler.js" );
+    ClientListener listener = new ClientListener( script );
+    listener.addTo( dropdown, SWT.Selection );
   }
 
   private void addTextClientListener( Text text ) {

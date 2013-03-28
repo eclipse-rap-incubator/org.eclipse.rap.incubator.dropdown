@@ -19,6 +19,8 @@
     this._.popup = createPopup();
     this._.viewer = createViewer( this._.popup );
     this._.linkedControl = linkedControl;
+    this._.events = createEventsMap();
+    this._.viewer.getManager().addEventListener( "changeSelection", onSelection, this );
     linkedControl.addEventListener( "appear", onAppear, this );
     this._.visibility = false;
   };
@@ -75,6 +77,23 @@
       return data === undefined ? null : data;
     },
 
+    addListener : function( type, listener ) {
+      if( this._.events[ type ] ) {
+        if( this._.events[ type ].indexOf( listener ) === -1 ) {
+          this._.events[ type ].push( listener );
+        }
+      } else {
+        throw new Error( "Unkown type " + type );
+      }
+    },
+
+    removeListener : function( type, listener ) {
+      if( this._.events[ type ] ) {
+        var index = this._.events[ type ].indexOf( listener );
+        rwt.util.Arrays.removeAt( this._.events[ type ], index );
+      }
+    },
+
     destroy : function() {
       if( !this.isDisposed() ) {
         this._.popup.destroy();
@@ -98,6 +117,21 @@
   var onAppear = function() {
     if( this._.visibility ) {
       this.show();
+    }
+  };
+
+  var onSelection = function( event ) {
+    var selection = this._.viewer.getSelectedItems();
+    var eventProxy = {
+      "widget" : this,
+      "element" : rwt.util.Encoding.unescape( selection[ 0 ].getLabel() ) // TOOD : use input el.
+    };
+    notify( this._.events[ "Selection" ], eventProxy );
+  };
+
+  var notify = function( listeners, event ) {
+    for( var i = 0; i < listeners.length; i++ ) {
+      listeners[ i ]( event );
     }
   };
 
@@ -127,5 +161,16 @@
 
   var defaultBorder = new rwt.html.Border( 1, "solid", "#000000" );
 
+  var createEventsMap = function() {
+    return {
+      "Selection" : []
+    };
+  };
+
+  var bind = function( context, method ) {
+    return function() {
+      return method.apply( context, arguments );
+    };
+  };
 
 }());

@@ -131,6 +131,42 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       assertEquals( [ "a", "b", "c" ], getViewerItems() );
     },
 
+    testAddSelectionListener : function() {
+      dropdown.setItems( [ "a", "b", "c" ] );
+      prepare();
+      var logger = TestUtil.getLogger();
+
+      dropdown.addListener( "Selection", logger.log );
+      selectItem( 1 );
+
+      assertEquals( 1, logger.getLog().length );
+    },
+
+    testRemoveSelectionListener : function() {
+      dropdown.setItems( [ "a", "b", "c" ] );
+      prepare();
+      var logger = TestUtil.getLogger();
+
+      dropdown.addListener( "Selection", logger.log );
+      dropdown.removeListener( "Selection", logger.log );
+      TestUtil.click( viewer.getItems()[ 1 ] );
+
+      assertEquals( 0, logger.getLog().length );
+    },
+
+    testSelectionEventFields : function() {
+      dropdown.setItems( [ "a", "b", "c" ] );
+      prepare();
+      var logger = TestUtil.getLogger();
+
+      dropdown.addListener( "Selection", logger.log );
+      selectItem( 1 );
+
+      var event = logger.getLog()[ 0 ];
+      assertIdentical( dropdown, event.widget );
+      assertIdentical( "b", event.element );
+    },
+
     testDestroy_DisposesDropDown : function() {
       dropdown.destroy();
 
@@ -180,6 +216,11 @@ var getViewerItems = function() {
   }
   return result;
 };
+
+var selectItem = function( index ) {
+  TestUtil.click( viewer.getItems()[ 1 ] );
+};
+
 
 
 }());

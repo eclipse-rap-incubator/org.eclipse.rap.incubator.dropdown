@@ -114,9 +114,9 @@ public class DropDown extends Widget {
     WidgetDataWhiteList service = RWT.getClient().getService( WidgetDataWhiteList.class );
     String[] dataKeys = service == null ? null : service.getKeys();
     if( dataKeys != null && Arrays.asList( dataKeys ).contains( key ) ) {
-      Map<Object, Object> data = new HashMap<Object, Object>();
+      Map<String, Object> data = new HashMap<String, Object>();
       data.put( key, value );
-      remoteObject.set( "data", data );
+      remoteObject.call( "setData", data );
     }
   }
 

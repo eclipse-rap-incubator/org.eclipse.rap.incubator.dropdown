@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 EclipseSource and others.
+ * Copyright (c) 2013 EclipseSource.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,20 +9,8 @@
  *    EclipseSource - initial API and implementation
  ******************************************************************************/
 
-(function(){
-  'use strict';
-
-  rap.registerTypeHandler( "rwt.dropdown.DropDown", {
-
-    factory : function( properties ) {
-      var control = rwt.remote.ObjectRegistry.getObject( properties.linkedControl );
-      return new rwt.dropdown.DropDown( control );
-    },
-
-    properties : [ "visibility" ],
-
-    methods : [ "setData" ]
-
-  } );
-
-}());
+function handleEvent( event ) {
+  var dropdown = event.widget;
+  var text = rap.getObject( dropdown.getData( "text" ) );
+  text.setText( event.element );
+}
