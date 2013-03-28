@@ -110,7 +110,7 @@ public class DropDown_Test {
 
     @SuppressWarnings("rawtypes")
     ArgumentCaptor< Map > argument = ArgumentCaptor.forClass( Map.class );
-    verify( remoteObject ).set( eq( "data" ), argument.capture() );
+    verify( remoteObject ).call( eq( "setData" ), argument.capture() );
     assertEquals( "bar", argument.getValue().get( "foo" ) );
   }
 
