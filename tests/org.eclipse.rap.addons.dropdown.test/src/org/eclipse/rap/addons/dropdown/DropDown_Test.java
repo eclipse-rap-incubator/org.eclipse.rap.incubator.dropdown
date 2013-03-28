@@ -35,7 +35,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.json.JSONException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -102,7 +101,7 @@ public class DropDown_Test {
   }
 
   @Test
-  public void testSetData_RendersDataInWhiteList() throws JSONException {
+  public void testSetData_RendersDataInWhiteList() {
     Fixture.fakePhase( PhaseId.PROCESS_ACTION );
 
     fakeWidgetDataWhiteList( new String[]{ "foo", "bar" } );
@@ -116,7 +115,7 @@ public class DropDown_Test {
   }
 
   @Test
-  public void testSetData_DoesNotRenderDataNotInWhiteList() throws JSONException {
+  public void testSetData_DoesNotRenderDataNotInWhiteList() {
     Fixture.fakePhase( PhaseId.PROCESS_ACTION );
 
     fakeWidgetDataWhiteList( new String[]{ "foo", "bar" } );

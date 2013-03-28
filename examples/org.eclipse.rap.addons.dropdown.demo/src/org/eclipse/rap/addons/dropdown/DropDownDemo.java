@@ -11,13 +11,16 @@
 
 package org.eclipse.rap.addons.dropdown;
 
+import static org.eclipse.rap.addons.dropdown.ResourceLoaderUtil.readTextContent;
+
 import org.eclipse.rap.clientscripting.ClientListener;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.application.AbstractEntryPoint;
-import org.eclipse.rap.rwt.client.service.JavaScriptExecutor;
 import org.eclipse.rap.rwt.client.service.JavaScriptLoader;
 import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteList;
+import org.eclipse.rap.rwt.internal.remote.RemoteObjectImpl;
 import org.eclipse.rap.rwt.lifecycle.WidgetUtil;
+import org.eclipse.rap.rwt.remote.RemoteObject;
 import org.eclipse.rap.rwt.service.ResourceManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -38,24 +41,11 @@ public class DropDownDemo extends AbstractEntryPoint {
 
   @Override
   protected void createContents( Composite parent ) {
-    loadNations();
     getShell().setLayout( new GridLayout( 2, false ) );
     WidgetDataWhiteList list = RWT.getClient().getService( WidgetDataWhiteList.class );
-    list.setKeys( new String[]{ "dropdown", "text" } );
+    list.setKeys( new String[]{ "dropdown", "text", "nations" } );
     createText( parent );
     createTestControls( new Composite( parent, SWT.NONE ) );
-  }
-
-  private void loadNations() {
-    ResourceManager manager = RWT.getResourceManager();
-    if( !manager.isRegistered( "nations.js" ) ) {
-      manager.register(
-        "nations.js",
-        getClass().getResourceAsStream( "nations.js" )
-      );
-    }
-    JavaScriptLoader jsl = RWT.getClient().getService( JavaScriptLoader.class );
-    jsl.require( manager.getLocation( "nations.js" ) );
   }
 
   private void createText( Composite parent ) {
@@ -66,12 +56,15 @@ public class DropDownDemo extends AbstractEntryPoint {
     dropdown = new DropDown( text );
     text.setData( "dropdown", WidgetUtil.getId( dropdown ) );
     dropdown.setData( "text", WidgetUtil.getId( text ) );
+    dropdown.setData( "nations", getClientData( "Nations" ) );
     addTextClientListener( text );
   }
 
   private void addTextClientListener( Text text ) {
-    ClientListener listener
-      = new ClientListener( ResourceLoaderUtil.readTextContent( "/org/eclipse/rap/addons/dropdown/textEventHandler.js" ) );
+    String script
+      = readTextContent( "/org/eclipse/rap/addons/dropdown/TextEventHandler.js" );
+     // TODO: should take inputStream or loader + path
+    ClientListener listener = new ClientListener( script );
     listener.addTo( text, SWT.Modify );
   }
 
@@ -114,9 +107,19 @@ public class DropDownDemo extends AbstractEntryPoint {
     show.addListener( SWT.Selection, listener);
   }
 
-  protected void evalJS( String string ) {
-    JavaScriptExecutor jsex = RWT.getClient().getService( JavaScriptExecutor.class );
-    jsex.execute( string );
+  // Experimental: Uses internal API, but allows to use cacheable data without polluting the
+  // public namespace.
+  private String getClientData( String type ) {
+    ResourceManager manager = RWT.getResourceManager();
+    String registerFilename = "clientData/" + type + ".js";
+    if( !manager.isRegistered( registerFilename ) ) {
+      manager.register( registerFilename, getClass().getResourceAsStream( type + ".js" ) );
+    }
+    JavaScriptLoader jsl = RWT.getClient().getService( JavaScriptLoader.class );
+    jsl.require( manager.getLocation( registerFilename ) );
+    RemoteObject remoteObject
+      = RWT.getUISession().getConnection().createRemoteObject( "clientData." + type );
+    return ( ( RemoteObjectImpl )remoteObject ).getId();
   }
 
 }
