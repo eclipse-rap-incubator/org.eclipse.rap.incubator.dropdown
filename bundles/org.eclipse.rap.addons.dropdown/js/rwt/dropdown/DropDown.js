@@ -38,16 +38,15 @@
       this._.viewer.setItems( items );
     },
 
-    getItemCount : function() {
-      return this._.viewer.getItemsCount();
-    },
-
     setVisibleItemCount : function( itemCount ) {
       this._.visibleItemCount = itemCount;
     },
 
-    getSelectionIndex : function() {
-      return this._.viewer.getItems().indexOf( this._.viewer.getSelectedItem() );
+    setSelectionIndex : function( index ) {
+      if( index < -1 || index >= this.getItemCount() || isNaN( index ) ) {
+        throw new Error( "Can not select item: Index " + index + " not valid" );
+      }
+      this._.viewer.selectItems( [ index ] );
     },
 
     setVisibility : function( value ) {
@@ -56,10 +55,6 @@
       } else {
         this.hide();
       }
-    },
-
-    getVisibility : function() {
-      return this._.popup.getVisibility();
     },
 
     show : function() {
@@ -126,6 +121,18 @@
         }
         this._ = null;
       }
+    },
+
+    getSelectionIndex : function() {
+      return this._.viewer.getItems().indexOf( this._.viewer.getSelectedItem() );
+    },
+
+    getItemCount : function() {
+      return this._.viewer.getItemsCount();
+    },
+
+    getVisibility : function() {
+      return this._.popup.getVisibility();
     },
 
     isDisposed : function() {

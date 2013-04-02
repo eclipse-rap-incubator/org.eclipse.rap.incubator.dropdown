@@ -161,7 +161,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       var logger = TestUtil.getLogger();
 
       dropdown.addListener( "Selection", logger.log );
-      selectItem( 1 );
+      clickItem( 1 );
 
       assertEquals( 1, logger.getLog().length );
     },
@@ -184,7 +184,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       var logger = TestUtil.getLogger();
 
       dropdown.addListener( "Selection", logger.log );
-      selectItem( 1 );
+      clickItem( 1 );
 
       var event = logger.getLog()[ 0 ];
       assertIdentical( dropdown, event.widget );
@@ -205,9 +205,36 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       dropdown.setItems( [ "a", "b", "c" ] );
       prepare();
 
-      selectItem( 1 );
+      clickItem( 1 );
 
       assertEquals( 1, dropdown.getSelectionIndex() );
+    },
+
+    testSetSelectionIndex : function() {
+      dropdown.setItems( [ "a", "b", "c" ] );
+
+      dropdown.setSelectionIndex( 1 );
+
+      assertEquals( 1, dropdown.getSelectionIndex() );
+    },
+
+    testSetSelectionIndex_ValueIsMinusOne : function() {
+      dropdown.setItems( [ "a", "b", "c" ] );
+
+      dropdown.setSelectionIndex( -1 );
+
+      assertEquals( -1, dropdown.getSelectionIndex() );
+    },
+
+    testSetSelectionIndex_ValueOutOfBoundsThrowsException : function() {
+      dropdown.setItems( [ "a", "b", "c" ] );
+
+      try {
+        dropdown.setSelectionIndex( 4 );
+        fail();
+      } catch( ex ) {
+        // expected
+      }
     },
 
     testDestroy_DisposesDropDown : function() {
@@ -260,7 +287,7 @@ var getViewerItems = function() {
   return result;
 };
 
-var selectItem = function( index ) {
+var clickItem = function( index ) {
   TestUtil.click( viewer.getItems()[ 1 ] );
 };
 
