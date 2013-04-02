@@ -46,6 +46,10 @@
       this._.visibleItemCount = itemCount;
     },
 
+    getSelectionIndex : function() {
+      return this._.viewer.getItems().indexOf( this._.viewer.getSelectedItem() );
+    },
+
     setVisibility : function( value ) {
       if( value ) {
         this.show();

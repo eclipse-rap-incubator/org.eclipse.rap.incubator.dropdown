@@ -191,6 +191,25 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       assertIdentical( "b", event.element );
     },
 
+    testGetSelectionIndex_InitialValueIsMinusOne : function() {
+      dropdown.setItems( [ "a", "b", "c" ] );
+
+      assertEquals( -1, dropdown.getSelectionIndex() );
+    },
+
+    testGetSelectionIndex_ValueIsMinusOneForNoItems : function() {
+      assertEquals( -1, dropdown.getSelectionIndex() );
+    },
+
+    testGetSelectionIndex_ValueAfterSelection : function() {
+      dropdown.setItems( [ "a", "b", "c" ] );
+      prepare();
+
+      selectItem( 1 );
+
+      assertEquals( 1, dropdown.getSelectionIndex() );
+    },
+
     testDestroy_DisposesDropDown : function() {
       dropdown.destroy();
 
