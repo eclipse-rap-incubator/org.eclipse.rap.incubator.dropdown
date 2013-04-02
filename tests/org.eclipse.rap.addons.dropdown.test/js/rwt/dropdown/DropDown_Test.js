@@ -146,6 +146,15 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       assertEquals( 3, dropdown.getItemCount() );
     },
 
+    testGetVisibility_returnsFalse : function() {
+      assertFalse( dropdown.getVisibility() );
+    },
+
+    testGetVisibility_returnsTrue : function() {
+      prepare();
+      assertTrue( dropdown.getVisibility() );
+    },
+
     testAddSelectionListener : function() {
       dropdown.setItems( [ "a", "b", "c" ] );
       prepare();

@@ -54,6 +54,10 @@
       }
     },
 
+    getVisibility : function() {
+      return this._.popup.getVisibility();
+    },
+
     show : function() {
       checkDisposed( this );
       this._.visibility = true;
@@ -156,6 +160,7 @@
     result.addToDocument();
     result.setBorder( POPUP_BORDER );
     result.setBackgroundColor( "#ffffff" );
+    result.setVisibility( false );
     // just for testing:
     result.setHeight( 150 );
     result.setRestrictToPageOnOpen( false );
