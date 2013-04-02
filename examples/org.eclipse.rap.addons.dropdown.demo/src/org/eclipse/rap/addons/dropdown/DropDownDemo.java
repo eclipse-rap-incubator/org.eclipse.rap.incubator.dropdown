@@ -25,100 +25,69 @@ import org.eclipse.rap.rwt.service.ResourceManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.RowLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 
 
 @SuppressWarnings("restriction")
 public class DropDownDemo extends AbstractEntryPoint {
 
-  private DropDown dropdown;
-  private Text text;
+  private String PATH_PREFIX = "/org/eclipse/rap/addons/dropdown/";
 
   @Override
   protected void createContents( Composite parent ) {
     getShell().setLayout( new GridLayout( 2, false ) );
     WidgetDataWhiteList list = RWT.getClient().getService( WidgetDataWhiteList.class );
-    list.setKeys( new String[]{ "dropdown", "text", "nations" } );
-    createText( parent );
-    createDropDown( text );
-    createTestControls( new Composite( parent, SWT.NONE ) );
+    list.setKeys( new String[]{ "dropdown", "text", "data" } );
+    createNationsExample( parent );
+    createMoviesExample( parent );
   }
 
-  private void createText( Composite parent ) {
-    text = new Text( parent, SWT.BORDER );
+  private void createNationsExample( Composite parent ) {
+    Text text = createText( parent );
+    text.setMessage( "Nations" );
+    DropDown dropdown = createDropDown( text );
+    dropdown.setVisibleItemCount( 3 );
+    dropdown.setData( "data", getClientData( "Nations" ) );
+  }
+
+  private void createMoviesExample( Composite parent ) {
+    Text text = createText( parent );
+    text.setMessage( "90's Movies" );
+    DropDown dropdown = createDropDown( text );
+    dropdown.setData( "data", getClientData( "Movies" ) );
+  }
+
+  private Text createText( Composite parent ) {
+    Text text = new Text( parent, SWT.BORDER );
     GridData gridData = new GridData( 200, 23 );
     gridData.verticalAlignment = SWT.TOP;
     text.setLayoutData( gridData );
     addTextClientListener( text );
+    return text;
   }
 
-  private void createDropDown( Text text ) {
-    dropdown = new DropDown( text );
-    dropdown.setVisibleItemCount( 3 );
+  private DropDown createDropDown( Text text ) {
+    DropDown dropdown = new DropDown( text );
     dropdown.setData( "text", WidgetUtil.getId( text ) );
-    dropdown.setData( "nations", getClientData( "Nations" ) );
     text.setData( "dropdown", WidgetUtil.getId( dropdown ) );
     addDropDownClientListener( dropdown );
+    return dropdown;
   }
 
   private void addDropDownClientListener( DropDown dropdown ) {
-    String script
-      = readTextContent( "/org/eclipse/rap/addons/dropdown/DropDownEventHandler.js" );
+    String script = readTextContent( PATH_PREFIX + "DropDownEventHandler.js" );
     ClientListener listener = new ClientListener( script );
     listener.addTo( dropdown, SWT.Selection );
   }
 
   private void addTextClientListener( Text text ) {
-    String script
-      = readTextContent( "/org/eclipse/rap/addons/dropdown/TextEventHandler.js" );
+    String script = readTextContent( PATH_PREFIX + "TextEventHandler.js" );
      // TODO: should take inputStream or loader + path
     ClientListener listener = new ClientListener( script );
     listener.addTo( text, SWT.Modify );
     listener.addTo( text, SWT.Verify );
-  }
-
-  private void createTestControls( final Composite parent ) {
-    parent.setLayoutData( new GridData( 400, 400 ) );
-    parent.setLayout( new RowLayout() );
-    createButton( parent, "show", new Listener() {
-      public void handleEvent( Event event ) {
-        dropdown.show();
-      }
-    } );
-    createButton( parent, "hide", new Listener() {
-      public void handleEvent( Event event ) {
-        dropdown.hide();
-      }
-    } );
-    createButton( parent, "recreate", new Listener() {
-      public void handleEvent( Event event ) {
-        text.dispose();
-        createText( parent.getParent() );
-        text.moveAbove( parent );
-        dropdown.show();
-        getShell().layout();
-      }
-    } );
-    createButton( parent, "server listener", new Listener() {
-      public void handleEvent( Event event ) {
-        text.addListener( SWT.Modify, new Listener() {
-          public void handleEvent( Event event ) {
-            dropdown.show();
-          }
-        } );
-      }
-    } );
-  }
-
-  private static void createButton( Composite composite, String text, Listener listener ) {
-    Button show = new Button( composite, SWT.PUSH );
-    show.setText( text );
-    show.addListener( SWT.Selection, listener);
+    listener.addTo( text, SWT.KeyDown );
   }
 
   // Experimental: Uses internal API, but allows to use cacheable data without polluting the

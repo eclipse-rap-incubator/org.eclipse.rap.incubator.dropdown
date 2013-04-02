@@ -12,5 +12,6 @@
 function handleEvent( event ) {
   var dropdown = event.widget;
   var text = rap.getObject( dropdown.getData( "text" ) );
+  text.setData( "selecting", true );
   text.setText( event.element );
 }

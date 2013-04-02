@@ -17,40 +17,74 @@ function handleEvent( event ) {
     case SWT.Verify:
       handleVerify( event );
     break;
+    case SWT.KeyDown:
+      handleKeyDown( event );
+    break;
   }
 }
 
 function handleVerify( event ) {
-  if( event.text === "" ) {
-    // the modify event can apparently not be used to determine if text was inserted or deleted
-    event.widget.setData( "del", true );
+  if( event.text !== "" && event.keyCode !== 0 ) {
+    // the modify event can not be used to determine how text was inserted or deleted
+    event.widget.setData( "typing", true );
   }
 }
 
-
+//TODO : This can get very slow with huge lists. Possible optimizations include caching results,
+//       limiting result length until first selection occurs, and virtual rendering
 function handleModify( event ) {
   var widget = event.widget;
   var text = widget.getText().toLowerCase();
   var dropdown = rap.getObject( widget.getData( "dropdown" ) );
-  var nations = rap.getObject( dropdown.getData( "nations" ) );
-  var items = itemsStartingWith( nations, text );
-  if( text.length >= 2 && items.length > 0 ) {
-    dropdown.setItems( items );
-    dropdown.show();
-    var common = commonText( items );
-    if( !widget.getData( "del" ) && common && common.length > text.length ) { // a better way to protects against recursive events?
-      var sel = widget.getSelection();
-      var newSel = [ sel[ 0 ], common.length ];
-      widget.setText( common );
-      // See Bug 404615 - [ClientScripting][Text] setSelection and getSelection do not work correctly in Modify event
-//      window.setTimeout( function() {
-//        widget.setSelection( newSel );
-//      }, 0 );
+  var data = rap.getObject( dropdown.getData( "data" ) );
+  var items = itemsStartingWith( data, text );
+  if( !widget.getData( "selecting" ) ) {
+    if( text.length >= 2 && items.length > 0 ) {
+      dropdown.setItems( items );
+      dropdown.show();
+      var common = commonText( items );
+      if( widget.getData( "typing" ) && common ) {
+        var sel = widget.getSelection();
+        var newSel = [ sel[ 0 ], common.length ];
+        widget.setText( common );
+        // See Bug 404615 - [ClientScripting][Text] setSelection and getSelection do not work correctly in Modify event
+  //      window.setTimeout( function() {
+  //        widget.setSelection( newSel );
+  //      }, 0 );
+      }
+    } else {
+      dropdown.hide();
     }
-  } else {
-    dropdown.hide();
   }
-  widget.setData( "del", false );
+  widget.setData( "typing", false );
+  widget.setData( "selecting", false );
+}
+
+function handleKeyDown( event ) {
+  var widget = event.widget;
+  var dropdown = rap.getObject( widget.getData( "dropdown" ) );
+  if( dropdown.getVisibility() ) {
+    switch( event.keyCode ) {
+      case SWT.ARROW_UP:
+        var index = dropdown.getSelectionIndex() - 1;
+        if( index >= 0 ) {
+          dropdown.setSelectionIndex( index );
+        }
+        event.doit = false; // prevent the cursor from moving
+      break;
+      case SWT.ARROW_DOWN:
+        var index = dropdown.getSelectionIndex() + 1;
+        if( index < dropdown.getItemCount() ) {
+          dropdown.setSelectionIndex( index );
+        }
+        event.doit = false;
+      break;
+      case SWT.CR:
+      case SWT.ESC: // TODO [tb] : Dropdown itself can not implement this easily, it has no focus
+        dropdown.hide();
+      break;
+    }
+  }
 }
 
 function commonText( items ) {

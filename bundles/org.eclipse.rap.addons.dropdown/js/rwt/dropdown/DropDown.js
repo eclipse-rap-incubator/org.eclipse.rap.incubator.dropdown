@@ -46,7 +46,7 @@
       if( index < -1 || index >= this.getItemCount() || isNaN( index ) ) {
         throw new Error( "Can not select item: Index " + index + " not valid" );
       }
-      this._.viewer.selectItems( [ index ] );
+      this._.viewer.selectItem( index );
     },
 
     setVisibility : function( value ) {
@@ -155,8 +155,12 @@
     var selection = this._.viewer.getSelectedItems();
     var eventProxy = {
       "widget" : this,
-      "element" : rwt.util.Encoding.unescape( selection[ 0 ].getLabel() ) // TOOD : use input el.
+      "element" : null
     };
+    if( selection.length > 0 ) {
+      // TOOD : use input element instead of label
+      eventProxy.element = rwt.util.Encoding.unescape( selection[ 0 ].getLabel() );
+    }
     notify( this._.events[ "Selection" ], eventProxy );
   };
 
