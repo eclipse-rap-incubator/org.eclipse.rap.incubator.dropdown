@@ -78,6 +78,7 @@ public class DropDownDemo extends AbstractEntryPoint {
      // TODO: should take inputStream or loader + path
     ClientListener listener = new ClientListener( script );
     listener.addTo( text, SWT.Modify );
+    listener.addTo( text, SWT.Verify );
   }
 
   private void createTestControls( final Composite parent ) {

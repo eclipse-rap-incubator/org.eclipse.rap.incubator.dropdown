@@ -100,6 +100,7 @@ public class DropDown_Test {
     verify( remoteObject ).set( "visibility", true );
   }
 
+  @SuppressWarnings("unchecked")
   @Test
   public void testSetData_RendersDataInWhiteList() {
     Fixture.fakePhase( PhaseId.PROCESS_ACTION );
