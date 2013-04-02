@@ -12,12 +12,19 @@
 (function(){
   'use strict';
 
+  // TODO [tb] : take values from theming or parent, or introduce setter
+  var ITEM_HEIGHT = 20;
+  var ITEM_FONT = rwt.html.Font.fromArray( [ [ "Arial" ], 12, false, false ] );
+  var POPUP_BORDER = new rwt.html.Border( 1, "solid", "#000000" );
+  var FRAMEWIDTH = 2;
+
   rwt.dropdown = {};
 
   rwt.dropdown.DropDown = function( linkedControl ) {
     this._ = {};
     this._.popup = createPopup();
     this._.viewer = createViewer( this._.popup );
+    this._.visibleItemCount = 5;
     this._.linkedControl = linkedControl;
     this._.events = createEventsMap();
     this._.viewer.getManager().addEventListener( "changeSelection", onSelection, this );
@@ -29,6 +36,10 @@
 
     setItems : function( items ) {
       this._.viewer.setItems( items );
+    },
+
+    setVisibleItemCount : function( itemCount ) {
+      this._.visibleItemCount = itemCount;
     },
 
     setVisibility : function( value ) {
@@ -46,9 +57,10 @@
         var yOffset = this._.linkedControl.getHeight();
         this._.popup.positionRelativeTo( this._.linkedControl, 0, yOffset );
         this._.popup.setWidth( this._.linkedControl.getWidth() );
+        this._.popup.setHeight( this._.visibleItemCount * ITEM_HEIGHT + FRAMEWIDTH );
         this._.popup.show();
         this._.viewer.setDimension( this._.popup.getInnerWidth(), this._.popup.getInnerHeight() );
-        this._.viewer.setItemDimensions( "100%", 30 ); // testing only
+        this._.viewer.setItemDimensions( "100%", ITEM_HEIGHT );
       }
     },
 
@@ -138,7 +150,7 @@
   var createPopup = function() {
     var result = new rwt.widgets.base.Popup();
     result.addToDocument();
-    result.setBorder( defaultBorder );
+    result.setBorder( POPUP_BORDER );
     result.setBackgroundColor( "#ffffff" );
     // just for testing:
     result.setHeight( 150 );
@@ -150,6 +162,8 @@
     var result = new rwt.widgets.base.BasicList( false );
     result.setLocation( 0, 0 );
     result.setParent( parent );
+    result.setFont( ITEM_FONT );
+    result.setScrollBarsVisible( false, false );
     return result;
   };
 
@@ -158,8 +172,6 @@
       throw new Error( "DropDown is disposed" );
     }
   };
-
-  var defaultBorder = new rwt.html.Border( 1, "solid", "#000000" );
 
   var createEventsMap = function() {
     return {

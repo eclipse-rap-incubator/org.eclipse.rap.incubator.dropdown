@@ -120,4 +120,8 @@ public class DropDown extends Widget {
     }
   }
 
+  public void setVisibleItemCount( int itemCount ) {
+    remoteObject.set( "visibleItemCount", itemCount );
+  }
+
 }

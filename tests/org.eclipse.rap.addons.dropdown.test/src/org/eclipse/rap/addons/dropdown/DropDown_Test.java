@@ -100,13 +100,18 @@ public class DropDown_Test {
     verify( remoteObject ).set( "visibility", true );
   }
 
+  @Test
+  public void testSetVisibleItemCount_RendersVisibleItemCount() {
+    dropdown.setVisibleItemCount( 7 );
+    verify( remoteObject ).set( "visibleItemCount", 7 );
+  }
+
   @SuppressWarnings("unchecked")
   @Test
   public void testSetData_RendersDataInWhiteList() {
     Fixture.fakePhase( PhaseId.PROCESS_ACTION );
 
     fakeWidgetDataWhiteList( new String[]{ "foo", "bar" } );
-
     dropdown.setData( "foo", "bar" );
 
     @SuppressWarnings("rawtypes")
@@ -120,7 +125,6 @@ public class DropDown_Test {
     Fixture.fakePhase( PhaseId.PROCESS_ACTION );
 
     fakeWidgetDataWhiteList( new String[]{ "foo", "bar" } );
-
     dropdown.setData( "fool", "bar" );
 
     verify( remoteObject, never() ).set( eq( "data" ), any() );

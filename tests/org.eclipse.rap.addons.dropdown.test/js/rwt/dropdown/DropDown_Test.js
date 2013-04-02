@@ -116,6 +116,13 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       assertEquals( 100, popup.getWidth() );
     },
 
+    testShow_SetVisibleItemCount : function() {
+      dropdown.setVisibleItemCount( 7 );
+      prepare();
+
+      assertEquals( 7 * 20, popup.getInnerHeight() );
+    },
+
     testShow_LayoutsViewer : function() {
       prepare();
 

@@ -59,6 +59,7 @@ public class DropDownDemo extends AbstractEntryPoint {
 
   private void createDropDown( Text text ) {
     dropdown = new DropDown( text );
+    dropdown.setVisibleItemCount( 3 );
     dropdown.setData( "text", WidgetUtil.getId( text ) );
     dropdown.setData( "nations", getClientData( "Nations" ) );
     text.setData( "dropdown", WidgetUtil.getId( dropdown ) );
