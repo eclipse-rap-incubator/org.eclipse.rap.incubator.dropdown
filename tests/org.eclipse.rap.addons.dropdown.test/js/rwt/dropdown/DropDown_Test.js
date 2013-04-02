@@ -66,6 +66,11 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       assertEquals( 0, viewer.getTop() );
     },
 
+    testConstructor_HideScrollbars : function() {
+      assertFalse( viewer.getVerticalBar().getDisplay() );
+      assertFalse( viewer.getHorizontalBar().getDisplay() );
+    },
+
     testSetData_SetDataWithTwoParameters : function() {
       dropdown.setData( "foo", "bar" );
 
@@ -121,6 +126,22 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       prepare();
 
       assertEquals( 7 * 20, popup.getInnerHeight() );
+    },
+
+    testSetVisibleItemCount_UpdatesScrollbar : function() {
+      dropdown.setItems( [ "a", "b", "c" ] );
+
+      dropdown.setVisibleItemCount( 2 );
+
+      assertTrue( viewer.getVerticalBar().getDisplay() );
+    },
+
+    testSetItems_UpdatesScrollbar : function() {
+      dropdown.setVisibleItemCount( 2 );
+
+      dropdown.setItems( [ "a", "b", "c" ] );
+
+      assertTrue( viewer.getVerticalBar().getDisplay() );
     },
 
     testShow_LayoutsViewer : function() {

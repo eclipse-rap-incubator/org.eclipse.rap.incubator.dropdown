@@ -36,10 +36,12 @@
 
     setItems : function( items ) {
       this._.viewer.setItems( items );
+      updateScrollBars.call( this );
     },
 
     setVisibleItemCount : function( itemCount ) {
       this._.visibleItemCount = itemCount;
+      updateScrollBars.call( this );
     },
 
     setSelectionIndex : function( index ) {
@@ -162,6 +164,12 @@
       eventProxy.element = rwt.util.Encoding.unescape( selection[ 0 ].getLabel() );
     }
     notify( this._.events[ "Selection" ], eventProxy );
+  };
+
+  var updateScrollBars = function() {
+    var scrollable = this._.visibleItemCount < this.getItemCount();
+    // TODO [tb] : Horizontal scrolling would require measuring all items preferred width
+    this._.viewer.setScrollBarsVisible( false, scrollable );
   };
 
   var notify = function( listeners, event ) {
