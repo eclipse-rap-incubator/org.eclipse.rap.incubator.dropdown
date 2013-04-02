@@ -138,6 +138,14 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       assertEquals( [ "a", "b", "c" ], getViewerItems() );
     },
 
+    testGetItemCount : function() {
+      prepare();
+
+      dropdown.setItems( [ "a", "b", "c" ] );
+
+      assertEquals( 3, dropdown.getItemCount() );
+    },
+
     testAddSelectionListener : function() {
       dropdown.setItems( [ "a", "b", "c" ] );
       prepare();

@@ -38,6 +38,10 @@
       this._.viewer.setItems( items );
     },
 
+    getItemCount : function() {
+      return this._.viewer.getItemsCount();
+    },
+
     setVisibleItemCount : function( itemCount ) {
       this._.visibleItemCount = itemCount;
     },
