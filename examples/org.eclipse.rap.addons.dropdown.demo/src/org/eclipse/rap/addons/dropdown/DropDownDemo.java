@@ -25,7 +25,11 @@ import org.eclipse.rap.rwt.service.ResourceManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 
 
@@ -44,22 +48,36 @@ public class DropDownDemo extends AbstractEntryPoint {
   }
 
   private void createNationsExample( Composite parent ) {
-    Text text = createText( parent );
+    // TODO : Use CSS Theming on textBox / open button
+    Composite textBox = new Composite( parent, SWT.BORDER );
+    GridLayout layout = new GridLayout( 2, false );
+    layout.marginHeight = 0;
+    layout.marginWidth = 0;
+    textBox.setLayout( layout );
+    Text text = createText( textBox, SWT.NONE );
     text.setMessage( "Nations" );
-    DropDown dropdown = createDropDown( text );
+    Button open = new Button( textBox, SWT.ARROW | SWT.DOWN );
+    open.setLayoutData( new GridData( SWT.RIGHT, SWT.FILL, false, true ) );
+    final DropDown dropdown = createDropDown( text, textBox );
+    open.addListener( SWT.Selection, new Listener() {
+      public void handleEvent( Event event ) {
+        // TODO : This should be a client listener
+        dropdown.show();
+      }
+    } );
     dropdown.setVisibleItemCount( 3 );
     dropdown.setData( "data", getClientData( "Nations" ) );
   }
 
   private void createMoviesExample( Composite parent ) {
-    Text text = createText( parent );
+    Text text = createText( parent, SWT.BORDER );
     text.setMessage( "90's Movies" );
-    DropDown dropdown = createDropDown( text );
+    DropDown dropdown = createDropDown( text, text );
     dropdown.setData( "data", getClientData( "Movies" ) );
   }
 
-  private Text createText( Composite parent ) {
-    Text text = new Text( parent, SWT.BORDER );
+  private Text createText( Composite parent, int style ) {
+    Text text = new Text( parent, style );
     GridData gridData = new GridData( 200, 23 );
     gridData.verticalAlignment = SWT.TOP;
     text.setLayoutData( gridData );
@@ -67,8 +85,8 @@ public class DropDownDemo extends AbstractEntryPoint {
     return text;
   }
 
-  private DropDown createDropDown( Text text ) {
-    DropDown dropdown = new DropDown( text );
+  private DropDown createDropDown( Text text, Control parent ) {
+    DropDown dropdown = new DropDown( parent );
     dropdown.setData( "text", WidgetUtil.getId( text ) );
     text.setData( "dropdown", WidgetUtil.getId( dropdown ) );
     addDropDownClientListener( dropdown );
@@ -79,6 +97,8 @@ public class DropDownDemo extends AbstractEntryPoint {
     String script = readTextContent( PATH_PREFIX + "DropDownEventHandler.js" );
     ClientListener listener = new ClientListener( script );
     listener.addTo( dropdown, SWT.Selection );
+    listener.addTo( dropdown, SWT.DefaultSelection );
+    //listener.addTo( dropdown, SWT.KeyDown ); // currently not supported, implement?
   }
 
   private void addTextClientListener( Text text ) {

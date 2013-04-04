@@ -18,16 +18,27 @@
   var POPUP_BORDER = new rwt.html.Border( 1, "solid", "#000000" );
   var FRAMEWIDTH = 2;
 
+  var eventTypes = {
+    Selection : 13,
+    DefaultSelection : 14
+  };
+
   rwt.dropdown = {};
 
   rwt.dropdown.DropDown = function( linkedControl ) {
     this._ = {};
+    this._.hideTimer = new rwt.client.Timer( 0 );
+    this._.hideTimer.addEventListener( "interval", checkFocus, this );
     this._.popup = createPopup();
     this._.viewer = createViewer( this._.popup );
     this._.visibleItemCount = 5;
     this._.linkedControl = linkedControl;
     this._.events = createEventsMap();
     this._.viewer.getManager().addEventListener( "changeSelection", onSelection, this );
+    this._.viewer.addEventListener( "keypress", onKeyPress, this );
+    this._.viewer.addEventListener( "dblclick", onDoubleClick, this );
+    this._.popup.getFocusRoot().addEventListener( "changeFocusedChild", onFocusChange, this );
+    linkedControl.getFocusRoot().addEventListener( "changeFocusedChild", onFocusChange, this );
     linkedControl.addEventListener( "appear", onAppear, this );
     this._.visibility = false;
   };
@@ -64,12 +75,16 @@
       this._.visibility = true;
       if( this._.linkedControl.isCreated() && !this._.popup.isSeeable() ) {
         var yOffset = this._.linkedControl.getHeight();
-        this._.popup.positionRelativeTo( this._.linkedControl, 0, yOffset );
-        this._.popup.setWidth( this._.linkedControl.getWidth() );
+        var control = this._.linkedControl;
+        this._.popup.positionRelativeTo( control, 0, yOffset );
+        this._.popup.setWidth( control.getWidth() );
         this._.popup.setHeight( this._.visibleItemCount * ITEM_HEIGHT + FRAMEWIDTH );
         this._.popup.show();
         this._.viewer.setDimension( this._.popup.getInnerWidth(), this._.popup.getInnerHeight() );
         this._.viewer.setItemDimensions( "100%", ITEM_HEIGHT );
+        if( !control.contains( control.getFocusRoot().getFocusedChild() ) ) {
+          this._.viewer.getFocusRoot().setFocusedChild( this._.viewer );
+        }
       }
     },
 
@@ -117,7 +132,11 @@
 
     destroy : function() {
       if( !this.isDisposed() ) {
+        var focusRoot = this._.linkedControl.getFocusRoot();
+        focusRoot.removeEventListener( "changeFocusedChild", onFocusChange, this );
+        this._.linkedControl.removeEventListener( "appear", onAppear, this );
         this._.popup.destroy();
+        this._.hideTimer.dispose();
         for( var key in this._ ) {
           this._[ key ] = null;
         }
@@ -153,17 +172,50 @@
     }
   };
 
+  var onKeyPress = function( event ) {
+    if( event.getKeyIdentifier() === "Enter" ) {
+      fireSelectionEvent.call( this, "DefaultSelection" );
+    }
+  };
+
   var onSelection = function( event ) {
+    fireSelectionEvent.call( this, "Selection" );
+  };
+
+  var onDoubleClick = function( event ) {
+    fireSelectionEvent.call( this, "DefaultSelection" );
+  };
+
+  var onFocusChange = function( event ) {
+    // NOTE : There is no secure way to get the newly focused widget at this point because
+    //        it may have another focus root. Therefore we use this timeout and check afterwards:
+    this._.hideTimer.start();
+  };
+
+  var fireSelectionEvent = function( type ) {
     var selection = this._.viewer.getSelectedItems();
     var eventProxy = {
       "widget" : this,
-      "element" : null
+      "element" : null,
+      "type" : eventTypes[ type ]
     };
     if( selection.length > 0 ) {
       // TOOD : use input element instead of label
       eventProxy.element = rwt.util.Encoding.unescape( selection[ 0 ].getLabel() );
     }
-    notify( this._.events[ "Selection" ], eventProxy );
+    notify( this._.events[ type ], eventProxy );
+  };
+
+  var checkFocus = function() {
+    this._.hideTimer.stop();
+    var control = this._.linkedControl;
+    var popup = this._.popup;
+    if(    !( control.getFocused() )
+        && !( control.contains && control.contains( control.getFocusRoot().getFocusedChild() ) )
+        && !( popup.contains( popup.getFocusRoot().getFocusedChild() ) )
+    ) {
+      this.hide();
+    }
   };
 
   var updateScrollBars = function() {
@@ -184,9 +236,8 @@
     result.setBorder( POPUP_BORDER );
     result.setBackgroundColor( "#ffffff" );
     result.setVisibility( false );
-    // just for testing:
-    result.setHeight( 150 );
     result.setRestrictToPageOnOpen( false );
+    result.setAutoHide( false );
     return result;
   };
 
@@ -206,9 +257,11 @@
   };
 
   var createEventsMap = function() {
-    return {
-      "Selection" : []
-    };
+    var result = {};
+    for( var key in eventTypes ) {
+      result[ key ] = [];
+    }
+    return result;
   };
 
   var bind = function( context, method ) {

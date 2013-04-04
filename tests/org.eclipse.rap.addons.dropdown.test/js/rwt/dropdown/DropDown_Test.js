@@ -19,6 +19,7 @@ var widget;
 var dropdown;
 var popup;
 var viewer;
+var hideTimer;
 
 rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
 
@@ -89,6 +90,57 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       prepare();
 
       assertTrue( popup.isSeeable() );
+    },
+
+    testDoNotHideOnParentClick : function() {
+      var focusable = new rwt.widgets.Button( "push" );
+      focusable.setParent( widget );
+      prepare();
+
+      TestUtil.click( focusable );
+      forceTimer();
+
+      assertTrue( popup.isSeeable() );
+    },
+
+    testDoNotHideOnFocusableParentClick : function() {
+      widget.setTabIndex( 1 );
+      widget.contains = rwt.util.Functions.returnFalse;
+      prepare();
+
+      TestUtil.click( widget );
+      forceTimer();
+
+      assertTrue( popup.isSeeable() );
+    },
+
+    testDoNotHideOnChildClick : function() {
+      prepare();
+
+      TestUtil.click( viewer );
+      forceTimer();
+
+      assertTrue( popup.isSeeable() );
+    },
+
+    testHideOnShellClick : function() {
+      prepare();
+
+      TestUtil.click( shell );
+      forceTimer();
+
+      assertFalse( popup.isSeeable() );
+    },
+
+    testShellClickAfterDisposeDoesNotCrash : function() {
+      prepare();
+      dropdown.destroy();
+      TestUtil.flush();
+
+      TestUtil.click( shell );
+      forceTimer();
+
+      assertFalse( popup.isSeeable() );
     },
 
     testShow_CalledBeforeCreatedMakesPopUpVisible : function() {
@@ -210,6 +262,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       var event = logger.getLog()[ 0 ];
       assertIdentical( dropdown, event.widget );
       assertIdentical( "b", event.element );
+      assertIdentical( 13, event.type );
     },
 
     testSelectionEventFields_NoItemSelected : function() {
@@ -220,6 +273,58 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
 
       dropdown.addListener( "Selection", logger.log );
       dropdown.setSelectionIndex( -1 );
+
+      var event = logger.getLog()[ 0 ];
+      assertIdentical( dropdown, event.widget );
+      assertIdentical( null, event.element );
+    },
+
+    testAddDefaultSelectionListener_FiresOnEnter : function() {
+      dropdown.setItems( [ "a", "b", "c" ] );
+      prepare();
+      var logger = TestUtil.getLogger();
+
+      dropdown.addListener( "DefaultSelection", logger.log );
+      clickItem( 1 );
+      TestUtil.pressOnce( viewer, "Enter" );
+
+      assertEquals( 1, logger.getLog().length );
+    },
+
+    testAddDefaultSelectionListener_FiresOnDoubleClick : function() {
+      dropdown.setItems( [ "a", "b", "c" ] );
+      prepare();
+      var logger = TestUtil.getLogger();
+
+      dropdown.addListener( "DefaultSelection", logger.log );
+      doubleClickItem( 1 );
+
+      assertEquals( 1, logger.getLog().length );
+    },
+
+    testDefaultSelectionEventFields : function() {
+      dropdown.setItems( [ "a", "b", "c" ] );
+      prepare();
+      var logger = TestUtil.getLogger();
+
+      dropdown.addListener( "DefaultSelection", logger.log );
+      clickItem( 1 );
+      TestUtil.pressOnce( viewer, "Enter" );
+
+      var event = logger.getLog()[ 0 ];
+      assertIdentical( dropdown, event.widget );
+      assertIdentical( "b", event.element );
+      assertIdentical( 14, event.type );
+    },
+
+    testDefaultSelectionEventFields_NoItemSelected : function() {
+      dropdown.setItems( [ "a", "b", "c" ] );
+      prepare();
+      var logger = TestUtil.getLogger();
+
+      dropdown.addListener( "DefaultSelection", logger.log );
+      dropdown.setSelectionIndex( -1 );
+      TestUtil.pressOnce( viewer, "Enter" );
 
       var event = logger.getLog()[ 0 ];
       assertIdentical( dropdown, event.widget );
@@ -293,6 +398,22 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       assertTrue( TestUtil.hasNoObjects( privateObj ) );
     },
 
+    testDestroy_DeregistersAppearListener : function() {
+      widget.setVisibility( false );
+
+      dropdown.destroy();
+      widget.setVisibility( true );
+      // Succeeds by not crashing
+    },
+
+    testDestroy_DocumentClick : function() {
+      prepare();
+      dropdown.destroy();
+      TestUtil.click( TestUtil.getDocument() );
+
+      assertFalse( popup.isSeeable() );
+    },
+
     createExample : function() {
       widget = new rwt.widgets.Composite();
       widget.setParent( shell );
@@ -301,6 +422,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       dropdown = new rwt.dropdown.DropDown( widget );
       popup = dropdown._.popup;
       viewer = dropdown._.viewer;
+      hideTimer = dropdown._.hideTimer;
     }
 
   }
@@ -326,6 +448,13 @@ var clickItem = function( index ) {
   TestUtil.click( viewer.getItems()[ 1 ] );
 };
 
+var doubleClickItem = function( index ) {
+  TestUtil.doubleClick( viewer.getItems()[ 1 ] );
+};
+
+var forceTimer = function() {
+  TestUtil.forceInterval( hideTimer );
+};
 
 
 }());
