@@ -24,40 +24,39 @@ function handleEvent( event ) {
 }
 
 function handleVerify( event ) {
-  if( event.text !== "" && event.keyCode !== 0 ) {
-    // the modify event can not be used to determine how text was inserted or deleted
+  // See Bug 404896 - [ClientScripting] Verify event keyCode is always zero when replacing txt
+  if( event.text !== "" /* && event.keyCode !== 0 */ ) {
     event.widget.setData( "typing", true );
   }
 }
 
 //TODO : This can get very slow with huge lists. Possible optimizations include caching results,
-//       limiting result length until first selection occurs, and virtual rendering
+//       limiting result length (at least until first selection occurs), and virtual rendering
 function handleModify( event ) {
   var widget = event.widget;
   var text = widget.getText().toLowerCase();
   var dropdown = rap.getObject( widget.getData( "dropdown" ) );
   var data = rap.getObject( dropdown.getData( "data" ) );
   var items = itemsStartingWith( data, text );
-  if( !widget.getData( "selecting" ) ) {
-    if( ( text.length >= 2 || dropdown.getVisibility() ) && items.length > 0 ) {
+  var typing = widget.getData( "typing" );
+  var selecting = widget.getData( "selecting" );
+  widget.setData( "typing", false );
+  widget.setData( "selecting", false );
+  if( !selecting ) {
+    if( ( text.length >= 2 || ( dropdown.getVisibility() && typing ) ) && items.length > 0 ) {
       dropdown.setItems( items );
       dropdown.show();
       var common = commonText( items );
-      if( widget.getData( "typing" ) && common ) {
+      if( typing && common && common.length > text.length ) {
         var sel = widget.getSelection();
         var newSel = [ sel[ 0 ], common.length ];
         widget.setText( common );
-        // See Bug 404615 - [ClientScripting][Text] setSelection and getSelection do not work correctly in Modify event
-  //      window.setTimeout( function() {
-  //        widget.setSelection( newSel );
-  //      }, 0 );
+        widget.setSelection( newSel );
       }
     } else {
       dropdown.hide();
     }
   }
-  widget.setData( "typing", false );
-  widget.setData( "selecting", false );
 }
 
 function handleKeyDown( event ) {
@@ -80,6 +79,14 @@ function handleKeyDown( event ) {
         event.doit = false;
       break;
       case SWT.CR:
+        var sel = widget.getSelection();
+        widget.setSelection( [ sel[ 1 ], sel[ 1 ] ] );
+        if( dropdown.getItemCount() === 1 || dropdown.getSelectionIndex() >= 0 ) {
+          dropdown.hide();
+          dropdown.setSelectionIndex( -1 ); // should this happen automatically?
+        }
+        event.doit = false;
+      break;
       case SWT.ESC: // TODO [tb] : Dropdown itself can not implement this easily, it has no focus
         dropdown.hide();
       break;
@@ -95,11 +102,12 @@ function commonText( items ) {
     var cont = true;
     var commonTo = 0;
     while( cont ) {
-      var next = items[ 0 ].indexOf( " ", commonTo + 1 );
+      var next = items[ 0 ].indexOf( " ", commonTo + 1 ); // TODO [tb] : also respect ,"':;
       if( next !== -1 ) {
-        var commons = itemsStartingWith( items, items[ 0 ].slice( 0, next ), true );
+        var testString = items[ 0 ].slice( 0, next + 1 );
+        var commons = itemsStartingWith( items, testString, true );
         if( items.length === commons.length ) {
-          commonTo = next;
+          commonTo = next + 1;
         } else {
           cont = false;
         }

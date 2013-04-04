@@ -24,14 +24,20 @@ function handleEvent( event ) {
 }
 
 function handleSelection( event ) {
-  var dropdown = event.widget;
-  var text = rap.getObject( dropdown.getData( "text" ) );
-  text.setData( "selecting", true );
-  text.setText( event.element );
+  if( event.element != null ) {
+    var dropdown = event.widget;
+    var text = rap.getObject( dropdown.getData( "text" ) );
+    text.setData( "selecting", true );
+    text.setText( event.element );
+    text.setSelection( [ 0, event.element.length ] );
+  }
 }
 
 function handleDefaultSelection( event ) {
-  event.widget.hide();
+  var dropdown = event.widget;
+  dropdown.hide();
+//  var text = rap.getObject( dropdown.getData( "text" ) );
+//  text.forceFocus(); // TODO : currently not possible
 }
 
 function handleKeyDown( event ) {
