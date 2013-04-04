@@ -28,8 +28,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 
 
@@ -58,13 +56,9 @@ public class DropDownDemo extends AbstractEntryPoint {
     text.setMessage( "Nations" );
     Button open = new Button( textBox, SWT.ARROW | SWT.DOWN );
     open.setLayoutData( new GridData( SWT.RIGHT, SWT.FILL, false, true ) );
+    addButtonClientListener( open );
     final DropDown dropdown = createDropDown( text, textBox );
-    open.addListener( SWT.Selection, new Listener() {
-      public void handleEvent( Event event ) {
-        // TODO : This should be a client listener
-        dropdown.show();
-      }
-    } );
+    open.setData( "dropdown", WidgetUtil.getId( dropdown ) );
     dropdown.setVisibleItemCount( 3 );
     dropdown.setData( "data", getClientData( "Nations" ) );
   }
@@ -99,6 +93,12 @@ public class DropDownDemo extends AbstractEntryPoint {
     listener.addTo( dropdown, SWT.Selection );
     listener.addTo( dropdown, SWT.DefaultSelection );
     //listener.addTo( dropdown, SWT.KeyDown ); // currently not supported, implement?
+  }
+
+  private void addButtonClientListener( Button button ) {
+    String script = readTextContent( PATH_PREFIX + "ButtonEventHandler.js" );
+    ClientListener listener = new ClientListener( script );
+    listener.addTo( button, SWT.MouseDown );
   }
 
   private void addTextClientListener( Text text ) {

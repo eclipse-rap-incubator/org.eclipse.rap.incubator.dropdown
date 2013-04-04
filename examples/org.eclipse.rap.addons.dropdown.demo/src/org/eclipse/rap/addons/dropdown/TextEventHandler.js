@@ -39,7 +39,7 @@ function handleModify( event ) {
   var data = rap.getObject( dropdown.getData( "data" ) );
   var items = itemsStartingWith( data, text );
   if( !widget.getData( "selecting" ) ) {
-    if( text.length >= 2 && items.length > 0 ) {
+    if( ( text.length >= 2 || dropdown.getVisibility() ) && items.length > 0 ) {
       dropdown.setItems( items );
       dropdown.show();
       var common = commonText( items );

@@ -92,6 +92,32 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       assertTrue( popup.isSeeable() );
     },
 
+    testShow_FocusesViewer : function() {
+      prepare();
+
+      assertTrue( viewer.getFocused() );
+    },
+
+    testShow_LeavesLinkedControlFocused : function() {
+      widget.setTabIndex( 1 );
+      widget.focus();
+      prepare();
+
+      assertFalse( viewer.getFocused() );
+      assertTrue( widget.getFocused() );
+    },
+
+    testShow_LeavesLinkedControlChildFocused : function() {
+      var focusable = new rwt.widgets.Button( "push" );
+      focusable.setParent( widget );
+      TestUtil.flush();
+      focusable.focus();
+      prepare();
+
+      assertFalse( viewer.getFocused() );
+      assertTrue( focusable.getFocused() );
+    },
+
     testDoNotHideOnParentClick : function() {
       var focusable = new rwt.widgets.Button( "push" );
       focusable.setParent( widget );

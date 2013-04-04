@@ -82,7 +82,7 @@
         this._.popup.show();
         this._.viewer.setDimension( this._.popup.getInnerWidth(), this._.popup.getInnerHeight() );
         this._.viewer.setItemDimensions( "100%", ITEM_HEIGHT );
-        if( !control.contains( control.getFocusRoot().getFocusedChild() ) ) {
+        if( !hasFocus( control ) ) {
           this._.viewer.getFocusRoot().setFocusedChild( this._.viewer );
         }
       }
@@ -208,12 +208,7 @@
 
   var checkFocus = function() {
     this._.hideTimer.stop();
-    var control = this._.linkedControl;
-    var popup = this._.popup;
-    if(    !( control.getFocused() )
-        && !( control.contains && control.contains( control.getFocusRoot().getFocusedChild() ) )
-        && !( popup.contains( popup.getFocusRoot().getFocusedChild() ) )
-    ) {
+    if( !hasFocus( this._.linkedControl ) && !hasFocus( this._.popup ) ) {
       this.hide();
     }
   };
@@ -269,5 +264,13 @@
       return method.apply( context, arguments );
     };
   };
+
+  var hasFocus = function( control ) {
+    var root = control.getFocusRoot();
+    var result =    control.getFocused()
+                 || ( control.contains && control.contains( root.getFocusedChild() ) );
+    return result;
+  };
+
 
 }());
