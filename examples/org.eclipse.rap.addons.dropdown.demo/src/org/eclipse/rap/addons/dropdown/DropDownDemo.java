@@ -11,8 +11,12 @@
 
 package org.eclipse.rap.addons.dropdown;
 
-import static org.eclipse.rap.addons.dropdown.ResourceLoaderUtil.readTextContent;
+import static org.eclipse.rap.addons.dropdown.viewer.ResourceLoaderUtil.readTextContent;
 
+import java.util.Arrays;
+
+import org.eclipse.rap.addons.dropdown.viewer.DropDownViewer;
+import org.eclipse.rap.addons.dropdown.viewer.LabelProvider;
 import org.eclipse.rap.clientscripting.ClientListener;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.application.AbstractEntryPoint;
@@ -43,6 +47,7 @@ public class DropDownDemo extends AbstractEntryPoint {
     list.setKeys( new String[]{ "dropdown", "text", "data" } );
     createNationsExample( parent );
     createMoviesExample( parent );
+    createKFZExample( parent );
   }
 
   private void createNationsExample( Composite parent ) {
@@ -68,6 +73,21 @@ public class DropDownDemo extends AbstractEntryPoint {
     text.setMessage( "90's Movies" );
     DropDown dropdown = createDropDown( text, text );
     dropdown.setData( "data", getClientData( "Movies" ) );
+  }
+
+  private void createKFZExample( Composite parent ) {
+    Text text = new Text( parent, SWT.BORDER );
+    GridData gridData = new GridData( 200, 23 );
+    gridData.verticalAlignment = SWT.TOP;
+    text.setLayoutData( gridData );
+    text.setMessage( "German City" );
+    DropDownViewer dropdown = new DropDownViewer( text );
+    dropdown.setLabelProvider( new LabelProvider() {
+      public String getText( Object object ) {
+        return ( ( String[] )object )[ 2 ];
+      }
+    } );
+    dropdown.setInput( Arrays.asList( KFZ.VALUES ) );
   }
 
   private Text createText( Composite parent, int style ) {
