@@ -9,8 +9,9 @@
  *    EclipseSource - initial API and implementation
  ******************************************************************************/
 
-var LINKED_CONTROL_KEY = "org.eclipse.rap.addons.dropdown.viewer.linkedControl";
-var INPUT_KEY = "org.eclipse.rap.addons.dropdown.viewer.input";
+ var LINKED_CONTROL_KEY = "org.eclipse.rap.addons.dropdown.viewer.linkedControl";
+ var INPUT_KEY = "org.eclipse.rap.addons.dropdown.viewer.input";
+ var VIEWER_KEY = "org.eclipse.rap.addons.dropdown.viewer";
 
 function handleEvent( event ) {
   switch( event.type ) {
@@ -46,10 +47,11 @@ function handleModify( event ) {
   widget.setData( "typing", false );
   widget.setData( "selecting", false );
   if( !selecting ) {
-    if( ( text.length >= 2 || ( dropdown.getVisibility() && typing ) ) && items.length > 0 ) {
-      dropdown.setItems( items );
+    if( ( text.length >= 2 || ( dropdown.getVisibility() && typing ) ) && items.values.length > 0 ) {
+      dropdown.setItems( items.values );
+      dropdown.setData( "indexMapping", items.indicies );
       dropdown.show();
-      var common = commonText( items );
+      var common = commonText( items.values );
       if( typing && common && common.length > text.length ) {
         var sel = widget.getSelection();
         var newSel = [ sel[ 0 ], common.length ];
@@ -86,6 +88,12 @@ function handleKeyDown( event ) {
         widget.setSelection( [ sel[ 1 ], sel[ 1 ] ] );
         if( dropdown.getItemCount() === 1 || dropdown.getSelectionIndex() >= 0 ) {
           dropdown.hide();
+          // TODO [tb] : do this by triggering default Selection
+          var selectionIndex = dropdown.getSelectionIndex();
+          var mapping = dropdown.getData( "indexMapping" );
+          var elementIndex = mapping[ selectionIndex ];
+          var viewer = rap.getObject( dropdown.getData( VIEWER_KEY ) );
+          viewer.notifySelectionChanged( elementIndex );
           dropdown.setSelectionIndex( -1 ); // should this happen automatically?
         }
         event.doit = false;
@@ -127,10 +135,29 @@ function commonText( items ) {
 
 function itemsStartingWith( items, text, caseSensitive ) {
   var itemFilter;
+  var resultIndicies = [];
   if( caseSensitive ) {
-    itemFilter = function( item ) { return item.indexOf( text ) === 0; };
+    itemFilter = function( item, index ) {
+      if( item.indexOf( text ) === 0 ) {
+        resultIndicies.push( index );
+        return true;
+      } else {
+        return false;
+      }
+   };
   } else {
-    itemFilter = function( item ) { return item.toLowerCase().indexOf( text ) === 0; };
+    itemFilter = function( item, index ) {
+      if( item.toLowerCase().indexOf( text ) === 0 ) {
+        resultIndicies.push( index );
+        return true;
+      } else {
+        return false;
+      }
+    };
   }
-  return items.filter( itemFilter );
+  var resultValues = items.filter( itemFilter );
+  return {
+    "values" : resultValues,
+    "indicies" : resultIndicies
+  };
 }

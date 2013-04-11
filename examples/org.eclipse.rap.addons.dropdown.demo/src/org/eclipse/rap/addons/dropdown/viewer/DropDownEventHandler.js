@@ -11,6 +11,7 @@
 
 var LINKED_CONTROL_KEY = "org.eclipse.rap.addons.dropdown.viewer.linkedControl";
 var INPUT_KEY = "org.eclipse.rap.addons.dropdown.viewer.input";
+var VIEWER_KEY = "org.eclipse.rap.addons.dropdown.viewer";
 
 function handleEvent( event ) {
   switch( event.type ) {
@@ -39,6 +40,11 @@ function handleSelection( event ) {
 function handleDefaultSelection( event ) {
   var dropdown = event.widget;
   dropdown.hide();
+  var selectionIndex = dropdown.getSelectionIndex();
+  var mapping = dropdown.getData( "indexMapping" );
+  var elementIndex = mapping[ selectionIndex ];
+  var viewer = rap.getObject( dropdown.getData( VIEWER_KEY ) );
+  viewer.notifySelectionChanged( elementIndex );
 //  var text = rap.getObject( dropdown.getData( "text" ) );
 //  text.forceFocus(); // TODO : currently not possible
 }
