@@ -5,7 +5,8 @@ Bundle-SymbolicName: org.eclipse.rap.addons.dropdown
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: ECLIPSESOURCE
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Import-Package: org.osgi.framework;version="1.3.0"
+Import-Package: org.eclipse.rap.clientscripting;version="0.1.100",
+ org.osgi.framework;version="1.3.0"
 Export-Package: org.eclipse.rap.addons.dropdown,
  org.eclipse.rap.addons.dropdown.internal.resources
 Require-Bundle: org.eclipse.rap.rwt;bundle-version="2.0.0"
