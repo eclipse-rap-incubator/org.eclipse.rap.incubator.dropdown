@@ -8,7 +8,7 @@
  * Contributors:
  *    EclipseSource - initial API and implementation
  ******************************************************************************/
-package org.eclipse.rap.addons.dropdown.viewer;
+package org.eclipse.rap.addons.dropdown.viewer.old;
 
 import java.io.BufferedReader;
 import java.io.IOException;

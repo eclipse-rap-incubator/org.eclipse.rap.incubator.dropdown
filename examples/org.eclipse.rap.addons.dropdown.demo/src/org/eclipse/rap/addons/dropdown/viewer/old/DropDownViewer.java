@@ -1,6 +1,6 @@
-package org.eclipse.rap.addons.dropdown.viewer;
+package org.eclipse.rap.addons.dropdown.viewer.old;
 
-import static org.eclipse.rap.addons.dropdown.viewer.ResourceLoaderUtil.readTextContent;
+import static org.eclipse.rap.addons.dropdown.viewer.old.ResourceLoaderUtil.readTextContent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,8 +10,8 @@ import java.util.Map;
 import org.eclipse.rap.addons.dropdown.DropDown;
 import org.eclipse.rap.clientscripting.ClientListener;
 import org.eclipse.rap.rwt.RWT;
-import org.eclipse.rap.rwt.client.OperationAdapter;
-import org.eclipse.rap.rwt.client.UniversalRemoteObject;
+import org.eclipse.rap.rwt.client.old.OperationAdapter;
+import org.eclipse.rap.rwt.client.old.UniversalRemoteObject;
 import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteList;
 import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteListImpl;
 import org.eclipse.rap.rwt.lifecycle.WidgetUtil;

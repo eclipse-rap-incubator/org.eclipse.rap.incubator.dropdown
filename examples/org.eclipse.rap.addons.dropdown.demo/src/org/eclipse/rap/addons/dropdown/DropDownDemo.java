@@ -11,14 +11,14 @@
 
 package org.eclipse.rap.addons.dropdown;
 
-import static org.eclipse.rap.addons.dropdown.viewer.ResourceLoaderUtil.readTextContent;
+import static org.eclipse.rap.addons.dropdown.viewer.old.ResourceLoaderUtil.readTextContent;
 
 import java.util.Arrays;
 
-import org.eclipse.rap.addons.dropdown.viewer.DropDownViewer;
-import org.eclipse.rap.addons.dropdown.viewer.LabelProvider;
-import org.eclipse.rap.addons.dropdown.viewer.SelectionChangedEvent;
-import org.eclipse.rap.addons.dropdown.viewer.SelectionChangedListener;
+import org.eclipse.rap.addons.dropdown.viewer.old.DropDownViewer;
+import org.eclipse.rap.addons.dropdown.viewer.old.LabelProvider;
+import org.eclipse.rap.addons.dropdown.viewer.old.SelectionChangedEvent;
+import org.eclipse.rap.addons.dropdown.viewer.old.SelectionChangedListener;
 import org.eclipse.rap.clientscripting.ClientListener;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.application.AbstractEntryPoint;

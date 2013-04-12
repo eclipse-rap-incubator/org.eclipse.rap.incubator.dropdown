@@ -9,7 +9,7 @@
  *    EclipseSource - initial API and implementation
  ******************************************************************************/
 
-package org.eclipse.rap.rwt.client;
+package org.eclipse.rap.rwt.client.old;
 
 import java.util.HashMap;
 import java.util.Map;

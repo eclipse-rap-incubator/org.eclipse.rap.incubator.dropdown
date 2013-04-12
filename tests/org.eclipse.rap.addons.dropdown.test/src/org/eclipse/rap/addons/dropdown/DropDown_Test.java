@@ -12,6 +12,7 @@
 package org.eclipse.rap.addons.dropdown;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -77,6 +78,11 @@ public class DropDown_Test {
   @Test
   public void testContructor_SetsReferenceWidget() {
     verify( remoteObject ).set( "linkedControl", WidgetUtil.getId( text ) );
+  }
+
+  @Test
+  public void testGetParent() {
+    assertSame( text, dropdown.getParent() );
   }
 
   @Test

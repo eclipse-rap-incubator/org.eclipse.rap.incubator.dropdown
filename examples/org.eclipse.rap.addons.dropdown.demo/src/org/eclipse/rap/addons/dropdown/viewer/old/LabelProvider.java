@@ -1,4 +1,4 @@
-package org.eclipse.rap.addons.dropdown.viewer;
+package org.eclipse.rap.addons.dropdown.viewer.old;
 
 
 public interface LabelProvider {
