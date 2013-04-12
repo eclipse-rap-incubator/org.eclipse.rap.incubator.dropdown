@@ -10,13 +10,11 @@ import java.util.Map;
 import org.eclipse.rap.addons.dropdown.DropDown;
 import org.eclipse.rap.clientscripting.ClientListener;
 import org.eclipse.rap.rwt.RWT;
-import org.eclipse.rap.rwt.client.service.JavaScriptLoader;
+import org.eclipse.rap.rwt.client.OperationAdapter;
+import org.eclipse.rap.rwt.client.UniversalRemoteObject;
 import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteList;
 import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteListImpl;
-import org.eclipse.rap.rwt.internal.remote.RemoteObjectImpl;
 import org.eclipse.rap.rwt.lifecycle.WidgetUtil;
-import org.eclipse.rap.rwt.remote.AbstractOperationHandler;
-import org.eclipse.rap.rwt.service.ResourceManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Text;
 
@@ -29,20 +27,21 @@ public class DropDownViewer {
   private static final String LINKED_CONTROL_KEY = "org.eclipse.rap.addons.dropdown.viewer.linkedControl";
   private static final String INPUT_KEY = "org.eclipse.rap.addons.dropdown.viewer.input";
   private static final String VIEWER_KEY = "org.eclipse.rap.addons.dropdown.viewer";
-  private static final String REMOTE_TYPE = "rwt.dropdown.DropDownViewer";
-  private static final String DROP_DOWN_VIWER_JS = "DropDownViewer.js";
   private DropDown dropdown;
   private Object[] input;
   private LabelProvider labelProvider;
   private List<SelectionChangedListener> selectionChangedListeners
     = new ArrayList<SelectionChangedListener>();
-  private RemoteObjectImpl remoteObject;
+  private UniversalRemoteObject remoteObject;
 
   public DropDownViewer( Text text ) {
     dropdown = new DropDown( text );
-    ensureClientViewer();
-    remoteObject
-      = ( RemoteObjectImpl )RWT.getUISession().getConnection().createRemoteObject( REMOTE_TYPE );
+      remoteObject = new UniversalRemoteObject( new OperationAdapter() {
+      @Override
+      public void handleNotify( String event, Map<String, Object> properties ) {
+        DropDownViewer.this.handleNotify( event, properties );
+      }
+    } );
     addWidgetDataKey( INPUT_KEY );
     addWidgetDataKey( LINKED_CONTROL_KEY );
     addWidgetDataKey( VIEWER_KEY );
@@ -52,12 +51,6 @@ public class DropDownViewer {
     dropdown.setData( LINKED_CONTROL_KEY, WidgetUtil.getId( text ) );
     dropdown.setData( VIEWER_KEY, remoteObject.getId() );
     text.setData( LINKED_CONTROL_KEY, WidgetUtil.getId( dropdown ) );
-    remoteObject.setHandler( new AbstractOperationHandler() {
-      @Override
-      public void handleNotify( String event, Map<String, Object> properties ) {
-        DropDownViewer.this.handleNotify( event, properties );
-      }
-    } );
   }
 
   public void setInput( List<?> elements ) {
@@ -118,14 +111,5 @@ public class DropDownViewer {
     listener.addTo( text, SWT.Verify );
     listener.addTo( text, SWT.KeyDown );
   }
-
- private void ensureClientViewer() {
-   ResourceManager manager = RWT.getResourceManager();
-   if( !manager.isRegistered( DROP_DOWN_VIWER_JS ) ) {
-     manager.register( DROP_DOWN_VIWER_JS, getClass().getResourceAsStream( DROP_DOWN_VIWER_JS ) );
-   }
-   JavaScriptLoader jsl = RWT.getClient().getService( JavaScriptLoader.class );
-   jsl.require( manager.getLocation( DROP_DOWN_VIWER_JS ) );
- }
 
 }

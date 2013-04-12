@@ -44,7 +44,7 @@ function handleDefaultSelection( event ) {
   var mapping = dropdown.getData( "indexMapping" );
   var elementIndex = mapping[ selectionIndex ];
   var viewer = rap.getObject( dropdown.getData( VIEWER_KEY ) );
-  viewer.notifySelectionChanged( elementIndex );
+  viewer.notify( "SelectionChanged", { "index" : elementIndex } );
 //  var text = rap.getObject( dropdown.getData( "text" ) );
 //  text.forceFocus(); // TODO : currently not possible
 }

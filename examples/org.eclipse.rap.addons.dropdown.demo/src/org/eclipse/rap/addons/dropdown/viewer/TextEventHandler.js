@@ -93,7 +93,7 @@ function handleKeyDown( event ) {
           var mapping = dropdown.getData( "indexMapping" );
           var elementIndex = mapping[ selectionIndex ];
           var viewer = rap.getObject( dropdown.getData( VIEWER_KEY ) );
-          viewer.notifySelectionChanged( elementIndex );
+          viewer.notify( "SelectionChanged", { "index" : elementIndex } );
           dropdown.setSelectionIndex( -1 ); // should this happen automatically?
         }
         event.doit = false;
