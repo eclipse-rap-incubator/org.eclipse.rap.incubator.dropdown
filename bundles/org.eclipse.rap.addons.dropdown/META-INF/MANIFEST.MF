@@ -8,5 +8,6 @@ Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Import-Package: org.eclipse.rap.clientscripting;version="0.1.100",
  org.osgi.framework;version="1.3.0"
 Export-Package: org.eclipse.rap.addons.dropdown,
- org.eclipse.rap.addons.dropdown.internal.resources
+ org.eclipse.rap.addons.dropdown.internal.resources,
+ org.eclipse.rap.rwt.remote
 Require-Bundle: org.eclipse.rap.rwt;bundle-version="2.0.0"

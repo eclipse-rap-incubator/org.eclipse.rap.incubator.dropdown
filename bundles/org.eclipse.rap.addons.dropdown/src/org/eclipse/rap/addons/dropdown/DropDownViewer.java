@@ -11,8 +11,15 @@
 
 package org.eclipse.rap.addons.dropdown;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.eclipse.rap.clientscripting.ClientListener;
 import org.eclipse.rap.rwt.RWT;
+import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteList;
+import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteListImpl;
+import org.eclipse.rap.rwt.remote.UniversalRemoteObject;
 import org.eclipse.swt.widgets.Text;
 
 
@@ -21,16 +28,24 @@ public class DropDownViewer {
   private static final String ATTR_CLIENT_LISTNER_HOLDER
     = ClientListenerHolder.class.getName() + "#instance";
 
+  private static String VIEWER_LINK =
+      DropDownViewer.class.getName() + "#viewer";
+
   private DropDown dropDown;
   private Text text;
   private ClientListenerHolder clientListener;
+
+  private UniversalRemoteObject remoteObject;
 
 
   public DropDownViewer( Text text ) {
     dropDown = new DropDown( text );
     this.text = text;
     clientListener = getClientListenerHolder();
+    remoteObject = new UniversalRemoteObject();
     attachClientListener();
+    attachWidgetData();
+    addWidgetDataKey( VIEWER_LINK );
   }
 
   public DropDown getDropDown() {
@@ -44,6 +59,28 @@ public class DropDownViewer {
     getTextKeyDownListener().addTo( text, ClientListener.KeyDown );
     getDropDownSelectionListener().addTo( dropDown, ClientListener.Selection );
     getDropDownDefaultSelectionListener().addTo( dropDown, ClientListener.DefaultSelection );
+  }
+
+  private void attachWidgetData() {
+    text.setData( VIEWER_LINK, remoteObject.getId() );
+    dropDown.setData( VIEWER_LINK, remoteObject.getId() );
+  }
+
+  // TODO : implement this in RAP core
+  @SuppressWarnings("restriction")
+  private static void addWidgetDataKey( String key ) {
+    WidgetDataWhiteListImpl service
+      = ( WidgetDataWhiteListImpl )RWT.getClient().getService( WidgetDataWhiteList.class );
+    String[] currentKeys = service.getKeys() != null ? service.getKeys() : new String[ 0 ];
+    List<String> list = new ArrayList<String>( Arrays.asList( currentKeys ) );
+    if( !list.contains( key ) ) {
+      list.add( key );
+      service.setKeys( list.toArray( new String[ list.size() ]) );
+    }
+  }
+
+  UniversalRemoteObject getRemoteObject() {
+    return remoteObject;
   }
 
   ClientListener getTextModifyListener() {
