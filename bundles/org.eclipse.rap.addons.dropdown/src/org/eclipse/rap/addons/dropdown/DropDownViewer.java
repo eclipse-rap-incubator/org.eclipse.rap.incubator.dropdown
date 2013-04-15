@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.rap.clientscripting.ClientListener;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteList;
@@ -32,18 +33,17 @@ public class DropDownViewer {
 
   private static String VIEWER_LINK =
       DropDownViewer.class.getName() + "#viewer";
-
-  private static String DROPDOWN_LINK =
-      DropDownViewer.class.getName() + "#dropDown";
-
-  private static String TEXT_LINK =
-      DropDownViewer.class.getName() + "#text";
+  private static String DROPDOWN_KEY = "dropDown";
+  private static String TEXT_KEY = "text";
+  private static String ELEMENTS_KEY = "elements";
 
   private DropDown dropDown;
   private Text text;
+  private Object[] input;
   private ClientListenerHolder clientListener;
-
   private UniversalRemoteObject remoteObject;
+  private ILabelProvider labelProvider;
+
 
 
   public DropDownViewer( Text text ) {
@@ -53,11 +53,31 @@ public class DropDownViewer {
     remoteObject = new UniversalRemoteObject();
     attachClientListener();
     linkClientObjects();
-    addWidgetDataKeys( new String[]{ VIEWER_LINK, TEXT_LINK, DROPDOWN_LINK } );
+    addWidgetDataKeys( new String[]{ VIEWER_LINK } );
   }
 
   public DropDown getDropDown() {
     return dropDown;
+  }
+
+  public void setLabelProvider( ILabelProvider provider ) {
+    labelProvider = provider;
+    if( input != null ) {
+      updateElements();
+    }
+  }
+
+  public void setInput( List<?> input ) {
+    this.input = input.toArray();
+    updateElements();
+  }
+
+  private void updateElements() {
+    String[] elements = new String[ this.input.length ];
+    for( int i = 0; i < elements.length; i++ ) {
+      elements[ i ] = labelProvider.getText( this.input[ i ] );
+    }
+    remoteObject.set( ELEMENTS_KEY, elements );
   }
 
   // TODO : detach on destroy
@@ -72,8 +92,8 @@ public class DropDownViewer {
   private void linkClientObjects() {
     text.setData( VIEWER_LINK, remoteObject.getId() );
     dropDown.setData( VIEWER_LINK, remoteObject.getId() );
-    remoteObject.set( DROPDOWN_LINK, WidgetUtil.getId( dropDown ) );
-    remoteObject.set( TEXT_LINK, WidgetUtil.getId( text ) );
+    remoteObject.set( DROPDOWN_KEY, WidgetUtil.getId( dropDown ) );
+    remoteObject.set( TEXT_KEY, WidgetUtil.getId( text ) );
   }
 
   private static void addWidgetDataKeys( String[] keys ) {

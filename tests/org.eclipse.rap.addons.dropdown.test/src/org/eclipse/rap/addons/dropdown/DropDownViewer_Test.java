@@ -19,6 +19,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.rap.clientscripting.ClientListener;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteList;
@@ -38,12 +39,11 @@ public class DropDownViewer_Test {
 
   // TODO : test reading scripts and attaching listener when possible
 
-  private static final String DROPDOWN_LINK =
-      "org.eclipse.rap.addons.dropdown.DropDownViewer#dropDown";
-  private static final String TEXT_LINK =
-      "org.eclipse.rap.addons.dropdown.DropDownViewer#text";
-  private static String VIEWER_LINK =
+  private static final String VIEWER_LINK =
       "org.eclipse.rap.addons.dropdown.DropDownViewer#viewer";
+  private static String DROPDOWN_KEY = "dropDown";
+  private static final String TEXT_KEY = "text";
+  private static String ELEMENTS_KEY = "elements";
   private Display display;
   private Text text;
   private DropDownViewer viewer;
@@ -156,7 +156,7 @@ public class DropDownViewer_Test {
     createViewer();
 
     String expected = WidgetUtil.getId( dropDown );
-    assertEquals( expected, viewer.getRemoteObject().getString( DROPDOWN_LINK ) );
+    assertEquals( expected, viewer.getRemoteObject().getString( DROPDOWN_KEY ) );
   }
 
   @Test
@@ -164,7 +164,7 @@ public class DropDownViewer_Test {
     createViewer();
 
     String expected = WidgetUtil.getId( text );
-    assertEquals( expected, viewer.getRemoteObject().getString( TEXT_LINK ) );
+    assertEquals( expected, viewer.getRemoteObject().getString( TEXT_KEY ) );
   }
 
   @Test
@@ -176,8 +176,6 @@ public class DropDownViewer_Test {
 
     List< String > list = Arrays.asList( service.getKeys() );;
     assertTrue( list.contains( VIEWER_LINK ) );
-    assertTrue( list.contains( DROPDOWN_LINK ) );
-    assertTrue( list.contains( TEXT_LINK ) );
   }
 
   @Test
@@ -202,12 +200,49 @@ public class DropDownViewer_Test {
     assertEquals( list.lastIndexOf( VIEWER_LINK ), list.indexOf( VIEWER_LINK ) );
   }
 
+  @Test
+  public void testSetInput_AddsElementsToRemoteObject() {
+    createViewer();
+    List<?> input = Arrays.asList( 7, 14, 21 );
+
+    viewer.setLabelProvider( new LabelProvider() );
+    viewer.setInput( input );
+
+    String[] result = getElements();
+    List< String > expected = Arrays.asList( new String[]{ "7", "14", "21"} );
+    assertEquals( expected, Arrays.asList( result ) );
+  }
+
+  @Test
+  public void testSetLabelProvide_UpdatesElements() {
+    createViewer();
+    List<?> input = Arrays.asList( 7, 14, 21 );
+
+    viewer.setLabelProvider( new LabelProvider() );
+    viewer.setInput( input );
+    viewer.setLabelProvider( new LabelProvider() {
+      @Override
+      public String getText( Object element ) {
+        return "Item " + element;
+      };
+    } );
+
+    String[] result = getElements();
+    List< String > expected = Arrays.asList( new String[]{ "Item 7", "Item 14", "Item 21"} );
+    assertEquals( expected, Arrays.asList( result ) );
+  }
+
+
   //////////
   // Helpers
 
   private void createViewer() {
     viewer = new DropDownViewer( text );
     dropDown = viewer.getDropDown();
+  }
+
+  private String[] getElements() {
+    return ( String[] )viewer.getRemoteObject().get( ELEMENTS_KEY );
   }
 
 
