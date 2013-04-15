@@ -22,6 +22,7 @@ import java.util.List;
 import org.eclipse.rap.clientscripting.ClientListener;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteList;
+import org.eclipse.rap.rwt.lifecycle.WidgetUtil;
 import org.eclipse.rap.rwt.testfixture.Fixture;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
@@ -37,14 +38,18 @@ public class DropDownViewer_Test {
 
   // TODO : test reading scripts and attaching listener when possible
 
+  private static final String DROPDOWN_LINK =
+      "org.eclipse.rap.addons.dropdown.DropDownViewer#dropDown";
+  private static final String TEXT_LINK =
+      "org.eclipse.rap.addons.dropdown.DropDownViewer#text";
+  private static String VIEWER_LINK =
+      "org.eclipse.rap.addons.dropdown.DropDownViewer#viewer";
   private Display display;
   private Text text;
   private DropDownViewer viewer;
   private Shell shell;
   private DropDown dropDown;
 
-  private static String VIEWER_LINK =
-      "org.eclipse.rap.addons.dropdown.DropDownViewer#viewer";
 
   @Before
   public void setUp() {
@@ -147,6 +152,22 @@ public class DropDownViewer_Test {
   }
 
   @Test
+  public void testLinkRemoteObjectToDropDown() {
+    createViewer();
+
+    String expected = WidgetUtil.getId( dropDown );
+    assertEquals( expected, viewer.getRemoteObject().getString( DROPDOWN_LINK ) );
+  }
+
+  @Test
+  public void testLinkRemoteObjectToText() {
+    createViewer();
+
+    String expected = WidgetUtil.getId( text );
+    assertEquals( expected, viewer.getRemoteObject().getString( TEXT_LINK ) );
+  }
+
+  @Test
   public void testAddKeysToWidgetDataWhiteList() {
     WidgetDataWhiteList service = RWT.getClient().getService( WidgetDataWhiteList.class );
     service.setKeys( new String[ 0 ] );
@@ -155,6 +176,8 @@ public class DropDownViewer_Test {
 
     List< String > list = Arrays.asList( service.getKeys() );;
     assertTrue( list.contains( VIEWER_LINK ) );
+    assertTrue( list.contains( DROPDOWN_LINK ) );
+    assertTrue( list.contains( TEXT_LINK ) );
   }
 
   @Test

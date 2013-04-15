@@ -12,6 +12,8 @@
 package org.eclipse.rap.rwt.remote;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -40,7 +42,6 @@ public class UniversalRemoteObject_Test {
     Fixture.fakeConnection( connection );
     remoteObject = mock( RemoteObjectImpl.class );
     when( connection.createRemoteObject( eq( REMOTE_TYPE ) ) ).thenReturn( remoteObject );
-    when( remoteObject.getId() ).thenReturn( "r11" );
     uro = new UniversalRemoteObject();
   }
 
@@ -55,8 +56,64 @@ public class UniversalRemoteObject_Test {
   }
 
   @Test
-  public void testGetId_ReturnsId() {
+  public void testCallThrough_GetId() {
+    when( remoteObject.getId() ).thenReturn( "r11" );
+
     assertEquals( "r11", uro.getId() );
+  }
+
+  @Test
+  public void testCallThrough_Destroy() {
+    uro.destroy();
+
+    verify( remoteObject ).destroy();
+  }
+
+  @Test
+  public void testCallThrough_Set() {
+    uro.set( "myBool", false );
+    uro.set( "myDouble", 1000100.101 );
+    uro.set( "myInt", 34 );
+    uro.set( "myObject", new Object[ 0 ] );
+    uro.set( "myString", "yourString" );
+
+    verify( remoteObject ).set( eq( "myBool" ), eq( false ) );
+    verify( remoteObject ).set( eq( "myDouble" ), eq( 1000100.101 ) );
+    verify( remoteObject ).set( eq( "myInt" ), eq( 34 ) );
+    verify( remoteObject ).set( eq( "myObject" ), eq( new Object[ 0 ] ) );
+    verify( remoteObject ).set( eq( "myString" ), eq( "yourString" ) );
+  }
+
+  @Test
+  public void testCallThrough_Listen() {
+    uro.listen( "Selection", true );
+
+    verify( remoteObject ).listen( eq( "Selection" ), eq( true ) );
+  }
+
+  @Test
+  public void testCall_NotSupported() {
+    try {
+      uro.call( "foo", null );
+      fail();
+    } catch( UnsupportedOperationException ex ) {
+      // expected
+    }
+  }
+
+  @Test
+  public void testGet() {
+    uro.set( "myBool", false );
+    uro.set( "myDouble", 1000100.101 );
+    uro.set( "myInt", 34 );
+    uro.set( "myObject", new Object[ 0 ] );
+    uro.set( "myString", "yourString" );
+
+    assertEquals( false, uro.getBoolean( "myBool" ) );
+    assertTrue( 1000100.101 == uro.getDouble( "myDouble" ) );
+    assertEquals( 34, uro.getInt( "myInt" ) );
+    assertEquals( 0, ( ( Object[] )uro.get( "myObject" ) ).length );
+    assertEquals( "yourString", uro.getString( "myString" ) );
   }
 
 }

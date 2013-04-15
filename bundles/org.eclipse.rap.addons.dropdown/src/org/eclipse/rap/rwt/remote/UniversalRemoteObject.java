@@ -11,18 +11,22 @@
 
 package org.eclipse.rap.rwt.remote;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.client.service.JavaScriptLoader;
 import org.eclipse.rap.rwt.internal.remote.RemoteObjectImpl;
 import org.eclipse.rap.rwt.service.ResourceManager;
 
 @SuppressWarnings("restriction")
-public class UniversalRemoteObject {
+public class UniversalRemoteObject implements RemoteObject {
 
   private static final String REMOTE_TYPE = "rwt.remote.UniversalRemoteObject";
   private static final String UNIVERSAL_REMOTE_OBJECT_JS = "UniversalRemoteObject.js";
 
   private RemoteObjectImpl remoteObject;
+  private Map<String, Object> properties = new HashMap<String, Object>();
 
 
   public UniversalRemoteObject() {
@@ -45,6 +49,67 @@ public class UniversalRemoteObject {
     }
     JavaScriptLoader jsl = RWT.getClient().getService( JavaScriptLoader.class );
     jsl.require( manager.getLocation( UNIVERSAL_REMOTE_OBJECT_JS ) );
+  }
+
+  public void set( String name, int value ) {
+    properties.put( name, new Integer( value ) );
+    remoteObject.set( name, value );
+  }
+
+  public void set( String name, double value ) {
+    properties.put( name, new Double( value ) );
+    remoteObject.set( name, value );
+  }
+
+  public void set( String name, boolean value ) {
+    properties.put( name, new Boolean( value ) );
+    remoteObject.set( name, value );
+  }
+
+  public void set( String name, String value ) {
+    properties.put( name, value );
+    remoteObject.set( name, value );
+  }
+
+  public void set( String name, Object value ) {
+    properties.put( name, value );
+    remoteObject.set( name, value );
+  }
+
+  public void listen( String eventType, boolean listen ) {
+    remoteObject.listen( eventType, listen );
+  }
+
+  public void call( String method, Map<String, Object> properties ) {
+    throw new UnsupportedOperationException( "Operation \"call\" not supported on this type" );
+  }
+
+  public void destroy() {
+    remoteObject.destroy();
+  }
+
+  public void setHandler( OperationHandler handler ) {
+    // TODO Auto-generated method stub
+  }
+
+  public Object get( String key ) {
+    return properties.get( key );
+  }
+
+  public boolean getBoolean( String key ) {
+    return ( ( Boolean )properties.get( key ) ).booleanValue();
+  }
+
+  public double getDouble( String key ) {
+    return ( ( Double )properties.get( key ) ).doubleValue();
+  }
+
+  public int getInt( String key ) {
+    return ( ( Integer )properties.get( key ) ).intValue();
+  }
+
+  public String getString( String key ) {
+    return ( String )properties.get( key );
   }
 
 }

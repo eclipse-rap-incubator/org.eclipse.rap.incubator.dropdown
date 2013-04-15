@@ -19,10 +19,12 @@ import org.eclipse.rap.clientscripting.ClientListener;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteList;
 import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteListImpl;
+import org.eclipse.rap.rwt.lifecycle.WidgetUtil;
 import org.eclipse.rap.rwt.remote.UniversalRemoteObject;
 import org.eclipse.swt.widgets.Text;
 
 
+@SuppressWarnings("restriction")
 public class DropDownViewer {
 
   private static final String ATTR_CLIENT_LISTNER_HOLDER
@@ -30,6 +32,12 @@ public class DropDownViewer {
 
   private static String VIEWER_LINK =
       DropDownViewer.class.getName() + "#viewer";
+
+  private static String DROPDOWN_LINK =
+      DropDownViewer.class.getName() + "#dropDown";
+
+  private static String TEXT_LINK =
+      DropDownViewer.class.getName() + "#text";
 
   private DropDown dropDown;
   private Text text;
@@ -44,8 +52,8 @@ public class DropDownViewer {
     clientListener = getClientListenerHolder();
     remoteObject = new UniversalRemoteObject();
     attachClientListener();
-    attachWidgetData();
-    addWidgetDataKey( VIEWER_LINK );
+    linkClientObjects();
+    addWidgetDataKeys( new String[]{ VIEWER_LINK, TEXT_LINK, DROPDOWN_LINK } );
   }
 
   public DropDown getDropDown() {
@@ -61,22 +69,24 @@ public class DropDownViewer {
     getDropDownDefaultSelectionListener().addTo( dropDown, ClientListener.DefaultSelection );
   }
 
-  private void attachWidgetData() {
+  private void linkClientObjects() {
     text.setData( VIEWER_LINK, remoteObject.getId() );
     dropDown.setData( VIEWER_LINK, remoteObject.getId() );
+    remoteObject.set( DROPDOWN_LINK, WidgetUtil.getId( dropDown ) );
+    remoteObject.set( TEXT_LINK, WidgetUtil.getId( text ) );
   }
 
-  // TODO : implement this in RAP core
-  @SuppressWarnings("restriction")
-  private static void addWidgetDataKey( String key ) {
+  private static void addWidgetDataKeys( String[] keys ) {
     WidgetDataWhiteListImpl service
       = ( WidgetDataWhiteListImpl )RWT.getClient().getService( WidgetDataWhiteList.class );
     String[] currentKeys = service.getKeys() != null ? service.getKeys() : new String[ 0 ];
     List<String> list = new ArrayList<String>( Arrays.asList( currentKeys ) );
-    if( !list.contains( key ) ) {
-      list.add( key );
-      service.setKeys( list.toArray( new String[ list.size() ]) );
-    }
+    for( int i = 0; i < keys.length; i++ ) {
+      if( !list.contains( keys[ i ] ) ) {
+        list.add( keys[ i ] );
+      }
+    };
+    service.setKeys( list.toArray( new String[ list.size() ]) );
   }
 
   UniversalRemoteObject getRemoteObject() {
