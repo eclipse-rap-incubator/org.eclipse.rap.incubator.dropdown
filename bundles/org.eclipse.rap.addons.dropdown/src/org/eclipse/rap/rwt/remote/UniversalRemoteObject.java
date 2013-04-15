@@ -28,6 +28,7 @@ public class UniversalRemoteObject implements RemoteObject {
 
   private RemoteObjectImpl remoteObject;
   private Map<String, Object> properties = new HashMap<String, Object>();
+  private OperationHandler handler;
 
 
   public UniversalRemoteObject() {
@@ -52,6 +53,7 @@ public class UniversalRemoteObject implements RemoteObject {
     jsl.require( manager.getLocation( UNIVERSAL_REMOTE_OBJECT_JS ) );
   }
 
+  // TODO : also invoke set operation handler?
   public void set( String name, int value ) {
     properties.put( name, new Integer( value ) );
     remoteObject.set( name, value );
@@ -90,7 +92,8 @@ public class UniversalRemoteObject implements RemoteObject {
   }
 
   public void setHandler( OperationHandler handler ) {
-    // TODO Auto-generated method stub
+    this.handler = handler;
+    remoteObject.setHandler( handler );
   }
 
   public Object get( String key ) {
@@ -111,6 +114,11 @@ public class UniversalRemoteObject implements RemoteObject {
 
   public String getString( String key ) {
     return ( String )properties.get( key );
+  }
+
+  public void notify( String event, Map<String, Object> properties ) {
+    // TODO Currently good for testing, but could also trigger client listener
+    handler.handleNotify( event, properties );
   }
 
 }

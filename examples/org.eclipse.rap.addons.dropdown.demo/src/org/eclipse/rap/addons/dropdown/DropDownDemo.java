@@ -25,12 +25,14 @@ import org.eclipse.rap.rwt.internal.remote.RemoteObjectImpl;
 import org.eclipse.rap.rwt.lifecycle.WidgetUtil;
 import org.eclipse.rap.rwt.remote.RemoteObject;
 import org.eclipse.rap.rwt.service.ResourceManager;
+import org.eclipse.rap.rwt.widgets.DialogUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Text;
 //import org.eclipse.rap.addons.dropdown.viewer.old.DropDownViewer;
 //import org.eclipse.rap.addons.dropdown.viewer.old.LabelProvider;
@@ -92,19 +94,19 @@ public class DropDownDemo extends AbstractEntryPoint {
       }
     } );
     dropdown.setInput( Arrays.asList( KFZ.VALUES ) );
-//    dropdown.addSelectionChangedListener( new SelectionChangedListener() {
-//      public void selectionChanged( SelectionChangedEvent event ) {
-//        String[] city = ( String[] )event.item;
-//        MessageBox box = new MessageBox( getShell() );
-//        box.setMessage(
-//           "Your area identifier is "
-//          + city[ 0 ]
-//          + ", which is "
-//          + city[ 1 ]
-//        );
-//        DialogUtil.open( box, null );
-//      }
-//    } );
+    dropdown.addSelectionChangedListener( new SelectionChangedListener() {
+      public void selectionChanged( SelectionChangedEvent event ) {
+        String[] city = ( String[] )event.item;
+        MessageBox box = new MessageBox( getShell() );
+        box.setMessage(
+           "Your area identifier is "
+          + city[ 0 ]
+          + ", which is "
+          + city[ 1 ]
+        );
+        DialogUtil.open( box, null );
+      }
+    } );
   }
 
   private Text createText( Composite parent, int style ) {

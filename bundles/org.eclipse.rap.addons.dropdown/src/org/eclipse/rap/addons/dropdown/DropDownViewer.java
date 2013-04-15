@@ -14,6 +14,7 @@ package org.eclipse.rap.addons.dropdown;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.rap.addons.dropdown.internal.resources.ResourceLoaderUtil;
@@ -22,6 +23,7 @@ import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteList;
 import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteListImpl;
 import org.eclipse.rap.rwt.lifecycle.WidgetUtil;
+import org.eclipse.rap.rwt.remote.AbstractOperationHandler;
 import org.eclipse.rap.rwt.remote.UniversalRemoteObject;
 import org.eclipse.swt.widgets.Text;
 
@@ -31,7 +33,7 @@ public class DropDownViewer {
 
   private static final String ATTR_CLIENT_LISTNER_HOLDER
     = ClientListenerHolder.class.getName() + "#instance";
-
+  private static final String SELECTION_CHANGED = "SelectionChanged";
   private static String VIEWER_LINK =
       DropDownViewer.class.getName() + "#viewer";
   private static String DROPDOWN_KEY = "dropDown";
@@ -44,12 +46,15 @@ public class DropDownViewer {
   private ClientListenerHolder clientListener;
   private UniversalRemoteObject remoteObject;
   private ILabelProvider labelProvider;
+  private List< SelectionChangedListener > selectionChangedListeners
+    = new ArrayList< SelectionChangedListener >();
 
   public DropDownViewer( Text text ) {
     dropDown = new DropDown( text );
     this.text = text;
     clientListener = getClientListenerHolder();
     remoteObject = new UniversalRemoteObject();
+    remoteObject.setHandler( new InternalOperationHandler() );
     attachClientListener();
     linkClientObjects();
   }
@@ -70,11 +75,21 @@ public class DropDownViewer {
     updateElements();
   }
 
+  public void addSelectionChangedListener( SelectionChangedListener listener ) {
+    selectionChangedListeners.add( listener );
+    remoteObject.listen( SELECTION_CHANGED, true );
+  }
+
+  ////////////
+  // Internals
+
   private void updateElements() {
     String[] elements = new String[ this.input.length ];
     for( int i = 0; i < elements.length; i++ ) {
       elements[ i ] = labelProvider.getText( this.input[ i ] );
     }
+    // TODO : Using a separate client object (e.g. "RemoteList") for the elements might allow
+    //        sharing and incremental updates
     remoteObject.set( ELEMENTS_KEY, elements );
   }
 
@@ -141,6 +156,26 @@ public class DropDownViewer {
       RWT.getUISession().setAttribute( ATTR_CLIENT_LISTNER_HOLDER, result );
     }
     return ( ClientListenerHolder )result;
+  }
+
+  private void fireSelectionChanged( int index ) {
+    Object element = input[ index ];
+    SelectionChangedEvent event = new SelectionChangedEvent( element );
+    for( SelectionChangedListener listener : selectionChangedListeners ) {
+      listener.selectionChanged( event );
+    }
+  }
+
+  private class InternalOperationHandler extends AbstractOperationHandler {
+
+    @Override
+    public void handleNotify( String event, Map<String, Object> properties ) {
+      if( SELECTION_CHANGED.equals( event ) ) {
+        int index = ( ( Integer )properties.get( "index" ) ).intValue();
+        DropDownViewer.this.fireSelectionChanged( index );
+      }
+    }
+
   }
 
   private class ClientListenerHolder {

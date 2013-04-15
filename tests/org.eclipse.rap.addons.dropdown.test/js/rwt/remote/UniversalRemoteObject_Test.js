@@ -46,7 +46,18 @@ rwt.qx.Class.define( "rwt.remote.UniversalRemoteObject_Test", {
       TestUtil.protocolSet( "r11", { "foo" : "bar" } );
 
       assertEquals( "bar", uro.get( "foo" ) );
+    },
+
+    testNotify : function() {
+      TestUtil.protocolListen( "r11", { "Selection" : true } );
+
+      uro.notify( "Selection", { "foo" : "bar" } );
+
+      var message = TestUtil.getMessageObject();
+      assertEquals( "bar", message.findNotifyProperty( "r11", "Selection", "foo" ) );
     }
+
+
   }
 
 } );

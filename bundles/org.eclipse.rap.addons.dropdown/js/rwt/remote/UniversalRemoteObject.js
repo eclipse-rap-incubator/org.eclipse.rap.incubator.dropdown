@@ -43,6 +43,7 @@
         var options = arguments[ 2 ];
         this._.properties[ property ] = value;
 //        if( !options || !options.nosync ) {
+        // TODO : perhaps limit to values created by the server?
 //          rap.getRemoteObject( this ).set( property, value );
 //        }
       }
@@ -53,7 +54,7 @@
     },
 
     notify : function( event, properties ) {
-//      rap.getRemoteObject( this ).notify( event, properties );
+      rap.getRemoteObject( this ).notify( event, properties );
 //      this._notifyInternal( event, properties );
     }
 

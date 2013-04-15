@@ -14,16 +14,25 @@ package org.eclipse.rap.rwt.remote;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.eclipse.rap.rwt.internal.remote.RemoteObjectImpl;
 import org.eclipse.rap.rwt.testfixture.Fixture;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 
 @SuppressWarnings("restriction")
@@ -33,6 +42,7 @@ public class UniversalRemoteObject_Test {
   private Connection connection;
   private RemoteObjectImpl remoteObject;
   private UniversalRemoteObject uro;
+  private OperationHandler operationHandler;
 
   @Before
   public void setUp() {
@@ -41,6 +51,14 @@ public class UniversalRemoteObject_Test {
     connection = mock( Connection.class );
     Fixture.fakeConnection( connection );
     remoteObject = mock( RemoteObjectImpl.class );
+    doAnswer( new Answer< Object >() {
+        @Override
+        public Object answer( InvocationOnMock invocation ) {
+            Object[] args = invocation.getArguments();
+            operationHandler = ( OperationHandler )args[ 0 ];
+            return null;
+        } }
+    ).when( remoteObject ).setHandler( any( OperationHandler.class ) );
     when( connection.createRemoteObject( eq( REMOTE_TYPE ) ) ).thenReturn( remoteObject );
     uro = new UniversalRemoteObject();
   }
@@ -103,6 +121,7 @@ public class UniversalRemoteObject_Test {
 
   @Test
   public void testGet() {
+    // TODO [tb] : Also test handling notify operations
     uro.set( "myBool", false );
     uro.set( "myDouble", 1000100.101 );
     uro.set( "myInt", 34 );
@@ -114,6 +133,46 @@ public class UniversalRemoteObject_Test {
     assertEquals( 34, uro.getInt( "myInt" ) );
     assertEquals( 0, ( ( Object[] )uro.get( "myObject" ) ).length );
     assertEquals( "yourString", uro.getString( "myString" ) );
+  }
+
+  @Test
+  public void testHandleNotifyOperation() {
+    final List< Map< String, Object > > log = new ArrayList< Map< String, Object > >();
+    uro.setHandler( new AbstractOperationHandler() {
+      @Override
+      public void handleNotify( String event, Map<String, Object> properties ) {
+        if( event.equals( "Selection" ) ) {
+          log.add( properties );
+        }
+      }
+    } );
+
+    Map< String, Object > properties = new HashMap< String, Object >();
+    properties.put( "index", new Integer( 23 ) );
+    operationHandler.handleNotify( "Selection", properties );
+
+    assertEquals( 1, log.size() );
+    assertEquals( new Integer( 23 ), log.get( 0 ).get( "index" ) );
+  }
+
+  @Test
+  public void testHandleNotifyLocalCall() {
+    final List< Map< String, Object > > log = new ArrayList< Map< String, Object > >();
+    uro.setHandler( new AbstractOperationHandler() {
+      @Override
+      public void handleNotify( String event, Map<String, Object> properties ) {
+        if( event.equals( "Selection" ) ) {
+          log.add( properties );
+        }
+      }
+    } );
+
+    Map< String, Object > properties = new HashMap< String, Object >();
+    properties.put( "index", new Integer( 23 ) );
+    uro.notify( "Selection", properties );
+
+    assertEquals( 1, log.size() );
+    assertEquals( new Integer( 23 ), log.get( 0 ).get( "index" ) );
   }
 
 }

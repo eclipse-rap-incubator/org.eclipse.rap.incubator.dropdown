@@ -16,8 +16,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.rap.clientscripting.ClientListener;
@@ -230,6 +233,48 @@ public class DropDownViewer_Test {
     String[] result = getElements();
     List< String > expected = Arrays.asList( new String[]{ "Item 7", "Item 14", "Item 21"} );
     assertEquals( expected, Arrays.asList( result ) );
+  }
+
+  @Test
+  public void testProcessSelectionChangedEvent() {
+    createViewer();
+    List<?> input = Arrays.asList( 7, 14, 21 );
+    final List<SelectionChangedEvent> log = new ArrayList<SelectionChangedEvent>();
+    viewer.setLabelProvider( new LabelProvider() );
+    viewer.setInput( input );
+    viewer.addSelectionChangedListener( new SelectionChangedListener() {
+      @Override
+      public void selectionChanged( SelectionChangedEvent event ) {
+        log.add( event );
+      }
+    } );
+
+    Map< String, Object > event = new HashMap< String, Object >();
+    event.put( "index", 2 );
+    viewer.getRemoteObject().notify( "SelectionChanged", event );
+
+    assertEquals( 1, log.size() );
+  }
+
+  @Test
+  public void testProcessSelectionChangedEvent_ElementField() {
+    createViewer();
+    List<?> input = Arrays.asList( 7, 14, 21 );
+    final List<SelectionChangedEvent> log = new ArrayList<SelectionChangedEvent>();
+    viewer.setLabelProvider( new LabelProvider() );
+    viewer.setInput( input );
+    viewer.addSelectionChangedListener( new SelectionChangedListener() {
+      @Override
+      public void selectionChanged( SelectionChangedEvent event ) {
+        log.add( event );
+      }
+    } );
+
+    Map< String, Object > event = new HashMap< String, Object >();
+    event.put( "index", 2 );
+    viewer.getRemoteObject().notify( "SelectionChanged", event );
+
+    assertEquals( new Integer( 21 ), log.get( 0 ).item );
   }
 
 
