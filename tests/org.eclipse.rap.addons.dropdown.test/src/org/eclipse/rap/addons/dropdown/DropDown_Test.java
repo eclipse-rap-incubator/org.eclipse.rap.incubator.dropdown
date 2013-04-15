@@ -77,7 +77,7 @@ public class DropDown_Test {
 
   @Test
   public void testContructor_SetsReferenceWidget() {
-    verify( remoteObject ).set( "linkedControl", WidgetUtil.getId( text ) );
+    verify( remoteObject ).set( "parent", WidgetUtil.getId( text ) );
   }
 
   @Test

@@ -15,7 +15,7 @@
   rap.registerTypeHandler( "rwt.dropdown.DropDown", {
 
     factory : function( properties ) {
-      var control = rwt.remote.ObjectRegistry.getObject( properties.linkedControl );
+      var control = rwt.remote.ObjectRegistry.getObject( properties.parent );
       return new rwt.dropdown.DropDown( control );
     },
 

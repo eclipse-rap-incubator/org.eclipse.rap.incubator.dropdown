@@ -13,11 +13,23 @@ package org.eclipse.rap.addons.dropdown.internal;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.eclipse.rap.addons.dropdown.internal.resources.DropDownResources;
 import org.eclipse.rap.rwt.jstest.TestContribution;
 
 public class DropDownResourcesContribution implements TestContribution {
+
+  public static String[] ADDITIONAL_RESOURCES = new String[] {
+    "rwt/remote/UniversalRemoteObject.js"
+  };
+
+  public static String[] concat( String[] array1, String[] array2 ) {
+    ArrayList< String > baseArray = new ArrayList< String >( Arrays.asList( array1 ) );
+    baseArray.addAll( Arrays.asList( array2 ) );
+    return ( String[] )baseArray.toArray( new String[ baseArray.size() ] );
+  }
 
   @Override
   public String getName() {
@@ -26,7 +38,7 @@ public class DropDownResourcesContribution implements TestContribution {
 
   @Override
   public String[] getResources() {
-    return DropDownResources.SCRIPTS;
+    return concat( DropDownResources.SCRIPTS, ADDITIONAL_RESOURCES );
   }
 
   @Override

@@ -21,10 +21,9 @@ public class DropDownTestContribution implements TestContribution {
 
   private static final ClassLoader CLASSLOADER = DropDownTestContribution.class.getClassLoader();
 
-  private static final String PATH_PREFIX = "/rwt/dropdown/";
-
   private static final String[] ALL_TEST_RESOURCES = new String[] {
-    "DropDown_Test.js",
+    "/rwt/dropdown/DropDown_Test.js",
+    "/rwt/remote/UniversalRemoteObject_Test.js",
   };
 
   @Override
@@ -39,7 +38,7 @@ public class DropDownTestContribution implements TestContribution {
 
   @Override
   public InputStream getResourceAsStream( String resourceName ) throws IOException {
-    return CLASSLOADER.getResourceAsStream( PATH_PREFIX + resourceName );
+    return CLASSLOADER.getResourceAsStream( resourceName );
   }
 
 }

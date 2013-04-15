@@ -23,7 +23,8 @@ import org.eclipse.rap.rwt.service.ResourceManager;
 public class UniversalRemoteObject implements RemoteObject {
 
   private static final String REMOTE_TYPE = "rwt.remote.UniversalRemoteObject";
-  private static final String UNIVERSAL_REMOTE_OBJECT_JS = "UniversalRemoteObject.js";
+  private static final String UNIVERSAL_REMOTE_OBJECT_JS
+    = "rwt/remote/UniversalRemoteObject.js";
 
   private RemoteObjectImpl remoteObject;
   private Map<String, Object> properties = new HashMap<String, Object>();
@@ -44,7 +45,7 @@ public class UniversalRemoteObject implements RemoteObject {
     if( !manager.isRegistered( UNIVERSAL_REMOTE_OBJECT_JS ) ) {
       manager.register(
         UNIVERSAL_REMOTE_OBJECT_JS,
-        getClass().getResourceAsStream( UNIVERSAL_REMOTE_OBJECT_JS )
+        getClass().getClassLoader().getResourceAsStream( UNIVERSAL_REMOTE_OBJECT_JS )
       );
     }
     JavaScriptLoader jsl = RWT.getClient().getService( JavaScriptLoader.class );

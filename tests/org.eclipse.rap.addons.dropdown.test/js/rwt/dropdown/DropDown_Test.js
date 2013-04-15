@@ -98,7 +98,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       assertTrue( viewer.getFocused() );
     },
 
-    testShow_LeavesLinkedControlFocused : function() {
+    testShow_LeavesParentFocused : function() {
       widget.setTabIndex( 1 );
       widget.focus();
       prepare();
@@ -107,7 +107,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       assertTrue( widget.getFocused() );
     },
 
-    testShow_LeavesLinkedControlChildFocused : function() {
+    testShow_LeavesSiblingFocused : function() {
       var focusable = new rwt.widgets.Button( "push" );
       focusable.setParent( widget );
       TestUtil.flush();

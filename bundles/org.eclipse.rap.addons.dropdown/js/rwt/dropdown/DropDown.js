@@ -25,21 +25,21 @@
 
   rwt.dropdown = {};
 
-  rwt.dropdown.DropDown = function( linkedControl ) {
+  rwt.dropdown.DropDown = function( parent ) {
     this._ = {};
     this._.hideTimer = new rwt.client.Timer( 0 );
     this._.hideTimer.addEventListener( "interval", checkFocus, this );
     this._.popup = createPopup();
     this._.viewer = createViewer( this._.popup );
     this._.visibleItemCount = 5;
-    this._.linkedControl = linkedControl;
+    this._.parent = parent;
     this._.events = createEventsMap();
     this._.viewer.getManager().addEventListener( "changeSelection", onSelection, this );
     this._.viewer.addEventListener( "keypress", onKeyPress, this );
     this._.viewer.addEventListener( "dblclick", onDoubleClick, this );
     this._.popup.getFocusRoot().addEventListener( "changeFocusedChild", onFocusChange, this );
-    linkedControl.getFocusRoot().addEventListener( "changeFocusedChild", onFocusChange, this );
-    linkedControl.addEventListener( "appear", onAppear, this );
+    parent.getFocusRoot().addEventListener( "changeFocusedChild", onFocusChange, this );
+    parent.addEventListener( "appear", onAppear, this );
     this._.visibility = false;
   };
 
@@ -73,9 +73,9 @@
     show : function() {
       checkDisposed( this );
       this._.visibility = true;
-      if( this._.linkedControl.isCreated() && !this._.popup.isSeeable() ) {
-        var yOffset = this._.linkedControl.getHeight();
-        var control = this._.linkedControl;
+      if( this._.parent.isCreated() && !this._.popup.isSeeable() ) {
+        var yOffset = this._.parent.getHeight();
+        var control = this._.parent;
         this._.popup.positionRelativeTo( control, 0, yOffset );
         this._.popup.setWidth( control.getWidth() );
         this._.popup.setHeight( this._.visibleItemCount * ITEM_HEIGHT + FRAMEWIDTH );
@@ -132,9 +132,9 @@
 
     destroy : function() {
       if( !this.isDisposed() ) {
-        var focusRoot = this._.linkedControl.getFocusRoot();
+        var focusRoot = this._.parent.getFocusRoot();
         focusRoot.removeEventListener( "changeFocusedChild", onFocusChange, this );
-        this._.linkedControl.removeEventListener( "appear", onAppear, this );
+        this._.parent.removeEventListener( "appear", onAppear, this );
         this._.popup.destroy();
         this._.hideTimer.dispose();
         for( var key in this._ ) {
@@ -208,7 +208,7 @@
 
   var checkFocus = function() {
     this._.hideTimer.stop();
-    if( !hasFocus( this._.linkedControl ) && !hasFocus( this._.popup ) ) {
+    if( !hasFocus( this._.parent ) && !hasFocus( this._.popup ) ) {
       this.hide();
     }
   };

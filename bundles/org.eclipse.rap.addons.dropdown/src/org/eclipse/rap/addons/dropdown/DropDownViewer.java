@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.jface.viewers.ILabelProvider;
+import org.eclipse.rap.addons.dropdown.internal.resources.ResourceLoaderUtil;
 import org.eclipse.rap.clientscripting.ClientListener;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteList;
@@ -44,8 +45,6 @@ public class DropDownViewer {
   private UniversalRemoteObject remoteObject;
   private ILabelProvider labelProvider;
 
-
-
   public DropDownViewer( Text text ) {
     dropDown = new DropDown( text );
     this.text = text;
@@ -53,7 +52,6 @@ public class DropDownViewer {
     remoteObject = new UniversalRemoteObject();
     attachClientListener();
     linkClientObjects();
-    addWidgetDataKeys( new String[]{ VIEWER_LINK } );
   }
 
   public DropDown getDropDown() {
@@ -90,6 +88,8 @@ public class DropDownViewer {
   }
 
   private void linkClientObjects() {
+    // NOTE : Order is relevant, DropDown renders immediately!
+    addWidgetDataKeys( new String[]{ VIEWER_LINK } );
     text.setData( VIEWER_LINK, remoteObject.getId() );
     dropDown.setData( VIEWER_LINK, remoteObject.getId() );
     remoteObject.set( DROPDOWN_KEY, WidgetUtil.getId( dropDown ) );
@@ -145,26 +145,33 @@ public class DropDownViewer {
 
   private class ClientListenerHolder {
 
-    private ClientListener textModifyListener = new ClientListener( "" );
-    private ClientListener textVerifyListener = new ClientListener( "" );
-    private ClientListener textKeyDownListener = new ClientListener( "" );
-    private ClientListener dropDownSelectionListener = new ClientListener( "" );
-    private ClientListener dropDownDefaultSelectionListener = new ClientListener( "" );
+    private String PREFIX = "org/eclipse/rap/addons/dropdown/internal/resources/";
 
-    ClientListener getTextModifyListener() {
-      return textModifyListener;
+    private final ClientListener textListener = createListener( "TextEventListener.js" );
+    private final ClientListener dropDownListener = createListener( "DropDownEventListener.js" );
+
+    private ClientListener createListener( String name ) {
+      return new ClientListener( ResourceLoaderUtil.readTextContent( PREFIX + name ) );
     }
+
+    public ClientListener getTextModifyListener() {
+      return textListener;
+    }
+
     public ClientListener getDropDownDefaultSelectionListener() {
-      return dropDownDefaultSelectionListener;
+      return dropDownListener;
     }
+
     public ClientListener getDropDownSelectionListener() {
-      return dropDownSelectionListener;
+      return dropDownListener;
     }
+
     public ClientListener getTextKeyDownListener() {
-      return textKeyDownListener;
+      return textListener;
     }
+
     public ClientListener getTextVerifyListener() {
-      return textVerifyListener;
+      return textListener;
     }
 
   }

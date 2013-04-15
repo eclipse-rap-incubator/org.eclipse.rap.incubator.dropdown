@@ -43,7 +43,7 @@ public class DropDown extends Widget {
     super( parent, 0 );
     this.parent = parent;
     DropDownResources.ensure();
-    getRemoteObject().set( "linkedControl", WidgetUtil.getId( parent ) );
+    getRemoteObject().set( "parent", WidgetUtil.getId( parent ) );
     parent.addListener( SWT.Dispose, new Listener() {
       public void handleEvent( Event event ) {
         DropDown.this.dispose();

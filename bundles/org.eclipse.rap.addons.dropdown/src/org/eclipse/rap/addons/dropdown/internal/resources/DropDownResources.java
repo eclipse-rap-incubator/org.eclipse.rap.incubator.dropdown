@@ -20,11 +20,10 @@ import org.eclipse.rap.rwt.client.service.JavaScriptLoader;
 public final class DropDownResources {
 
   public static final String[] SCRIPTS = new String[] {
-    "DropDown.js",
-    "DropDownHandler.js"
+    "rwt/dropdown/DropDown.js",
+    "rwt/dropdown/DropDownHandler.js"
   };
 
-  private static final String LOCAL_PATH = "rwt/dropdown/";
   private static final boolean DEBUG = true;
 
   public static void ensure() {
@@ -71,7 +70,7 @@ public final class DropDownResources {
 
   public static InputStream getResourceAsStream( String resourceName ) {
     ClassLoader classLoader = DropDownResources.class.getClassLoader();
-    InputStream inputStream = classLoader.getResourceAsStream( LOCAL_PATH + resourceName );
+    InputStream inputStream = classLoader.getResourceAsStream( resourceName );
     if( inputStream == null ) {
       throw new RuntimeException( "Resource not found: " + resourceName );
     }
