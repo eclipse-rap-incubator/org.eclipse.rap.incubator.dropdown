@@ -129,11 +129,17 @@ public class DropDownViewer {
     remoteObject.set( TEXT_KEY, WidgetUtil.getId( text ) );
   }
 
+  private void unlinkClientObjects() {
+    text.setData( VIEWER_LINK, null );
+    dropDown.setData( VIEWER_LINK, null );
+  }
+
   private void attachDisposeListener() {
     dropDown.addListener( SWT.Dispose, new Listener() {
       public void handleEvent( Event event ) {
-        remoteObject.destroy();
+        unlinkClientObjects();
         detachClientListener();
+        remoteObject.destroy();
       }
     } );
   }

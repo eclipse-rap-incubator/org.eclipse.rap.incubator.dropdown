@@ -302,6 +302,18 @@ public class DropDownViewer_Test {
     }
   }
 
+  @Test
+  public void testCreateViewerAgainAfterDispose() {
+    Fixture.fakePhase( PhaseId.PROCESS_ACTION );
+    createViewer();
+    dropDown.dispose();
+
+    try {
+      createViewer();
+    } catch( IllegalStateException ex ) {
+      fail();
+    }
+  }
 
   //////////
   // Helpers
