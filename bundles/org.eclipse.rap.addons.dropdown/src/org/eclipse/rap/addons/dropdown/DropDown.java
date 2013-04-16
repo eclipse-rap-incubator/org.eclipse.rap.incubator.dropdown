@@ -38,17 +38,19 @@ public class DropDown extends Widget {
   private boolean disposed = false;
   private Object widgetAdapter;
   private Control parent;
+  private Listener disposeListener;
 
   public DropDown( Control parent ) {
     super( parent, 0 );
     this.parent = parent;
     DropDownResources.ensure();
     getRemoteObject().set( "parent", WidgetUtil.getId( parent ) );
-    parent.addListener( SWT.Dispose, new Listener() {
+    disposeListener = new Listener() {
       public void handleEvent( Event event ) {
         DropDown.this.dispose();
       }
-    } );
+    };
+    parent.addListener( SWT.Dispose, disposeListener );
   }
 
   @Override
@@ -77,8 +79,8 @@ public class DropDown extends Widget {
   public void dispose() {
     if( !disposed ) {
       super.dispose();
+      parent.removeListener( SWT.Dispose, disposeListener );
       remoteObject.destroy();
-      remoteObject = null;
       disposed = true;
     }
   }
@@ -97,6 +99,10 @@ public class DropDown extends Widget {
   public void hide() {
     checkDisposed();
     remoteObject.set( "visibility", false );
+  }
+
+  public void setVisibleItemCount( int itemCount ) {
+    remoteObject.set( "visibleItemCount", itemCount );
   }
 
   private void checkDisposed() {
@@ -127,10 +133,6 @@ public class DropDown extends Widget {
       data.put( key, value );
       remoteObject.call( "setData", data );
     }
-  }
-
-  public void setVisibleItemCount( int itemCount ) {
-    remoteObject.set( "visibleItemCount", itemCount );
   }
 
 }

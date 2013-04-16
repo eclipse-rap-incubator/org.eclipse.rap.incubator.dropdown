@@ -12,6 +12,7 @@
 package org.eclipse.rap.addons.dropdown;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
@@ -91,6 +92,13 @@ public class DropDown_Test {
   public void testDipose_RendersDetroy() {
     dropdown.dispose();
     verify( remoteObject ).destroy();
+  }
+
+  @Test
+  public void testDipose_RemovesParentListener() {
+    dropdown.dispose();
+
+    assertFalse( text.isListening( SWT.Dispose ) );
   }
 
   @Test

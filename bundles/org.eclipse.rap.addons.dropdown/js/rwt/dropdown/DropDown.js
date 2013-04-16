@@ -23,8 +23,20 @@
     DefaultSelection : 14
   };
 
+  /**
+   * @public
+   * @namespace
+   * @name rwt
+   */
+  /**
+   * @public
+   * @namespace
+   */
   rwt.dropdown = {};
 
+  /**
+   * @class Instances of DropDown represent the server-side counterpart of a DropDown widget
+   */
   rwt.dropdown.DropDown = function( parent ) {
     this._ = {};
     this._.hideTimer = new rwt.client.Timer( 0 );

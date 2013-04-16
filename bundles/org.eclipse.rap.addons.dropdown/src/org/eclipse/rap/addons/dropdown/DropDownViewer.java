@@ -198,7 +198,7 @@ public class DropDownViewer {
 
   }
 
-  private class ClientListenerHolder {
+  private static class ClientListenerHolder {
 
     private String PREFIX = "org/eclipse/rap/addons/dropdown/internal/resources/";
 
