@@ -33,6 +33,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Text;
@@ -46,6 +47,7 @@ import org.eclipse.swt.widgets.Text;
 public class DropDownDemo extends AbstractEntryPoint {
 
   private String PATH_PREFIX = "/org/eclipse/rap/addons/dropdown/";
+  DropDownViewer viewer = null;
 
   @Override
   protected void createContents( Composite parent ) {
@@ -87,15 +89,19 @@ public class DropDownDemo extends AbstractEntryPoint {
     GridData gridData = new GridData( 200, 23 );
     gridData.verticalAlignment = SWT.TOP;
     text.setLayoutData( gridData );
-    text.setMessage( "German City" );
-    final DropDownViewer viewer = new DropDownViewer( text );
+    text.setMessage( "City" );
+    viewer = new DropDownViewer( text );
     viewer.setLabelProvider( new LabelProvider() {
       @Override
       public String getText( Object object ) {
-        return ( ( String[] )object )[ 2 ];
+        String[] entry = ( ( String[] )object );
+        if( entry.length == 4 ) {
+          return entry[ 2 ]; // germany
+        } else {
+          return entry[ 1 ]; // austria
+        }
       }
     } );
-    viewer.setInput( Arrays.asList( KFZ.VALUES ) );
     viewer.addSelectionChangedListener( new SelectionChangedListener() {
       public void selectionChanged( SelectionChangedEvent event ) {
         String[] city = ( String[] )event.item;
@@ -116,6 +122,35 @@ public class DropDownDemo extends AbstractEntryPoint {
         viewer.getDropDown().dispose();
       }
     } );
+    Group location = new Group( parent, SWT.NONE );
+    location.setText( "Location" );
+    location.setLayout( new GridLayout( 1, true ) );
+    final Button germany = new Button( location, SWT.RADIO );
+    germany.setText( "Germany" );
+    germany.addListener( SWT.Selection, new Listener() {
+      public void handleEvent( Event event ) {
+        if( germany.getSelection() ) {
+          loadGermany();
+        }
+      }
+    } );
+    final Button austria = new Button( location, SWT.RADIO );
+    austria.setText( "Austria" );
+    austria.addListener( SWT.Selection, new Listener() {
+      public void handleEvent( Event event ) {
+        if( austria.getSelection() ) {
+          loadAustria();
+        }
+      }
+    } );
+  }
+
+  void loadGermany() {
+    viewer.setInput( Arrays.asList( KFZ.DE ) );
+  }
+
+  void loadAustria() {
+    viewer.setInput( Arrays.asList( KFZ.AT ) );
   }
 
   private Text createText( Composite parent, int style ) {
