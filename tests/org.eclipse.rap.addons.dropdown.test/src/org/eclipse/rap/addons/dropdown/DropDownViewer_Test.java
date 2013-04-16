@@ -15,6 +15,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -286,6 +287,19 @@ public class DropDownViewer_Test {
     viewer.getDropDown().dispose();
 
     assertTrue( viewer.getRemoteObject().isDestroyed() );
+  }
+
+  @Test
+  public void testCreateViewerTwice() {
+    Fixture.fakePhase( PhaseId.PROCESS_ACTION );
+    createViewer();
+
+    try {
+      createViewer();
+      fail();
+    } catch( IllegalStateException ex ) {
+      // expected
+    }
   }
 
 

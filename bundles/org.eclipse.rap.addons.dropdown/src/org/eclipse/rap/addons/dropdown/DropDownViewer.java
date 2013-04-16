@@ -53,8 +53,9 @@ public class DropDownViewer {
     = new ArrayList< SelectionChangedListener >();
 
   public DropDownViewer( Text text ) {
-    dropDown = new DropDown( text );
     this.text = text;
+    checkParent();
+    dropDown = new DropDown( text );
     clientListener = getClientListenerHolder();
     remoteObject = new UniversalRemoteObject();
     remoteObject.setHandler( new InternalOperationHandler() );
@@ -86,6 +87,12 @@ public class DropDownViewer {
 
   ////////////
   // Internals
+
+  private void checkParent() {
+    if( text.getData( VIEWER_LINK ) != null ) {
+      throw new IllegalStateException( "Text already has a " + getClass().getSimpleName() );
+    }
+  }
 
   private void updateElements() {
     String[] elements = new String[ this.input.length ];
