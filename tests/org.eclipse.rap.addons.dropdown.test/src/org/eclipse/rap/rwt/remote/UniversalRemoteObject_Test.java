@@ -136,6 +136,27 @@ public class UniversalRemoteObject_Test {
   }
 
   @Test
+  public void testGetAfterDestroyCrashs() {
+    uro.set( "myString", "yourString" );
+
+    markDestroyed();
+
+    try {
+      uro.getString( "myString" );
+      fail();
+    } catch( IllegalStateException ex ) {
+     // expected
+    }
+  }
+
+  @Test
+  public void testIsDestroyedCallsThrough() {
+    markDestroyed();
+
+    assertTrue( uro.isDestroyed() );
+  }
+
+  @Test
   public void testHandleNotifyOperation() {
     final List< Map< String, Object > > log = new ArrayList< Map< String, Object > >();
     uro.setHandler( new AbstractOperationHandler() {
@@ -173,6 +194,15 @@ public class UniversalRemoteObject_Test {
 
     assertEquals( 1, log.size() );
     assertEquals( new Integer( 23 ), log.get( 0 ).get( "index" ) );
+  }
+
+  private void markDestroyed() {
+    doAnswer( new Answer< Boolean >() {
+      @Override
+      public Boolean answer( InvocationOnMock invocation ) {
+          return true;
+      }
+    } ).when( remoteObject ).isDestroyed();
   }
 
 }

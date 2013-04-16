@@ -21,7 +21,9 @@
 
     properties : [ "visibility", "visibleItemCount" ],
 
-    methods : [ "setData" ]
+    methods : [ "setData" ],
+
+    destructor : "destroy"
 
   } );
 

@@ -32,6 +32,8 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Text;
 //import org.eclipse.rap.addons.dropdown.viewer.old.DropDownViewer;
@@ -86,15 +88,15 @@ public class DropDownDemo extends AbstractEntryPoint {
     gridData.verticalAlignment = SWT.TOP;
     text.setLayoutData( gridData );
     text.setMessage( "German City" );
-    DropDownViewer dropdown = new DropDownViewer( text );
-    dropdown.setLabelProvider( new LabelProvider() {
+    final DropDownViewer viewer = new DropDownViewer( text );
+    viewer.setLabelProvider( new LabelProvider() {
       @Override
       public String getText( Object object ) {
         return ( ( String[] )object )[ 2 ];
       }
     } );
-    dropdown.setInput( Arrays.asList( KFZ.VALUES ) );
-    dropdown.addSelectionChangedListener( new SelectionChangedListener() {
+    viewer.setInput( Arrays.asList( KFZ.VALUES ) );
+    viewer.addSelectionChangedListener( new SelectionChangedListener() {
       public void selectionChanged( SelectionChangedEvent event ) {
         String[] city = ( String[] )event.item;
         MessageBox box = new MessageBox( getShell() );
@@ -105,6 +107,13 @@ public class DropDownDemo extends AbstractEntryPoint {
           + city[ 1 ]
         );
         DialogUtil.open( box, null );
+      }
+    } );
+    Button dispose = new Button( parent, SWT.PUSH );
+    dispose.setText( "Dispose DropDown" );
+    dispose.addListener( SWT.Selection, new Listener(){
+      public void handleEvent( Event event ) {
+        viewer.getDropDown().dispose();
       }
     } );
   }

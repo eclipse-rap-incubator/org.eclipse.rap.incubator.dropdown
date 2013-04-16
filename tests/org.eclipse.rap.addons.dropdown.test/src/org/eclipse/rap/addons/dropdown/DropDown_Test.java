@@ -34,6 +34,8 @@ import org.eclipse.rap.rwt.remote.RemoteObject;
 import org.eclipse.rap.rwt.testfixture.Fixture;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.junit.After;
@@ -89,6 +91,17 @@ public class DropDown_Test {
   public void testDipose_RendersDetroy() {
     dropdown.dispose();
     verify( remoteObject ).destroy();
+  }
+
+  @Test
+  public void testDipose_FiresDispose() {
+    Fixture.fakePhase( PhaseId.PROCESS_ACTION );
+    Listener listener = mock( Listener.class );
+    dropdown.addListener( SWT.Dispose, listener );
+
+    dropdown.dispose();
+
+    verify( listener ).handleEvent( any( Event.class ) );
   }
 
   @Test

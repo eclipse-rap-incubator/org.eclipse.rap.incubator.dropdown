@@ -25,6 +25,9 @@ import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteListImpl;
 import org.eclipse.rap.rwt.lifecycle.WidgetUtil;
 import org.eclipse.rap.rwt.remote.AbstractOperationHandler;
 import org.eclipse.rap.rwt.remote.UniversalRemoteObject;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 
 
@@ -57,6 +60,7 @@ public class DropDownViewer {
     remoteObject.setHandler( new InternalOperationHandler() );
     attachClientListener();
     linkClientObjects();
+    attachDisposeListener();
   }
 
   public DropDown getDropDown() {
@@ -93,13 +97,20 @@ public class DropDownViewer {
     remoteObject.set( ELEMENTS_KEY, elements );
   }
 
-  // TODO : detach on destroy
   private void attachClientListener() {
     getTextModifyListener().addTo( text, ClientListener.Modify );
     getTextVerifyListener().addTo( text, ClientListener.Verify );
     getTextKeyDownListener().addTo( text, ClientListener.KeyDown );
     getDropDownSelectionListener().addTo( dropDown, ClientListener.Selection );
     getDropDownDefaultSelectionListener().addTo( dropDown, ClientListener.DefaultSelection );
+  }
+
+  private void detachClientListener() {
+    getTextModifyListener().removeFrom( text, ClientListener.Modify );
+    getTextVerifyListener().removeFrom( text, ClientListener.Verify );
+    getTextKeyDownListener().removeFrom( text, ClientListener.KeyDown );
+    getDropDownSelectionListener().removeFrom( dropDown, ClientListener.Selection );
+    getDropDownDefaultSelectionListener().removeFrom( dropDown, ClientListener.DefaultSelection );
   }
 
   private void linkClientObjects() {
@@ -109,6 +120,15 @@ public class DropDownViewer {
     dropDown.setData( VIEWER_LINK, remoteObject.getId() );
     remoteObject.set( DROPDOWN_KEY, WidgetUtil.getId( dropDown ) );
     remoteObject.set( TEXT_KEY, WidgetUtil.getId( text ) );
+  }
+
+  private void attachDisposeListener() {
+    dropDown.addListener( SWT.Dispose, new Listener() {
+      public void handleEvent( Event event ) {
+        remoteObject.destroy();
+        detachClientListener();
+      }
+    } );
   }
 
   private static void addWidgetDataKeys( String[] keys ) {

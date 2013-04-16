@@ -26,6 +26,7 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.rap.clientscripting.ClientListener;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteList;
+import org.eclipse.rap.rwt.lifecycle.PhaseId;
 import org.eclipse.rap.rwt.lifecycle.WidgetUtil;
 import org.eclipse.rap.rwt.testfixture.Fixture;
 import org.eclipse.swt.SWT;
@@ -275,6 +276,16 @@ public class DropDownViewer_Test {
     viewer.getRemoteObject().notify( "SelectionChanged", event );
 
     assertEquals( new Integer( 21 ), log.get( 0 ).item );
+  }
+
+  @Test
+  public void testDestroyRemoteObject() {
+    Fixture.fakePhase( PhaseId.PROCESS_ACTION );
+    createViewer();
+
+    viewer.getDropDown().dispose();
+
+    assertTrue( viewer.getRemoteObject().isDestroyed() );
   }
 
 

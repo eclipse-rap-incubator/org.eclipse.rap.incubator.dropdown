@@ -75,9 +75,12 @@ public class DropDown extends Widget {
 
   @Override
   public void dispose() {
-    remoteObject.destroy();
-    remoteObject = null;
-    disposed = true;
+    if( !disposed ) {
+      super.dispose();
+      remoteObject.destroy();
+      remoteObject = null;
+      disposed = true;
+    }
   }
 
   @Override

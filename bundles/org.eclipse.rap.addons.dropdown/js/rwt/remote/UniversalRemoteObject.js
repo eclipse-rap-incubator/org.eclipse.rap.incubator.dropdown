@@ -17,7 +17,9 @@
       return new UniversalRemoteObject();
     },
 
-    isGeneric : true
+    isGeneric : true,
+
+    destructor : "destroy"
 
   } );
 
@@ -47,6 +49,14 @@
 //          rap.getRemoteObject( this ).set( property, value );
 //        }
       }
+    },
+
+    destroy : function() {
+      for( var key in this._.properties ) {
+        this._.properties[ key ] = null;
+      }
+      this._.properties = null;
+      this._ = null;
     },
 
     get : function( property ) {

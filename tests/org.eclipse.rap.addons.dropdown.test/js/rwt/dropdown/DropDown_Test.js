@@ -417,11 +417,14 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
     },
 
     testDestroy_ClearsReferences : function() {
+      dropdown.setData( "foo", {} );
       var privateObj = dropdown._;
+      var props = privateObj.widgetData;
       dropdown.destroy();
 
       assertTrue( TestUtil.hasNoObjects( dropdown, true ) );
       assertTrue( TestUtil.hasNoObjects( privateObj ) );
+      assertTrue( TestUtil.hasNoObjects( props ) );
     },
 
     testDestroy_DeregistersAppearListener : function() {
@@ -430,6 +433,14 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       dropdown.destroy();
       widget.setVisibility( true );
       // Succeeds by not crashing
+    },
+
+    testDestroy_RemoveListenerDoesNotCrash : function() {
+      var listener = function(){};
+      dropdown.addListener( "Selection", listener );
+      dropdown.destroy();
+
+      dropdown.removeListener( "Selection", listener );
     },
 
     testDestroy_DocumentClick : function() {

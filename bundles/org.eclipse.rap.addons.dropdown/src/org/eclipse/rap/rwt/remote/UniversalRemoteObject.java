@@ -87,38 +87,49 @@ public class UniversalRemoteObject implements RemoteObject {
     throw new UnsupportedOperationException( "Operation \"call\" not supported on this type" );
   }
 
-  public void destroy() {
-    remoteObject.destroy();
-  }
-
   public void setHandler( OperationHandler handler ) {
     this.handler = handler;
     remoteObject.setHandler( handler );
   }
 
   public Object get( String key ) {
+    checkDestroyed();
     return properties.get( key );
   }
 
   public boolean getBoolean( String key ) {
-    return ( ( Boolean )properties.get( key ) ).booleanValue();
+    return ( ( Boolean )get( key ) ).booleanValue();
   }
 
   public double getDouble( String key ) {
-    return ( ( Double )properties.get( key ) ).doubleValue();
+    return ( ( Double )get( key ) ).doubleValue();
   }
 
   public int getInt( String key ) {
-    return ( ( Integer )properties.get( key ) ).intValue();
+    return ( ( Integer )get( key ) ).intValue();
   }
 
   public String getString( String key ) {
-    return ( String )properties.get( key );
+    return ( String )get( key );
   }
 
   public void notify( String event, Map<String, Object> properties ) {
     // TODO Currently good for testing, but could also trigger client listener
     handler.handleNotify( event, properties );
+  }
+
+  public void destroy() {
+    remoteObject.destroy();
+  }
+
+  public boolean isDestroyed() {
+    return remoteObject.isDestroyed();
+  }
+
+  private void checkDestroyed() {
+    if( remoteObject.isDestroyed() ) {
+      throw new IllegalStateException( "The RemoteObject was alredy destroyed" );
+    }
   }
 
 }

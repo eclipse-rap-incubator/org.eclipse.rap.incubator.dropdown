@@ -124,7 +124,7 @@
     },
 
     removeListener : function( type, listener ) {
-      if( this._.events[ type ] ) {
+      if( this._ && this._.events[ type ] ) {
         var index = this._.events[ type ].indexOf( listener );
         rwt.util.Arrays.removeAt( this._.events[ type ], index );
       }
@@ -137,6 +137,11 @@
         this._.parent.removeEventListener( "appear", onAppear, this );
         this._.popup.destroy();
         this._.hideTimer.dispose();
+        if( this._.widgetData ) {
+          for( var key in this._.widgetData ) {
+            this._.widgetData[ key ] = null;
+          }
+        }
         for( var key in this._ ) {
           this._[ key ] = null;
         }

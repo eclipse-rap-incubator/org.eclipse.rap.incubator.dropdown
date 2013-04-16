@@ -55,7 +55,17 @@ rwt.qx.Class.define( "rwt.remote.UniversalRemoteObject_Test", {
 
       var message = TestUtil.getMessageObject();
       assertEquals( "bar", message.findNotifyProperty( "r11", "Selection", "foo" ) );
+    },
+
+    testDestroy : function() {
+      TestUtil.protocolSet( "r11", { "foo" : {} } );
+      var propertiesMap = uro._.properties;
+
+      uro.destroy();
+
+      assertTrue( TestUtil.hasNoObjects( propertiesMap ) );
     }
+
 
 
   }
