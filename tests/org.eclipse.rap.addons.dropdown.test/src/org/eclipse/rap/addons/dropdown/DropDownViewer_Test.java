@@ -77,6 +77,14 @@ public class DropDownViewer_Test {
   }
 
   @Test
+  public void testConstructor_SetEmptyElements() {
+    createViewer();
+
+    List< String > expected = new ArrayList< String >();
+    assertEquals( expected, Arrays.asList( getElements() ) );
+  }
+
+  @Test
   public void testGetDefaultTextModifyListenerTwice_ReturnsSameInstance() {
     createViewer();
     ClientListener listener1 = viewer.getTextModifyListener();

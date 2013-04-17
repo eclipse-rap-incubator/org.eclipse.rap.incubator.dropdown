@@ -59,6 +59,7 @@ public class DropDownViewer {
     clientListener = getClientListenerHolder();
     remoteObject = new UniversalRemoteObject();
     remoteObject.setHandler( new InternalOperationHandler() );
+    setElements( new String[ 0 ] );
     attachClientListener();
     linkClientObjects();
     attachDisposeListener();
@@ -99,6 +100,10 @@ public class DropDownViewer {
     for( int i = 0; i < elements.length; i++ ) {
       elements[ i ] = labelProvider.getText( this.input[ i ] );
     }
+    setElements( elements );
+  }
+
+  private void setElements( String[] elements ) {
     // TODO : Using a separate client object (e.g. "RemoteList") for the elements might allow
     //        sharing and incremental updates
     remoteObject.set( ELEMENTS_KEY, elements );
