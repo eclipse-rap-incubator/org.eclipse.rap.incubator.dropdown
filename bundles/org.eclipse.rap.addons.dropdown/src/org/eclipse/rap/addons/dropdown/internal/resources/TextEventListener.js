@@ -10,6 +10,8 @@
  ******************************************************************************/
 
 var VIEWER_KEY = "org.eclipse.rap.addons.dropdown.DropDownViewer#viewer";
+var searchItems = rwt.dropdown.DropDown.searchItems;
+var createQuery = rwt.dropdown.DropDown.createQuery;
 
 function handleEvent( event ) {
   switch( event.type ) {
@@ -40,17 +42,17 @@ function handleModify( event ) {
   var viewer = rap.getObject( widget.getData( VIEWER_KEY ) );
   var dropdown = rap.getObject( viewer.get( "dropDown" ) );
   var data = viewer.get( "elements" );
-  var items = itemsStartingWith( data, text );
+  var result = searchItems( data, createQuery( text ) );
   var typing = widget.getData( "typing" );
   var selecting = widget.getData( "selecting" );
   widget.setData( "typing", false );
   widget.setData( "selecting", false );
   if( !selecting ) {
-    if( ( text.length >= 2 || ( dropdown.getVisibility() && typing ) ) && items.values.length > 0 ) {
-      dropdown.setItems( items.values );
-      dropdown.setData( "indexMapping", items.indicies );
+    if( ( text.length >= 2 || ( dropdown.getVisibility() && typing ) ) && result.items.length > 0 ) {
+      dropdown.setItems( result.items );
+      dropdown.setData( "indexMapping", result.indicies );
       dropdown.show();
-      var common = commonText( items.values );
+      var common = commonText( result.items );
       if( typing && common && common.length > text.length ) {
         var sel = widget.getSelection();
         var newSel = [ sel[ 0 ], common.length ];
@@ -91,7 +93,7 @@ function handleKeyDown( event ) {
           // TODO [tb] : do this by triggering default Selection
           var selectionIndex = dropdown.getSelectionIndex();
           var mapping = dropdown.getData( "indexMapping" );
-          var elementIndex = mapping[ selectionIndex ];
+          var elementIndex = mapping[ selectionIndex >= 0 ? selectionIndex : 0 ];
           var viewer = rap.getObject( dropdown.getData( VIEWER_KEY ) );
           viewer.notify( "SelectionChanged", { "index" : elementIndex } );
           dropdown.setSelectionIndex( -1 ); // should this happen automatically?
@@ -116,7 +118,7 @@ function commonText( items ) {
       var next = items[ 0 ].indexOf( " ", commonTo + 1 ); // TODO [tb] : also respect ,"':;
       if( next !== -1 ) {
         var testString = items[ 0 ].slice( 0, next + 1 );
-        var commons = itemsStartingWith( items, testString, true );
+        var commons = searchItems( items, createQuery( testString, true ) ).items;
         if( items.length === commons.length ) {
           commonTo = next + 1;
         } else {
@@ -133,31 +135,3 @@ function commonText( items ) {
   return result;
 }
 
-function itemsStartingWith( items, text, caseSensitive ) {
-  var itemFilter;
-  var resultIndicies = [];
-  if( caseSensitive ) {
-    itemFilter = function( item, index ) {
-      if( item.indexOf( text ) === 0 ) {
-        resultIndicies.push( index );
-        return true;
-      } else {
-        return false;
-      }
-   };
-  } else {
-    itemFilter = function( item, index ) {
-      if( item.toLowerCase().indexOf( text ) === 0 ) {
-        resultIndicies.push( index );
-        return true;
-      } else {
-        return false;
-      }
-    };
-  }
-  var resultValues = items.filter( itemFilter );
-  return {
-    "values" : resultValues,
-    "indicies" : resultIndicies
-  };
-}

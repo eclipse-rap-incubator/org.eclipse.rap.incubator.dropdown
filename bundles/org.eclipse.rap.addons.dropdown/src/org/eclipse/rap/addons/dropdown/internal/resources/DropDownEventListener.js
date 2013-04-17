@@ -10,6 +10,8 @@
  ******************************************************************************/
 
 var VIEWER_KEY = "org.eclipse.rap.addons.dropdown.DropDownViewer#viewer";
+var searchItems = rwt.dropdown.DropDown.searchItems;
+var createQuery = rwt.dropdown.DropDown.createQuery;
 
 function handleEvent( event ) {
   switch( event.type ) {
@@ -19,9 +21,9 @@ function handleEvent( event ) {
     case SWT.DefaultSelection:
       handleDefaultSelection( event );
     break;
-//    case SWT.KeyDown:
-//      handleKeyDown( event ); // not supported (yet?)
-//    break;
+    case SWT.Show:
+      handleShow( event );
+    break;
   }
 }
 
@@ -48,8 +50,13 @@ function handleDefaultSelection( event ) {
 //  text.forceFocus(); // TODO : currently not possible
 }
 
-function handleKeyDown( event ) {
-  if( event.keyCode === SWT.ESC ) { // make default behavior? (Only effective when focused)
-    event.widget.hide();
-  }
+function handleShow( event ) {
+  var dropdown = event.widget;
+  var viewer = rap.getObject( dropdown.getData( VIEWER_KEY ) );
+  var data = viewer.get( "elements" );
+  var text = rap.getObject( viewer.get( "text" ) );
+  var str = text.getText();
+  var result = searchItems( data, createQuery( str ) );
+  dropdown.setItems( result.items );
+  dropdown.setData( "indexMapping", result.indicies );
 }

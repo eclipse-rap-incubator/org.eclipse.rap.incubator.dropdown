@@ -9,6 +9,9 @@
  *    EclipseSource - initial API and implementation
  ******************************************************************************/
 
+var searchItems = rwt.dropdown.DropDown.searchItems;
+var createQuery = rwt.dropdown.DropDown.createQuery;
+
 function handleEvent( event ) {
   switch( event.type ) {
     case SWT.Modify:
@@ -30,14 +33,12 @@ function handleVerify( event ) {
   }
 }
 
-//TODO : This can get very slow with huge lists. Possible optimizations include caching results,
-//       limiting result length (at least until first selection occurs), and virtual rendering
 function handleModify( event ) {
   var widget = event.widget;
   var text = widget.getText().toLowerCase();
   var dropdown = rap.getObject( widget.getData( "dropdown" ) );
   var data = rap.getObject( dropdown.getData( "data" ) );
-  var items = itemsStartingWith( data, text );
+  var items = searchItems( data, createQuery( text ), 10 ).items;
   var typing = widget.getData( "typing" );
   var selecting = widget.getData( "selecting" );
   widget.setData( "typing", false );
@@ -105,7 +106,7 @@ function commonText( items ) {
       var next = items[ 0 ].indexOf( " ", commonTo + 1 ); // TODO [tb] : also respect ,"':;
       if( next !== -1 ) {
         var testString = items[ 0 ].slice( 0, next + 1 );
-        var commons = itemsStartingWith( items, testString, true );
+        var commons = searchItems( items, createQuery( testString, true ) ).items;
         if( items.length === commons.length ) {
           commonTo = next + 1;
         } else {
@@ -120,14 +121,4 @@ function commonText( items ) {
     }
   }
   return result;
-}
-
-function itemsStartingWith( items, text, caseSensitive ) {
-  var itemFilter;
-  if( caseSensitive ) {
-    itemFilter = function( item ) { return item.indexOf( text ) === 0; };
-  } else {
-    itemFilter = function( item ) { return item.toLowerCase().indexOf( text ) === 0; };
-  }
-  return items.filter( itemFilter );
 }

@@ -13,6 +13,7 @@
 'use strict';
 
 var TestUtil = org.eclipse.rwt.test.fixture.TestUtil;
+var DropDown = rwt.dropdown.DropDown;
 
 var shell;
 var widget;
@@ -491,6 +492,82 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
 
       assertFalse( popup.isSeeable() );
     },
+
+    testSearchItems_EmptyArrayReturnsEmptyResult : function() {
+      var results = DropDown.searchItems( [], /foo/ );
+
+      assertEquals( "/foo/", results.query.toString() );
+      assertEquals( [], results.items );
+      assertEquals( [], results.indicies );
+    },
+
+    testSearchItems_FindMultipleItems : function() {
+      var items = [ "afoo", "bar", "food", "abc" ];
+      var results = DropDown.searchItems( items, /foo/ );
+
+      assertEquals( "/foo/", results.query.toString() );
+      assertEquals( [ "afoo", "food" ], results.items );
+      assertEquals( [ 0, 2 ], results.indicies );
+      assertEquals( 0, results.limit );
+    },
+
+    testSearchItems_FindMultipleItemsWithLimit : function() {
+      var items = [ "afoo", "bfoo", "x", "cfoo", "foor", "four" ];
+      var results = DropDown.searchItems( items, /foo/, 3 );
+
+      assertEquals( "/foo/", results.query.toString() );
+      assertEquals( [ "afoo", "bfoo", "cfoo" ], results.items );
+      assertEquals( [ 0, 1, 3 ], results.indicies );
+      assertEquals( 3, results.limit );
+    },
+
+    testSearchItems_FindItemsStartingWith : function() {
+      var items = [ "afoo", "bar", "food", "abc" ];
+      var results = DropDown.searchItems( items, /^foo/ );
+
+      assertEquals( "/^foo/", results.query.toString() );
+      assertEquals( [ "food" ], results.items );
+      assertEquals( [ 2 ], results.indicies );
+    },
+
+    testSearchItems_FromCreateQuery : function() {
+      var items = [ "^foox", "bar", "food", "abc" ];
+      var results = DropDown.searchItems( items, DropDown.createQuery( "^foo" ) );
+
+      assertEquals( [ "^foox" ], results.items );
+      assertEquals( [ 0 ], results.indicies );
+      assertEquals( "/^\\^foo/i", results.query.toString() );
+    },
+
+    testSearchItems_FromCreateQueryCaseInsensitive : function() {
+      var items = [ "ooxd", "bar", "food", "abc" ];
+      var results = DropDown.searchItems( items, DropDown.createQuery( "OoX" ) );
+
+      assertEquals( [ "ooxd" ], results.items );
+      assertEquals( [ 0 ], results.indicies );
+      assertEquals( "/^OoX/i", results.query.toString() );
+    },
+
+    testSearchItems_FromCreateQueryCaseSensitive : function() {
+      var items = [ "fOoX", "bar", "food", "abc" ];
+      var results = DropDown.searchItems( items, DropDown.createQuery( "foo", true ) );
+
+      assertEquals( [ "food" ], results.items );
+      assertEquals( [ 2 ], results.indicies );
+      assertEquals( "/^foo/", results.query.toString() );
+    },
+
+    testSearchItems_FromCreateQueryIgnorePosition : function() {
+      var items = [ "a^fOoX", "bar", "_food", "abc" ];
+      var results = DropDown.searchItems( items, DropDown.createQuery( "foo", true, true ) );
+
+      assertEquals( [ "_food" ], results.items );
+      assertEquals( [ 2 ], results.indicies );
+      assertEquals( "/foo/", results.query.toString() );
+    },
+
+    ///////////
+    // Helper
 
     createExample : function() {
       widget = new rwt.widgets.Composite();

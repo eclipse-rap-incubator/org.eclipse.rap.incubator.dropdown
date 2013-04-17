@@ -37,8 +37,7 @@ public class DropDownViewer {
   private static final String ATTR_CLIENT_LISTNER_HOLDER
     = ClientListenerHolder.class.getName() + "#instance";
   private static final String SELECTION_CHANGED = "SelectionChanged";
-  private static String VIEWER_LINK =
-      DropDownViewer.class.getName() + "#viewer";
+  private static String VIEWER_LINK = DropDownViewer.class.getName() + "#viewer";
   private static String DROPDOWN_KEY = "dropDown";
   private static String TEXT_KEY = "text";
   private static String ELEMENTS_KEY = "elements";
@@ -115,6 +114,7 @@ public class DropDownViewer {
     getTextKeyDownListener().addTo( text, ClientListener.KeyDown );
     getDropDownSelectionListener().addTo( dropDown, ClientListener.Selection );
     getDropDownDefaultSelectionListener().addTo( dropDown, ClientListener.DefaultSelection );
+    getDropDownShowListener().addTo( dropDown, ClientListener.Show );
   }
 
   private void detachClientListener() {
@@ -123,6 +123,7 @@ public class DropDownViewer {
     getTextKeyDownListener().removeFrom( text, ClientListener.KeyDown );
     getDropDownSelectionListener().removeFrom( dropDown, ClientListener.Selection );
     getDropDownDefaultSelectionListener().removeFrom( dropDown, ClientListener.DefaultSelection );
+    getDropDownShowListener().removeFrom( dropDown, ClientListener.Show );
   }
 
   private void linkClientObjects() {
@@ -186,6 +187,10 @@ public class DropDownViewer {
     return clientListener.getDropDownDefaultSelectionListener();
   };
 
+  public ClientListener getDropDownShowListener() {
+    return clientListener.getDropDownShowListener();
+  }
+
   // TODO : make exchangeable by accepting a class that extends the holder in the constructor
   private ClientListenerHolder getClientListenerHolder() {
     Object result = RWT.getUISession().getAttribute( ATTR_CLIENT_LISTNER_HOLDER );
@@ -225,6 +230,10 @@ public class DropDownViewer {
 
     private ClientListener createListener( String name ) {
       return new ClientListener( ResourceLoaderUtil.readTextContent( PREFIX + name ) );
+    }
+
+    public ClientListener getDropDownShowListener() {
+      return dropDownListener;
     }
 
     public ClientListener getTextModifyListener() {

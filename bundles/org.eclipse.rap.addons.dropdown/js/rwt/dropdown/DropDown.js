@@ -188,6 +188,41 @@
 
   };
 
+  ////////////
+  // "statics"
+
+  rwt.dropdown.DropDown.searchItems = function( items, query, limit ) {
+    var resultIndicies = [];
+    var filter = function( item, index ) {
+      if( query.test( item ) ) {
+        resultIndicies.push( index );
+        return true;
+      } else {
+        return false;
+      }
+    };
+    var resultLimit = typeof limit === "number" ? limit : 0;
+    var resultItems = filterArray( items, filter, resultLimit );
+    return {
+      "items" : resultItems,
+      "indicies" : resultIndicies,
+      "query" : query,
+      "limit" : resultLimit
+    };
+  };
+
+  rwt.dropdown.DropDown.createQuery = function( str, caseSensitive, ignorePosition ) {
+    var escapedStr = rwt.dropdown.DropDown.escapeRegExp( str );
+    return new RegExp( ( ignorePosition ? "" : "^" ) + escapedStr, caseSensitive ? "" : "i" );
+  };
+
+  rwt.dropdown.DropDown.escapeRegExp = function( str ) {
+    return str.replace( /[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&" );
+  };
+
+  ////////////
+  // Internals
+
   var onTextAppear = function() {
     if( this._.visibility ) {
       this.show();
@@ -300,6 +335,23 @@
     var root = control.getFocusRoot();
     var result =    control.getFocused()
                  || ( control.contains && control.contains( root.getFocusedChild() ) );
+    return result;
+  };
+
+  var filterArray = function( arr, func, limit ) {
+    var result = [];
+    if( typeof arr.filter === "function" && limit === 0 ) {
+      result = arr.filter( func );
+    } else {
+      for( var i = 0; i < arr.length; i++ ) {
+        if( func( arr[ i ], i ) ) {
+          result.push( arr[ i ] );
+          if( limit !== 0 && result.length === limit ) {
+            break;
+          }
+        }
+      }
+    }
     return result;
   };
 
