@@ -11,8 +11,6 @@
 
 package org.eclipse.rap.addons.dropdown;
 
-import static org.eclipse.rap.addons.dropdown.viewer.old.ResourceLoaderUtil.readTextContent;
-
 import java.util.Arrays;
 
 import org.eclipse.jface.viewers.LabelProvider;
@@ -37,10 +35,6 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Text;
-//import org.eclipse.rap.addons.dropdown.viewer.old.DropDownViewer;
-//import org.eclipse.rap.addons.dropdown.viewer.old.LabelProvider;
-//import org.eclipse.rap.addons.dropdown.viewer.old.SelectionChangedEvent;
-//import org.eclipse.rap.addons.dropdown.viewer.old.SelectionChangedListener;
 
 
 @SuppressWarnings("restriction")
@@ -51,7 +45,7 @@ public class DropDownDemo extends AbstractEntryPoint {
 
   @Override
   protected void createContents( Composite parent ) {
-    getShell().setLayout( new GridLayout( 2, false ) );
+    getShell().setLayout( new GridLayout( 1, false ) );
     WidgetDataWhiteList list = RWT.getClient().getService( WidgetDataWhiteList.class );
     list.setKeys( new String[]{ "dropdown", "text", "data" } );
     createNationsExample( parent );
@@ -61,7 +55,10 @@ public class DropDownDemo extends AbstractEntryPoint {
 
   private void createNationsExample( Composite parent ) {
     // TODO : Use CSS Theming on textBox / open button
-    Composite textBox = new Composite( parent, SWT.BORDER );
+    Group group = new Group( parent, SWT.NONE );
+    group.setText( "DropDown + client expand button, 192 entries cached" );
+    group.setLayout( new GridLayout( 1, true ) );
+    Composite textBox = new Composite( group, SWT.BORDER );
     GridLayout layout = new GridLayout( 2, false );
     layout.marginHeight = 0;
     layout.marginWidth = 0;
@@ -78,18 +75,37 @@ public class DropDownDemo extends AbstractEntryPoint {
   }
 
   private void createMoviesExample( Composite parent ) {
-    Text text = createText( parent, SWT.BORDER );
+    Group group = new Group( parent, SWT.NONE );
+    group.setText( "DropDown only, 1157 entries cached" );
+    group.setLayout( new GridLayout( 1, true ) );
+    Text text = createText( group, SWT.BORDER );
     text.setMessage( "90's Movies" );
     DropDown dropdown = createDropDown( text, text );
     dropdown.setData( "data", getClientData( "Movies" ) );
   }
 
   private void createKFZExample( Composite parent ) {
-    Text text = new Text( parent, SWT.BORDER );
+    Group group = new Group( parent, SWT.NONE );
+    group.setText( "DropDownViewer + server-side expand button, dynamic input (586 entries max)" );
+    group.setLayout( new GridLayout( 2, false) );
+    Composite textBox = new Composite( group, SWT.BORDER );
+    GridLayout layout = new GridLayout( 2, false );
+    layout.marginHeight = 0;
+    layout.marginWidth = 0;
+    textBox.setLayoutData( new GridData( SWT.CENTER, SWT.CENTER, false, false) );
+    textBox.setLayout( layout );
+    Text text = new Text( textBox, SWT.NONE );
     GridData gridData = new GridData( 200, 23 );
     gridData.verticalAlignment = SWT.TOP;
     text.setLayoutData( gridData );
     text.setMessage( "City" );
+    Button open = new Button( textBox, SWT.ARROW | SWT.DOWN );
+    open.setLayoutData( new GridData( SWT.RIGHT, SWT.FILL, false, true ) );
+    open.addListener( SWT.Selection, new Listener() {
+      public void handleEvent( Event event ) {
+        viewer.getDropDown().show();
+      }
+    } );
     viewer = new DropDownViewer( text );
     viewer.setLabelProvider( new LabelProvider() {
       @Override
@@ -115,15 +131,9 @@ public class DropDownDemo extends AbstractEntryPoint {
         DialogUtil.open( box, null );
       }
     } );
-    Button dispose = new Button( parent, SWT.PUSH );
-    dispose.setText( "Dispose DropDown" );
-    dispose.addListener( SWT.Selection, new Listener(){
-      public void handleEvent( Event event ) {
-        viewer.getDropDown().dispose();
-      }
-    } );
-    Group location = new Group( parent, SWT.NONE );
+    Group location = new Group( group, SWT.NONE );
     location.setText( "Location" );
+    location.setLayoutData( new GridData( SWT.TOP, SWT.CENTER, false, true ) );
     location.setLayout( new GridLayout( 1, true ) );
     final Button germany = new Button( location, SWT.RADIO );
     germany.setText( "Germany" );
@@ -171,21 +181,20 @@ public class DropDownDemo extends AbstractEntryPoint {
   }
 
   private void addDropDownClientListener( DropDown dropdown ) {
-    String script = readTextContent( PATH_PREFIX + "DropDownEventHandler.js" );
+    String script = ResourceLoaderUtil.readTextContent( PATH_PREFIX + "DropDownEventHandler.js" );
     ClientListener listener = new ClientListener( script );
     listener.addTo( dropdown, SWT.Selection );
     listener.addTo( dropdown, SWT.DefaultSelection );
-    //listener.addTo( dropdown, SWT.KeyDown ); // currently not supported, implement?
   }
 
   private void addButtonClientListener( Button button ) {
-    String script = readTextContent( PATH_PREFIX + "ButtonEventHandler.js" );
+    String script = ResourceLoaderUtil.readTextContent( PATH_PREFIX + "ButtonEventHandler.js" );
     ClientListener listener = new ClientListener( script );
     listener.addTo( button, SWT.MouseDown );
   }
 
   private void addTextClientListener( Text text ) {
-    String script = readTextContent( PATH_PREFIX + "TextEventHandler.js" );
+    String script = ResourceLoaderUtil.readTextContent( PATH_PREFIX + "TextEventHandler.js" );
      // TODO: should take inputStream or loader + path
     ClientListener listener = new ClientListener( script );
     listener.addTo( text, SWT.Modify );
