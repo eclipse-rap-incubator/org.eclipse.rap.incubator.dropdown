@@ -170,6 +170,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
     },
 
     testShow_CalledBeforeCreatedMakesPopUpVisible : function() {
+      dropdown.destroy();
       this.createExample();
 
       prepare();
@@ -265,6 +266,46 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       assertEquals( 1, logger.getLog().length );
     },
 
+    testAddShowListener : function() {
+      var logger = TestUtil.getLogger();
+      dropdown.addListener( "Show", logger.log );
+
+      prepare();
+
+      assertEquals( 1, logger.getLog().length );
+    },
+
+    testRemoveShowListener : function() {
+      var logger = TestUtil.getLogger();
+      dropdown.addListener( "Show", logger.log );
+      dropdown.removeListener( "Show", logger.log );
+
+      prepare();
+
+      assertEquals( 0, logger.getLog().length );
+    },
+
+    testAddHideListener : function() {
+      prepare();
+      var logger = TestUtil.getLogger();
+      dropdown.addListener( "Hide", logger.log );
+
+      dropdown.hide();
+
+      assertEquals( 1, logger.getLog().length );
+    },
+
+    testRemoveHideListener : function() {
+      prepare();
+      var logger = TestUtil.getLogger();
+      dropdown.addListener( "Hide", logger.log );
+      dropdown.removeListener( "Hide", logger.log );
+
+      dropdown.hide();
+
+      assertEquals( 0, logger.getLog().length );
+    },
+
     testRemoveSelectionListener : function() {
       dropdown.setItems( [ "a", "b", "c" ] );
       prepare();
@@ -287,7 +328,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
 
       var event = logger.getLog()[ 0 ];
       assertIdentical( dropdown, event.widget );
-      assertIdentical( "b", event.element );
+      assertIdentical( "b", event.item );
       assertIdentical( 13, event.type );
     },
 
@@ -302,7 +343,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
 
       var event = logger.getLog()[ 0 ];
       assertIdentical( dropdown, event.widget );
-      assertIdentical( null, event.element );
+      assertIdentical( null, event.item );
     },
 
     testAddDefaultSelectionListener_FiresOnEnter : function() {
@@ -339,7 +380,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
 
       var event = logger.getLog()[ 0 ];
       assertIdentical( dropdown, event.widget );
-      assertIdentical( "b", event.element );
+      assertIdentical( "b", event.item );
       assertIdentical( 14, event.type );
     },
 
@@ -354,7 +395,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
 
       var event = logger.getLog()[ 0 ];
       assertIdentical( dropdown, event.widget );
-      assertIdentical( null, event.element );
+      assertIdentical( null, event.item );
     },
 
     testGetSelectionIndex_InitialValueIsMinusOne : function() {

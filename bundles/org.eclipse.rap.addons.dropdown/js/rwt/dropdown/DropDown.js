@@ -18,9 +18,12 @@
   var POPUP_BORDER = new rwt.html.Border( 1, "solid", "#000000" );
   var FRAMEWIDTH = 2;
 
+  // Values identical to SWT
   var eventTypes = {
     Selection : 13,
-    DefaultSelection : 14
+    DefaultSelection : 14,
+    Show : 22,
+    Hide : 23
   };
 
   /**
@@ -49,9 +52,11 @@
     this._.viewer.getManager().addEventListener( "changeSelection", onSelection, this );
     this._.viewer.addEventListener( "keypress", onKeyPress, this );
     this._.viewer.addEventListener( "dblclick", onDoubleClick, this );
+    this._.popup.addEventListener( "appear", onAppear, this );
+    this._.popup.addEventListener( "disappear", onDisappear, this );
     this._.popup.getFocusRoot().addEventListener( "changeFocusedChild", onFocusChange, this );
     parent.getFocusRoot().addEventListener( "changeFocusedChild", onFocusChange, this );
-    parent.addEventListener( "appear", onAppear, this );
+    parent.addEventListener( "appear", onTextAppear, this );
     this._.visibility = false;
   };
 
@@ -146,7 +151,7 @@
       if( !this.isDisposed() ) {
         var focusRoot = this._.parent.getFocusRoot();
         focusRoot.removeEventListener( "changeFocusedChild", onFocusChange, this );
-        this._.parent.removeEventListener( "appear", onAppear, this );
+        this._.parent.removeEventListener( "appear", onTextAppear, this );
         this._.popup.destroy();
         this._.hideTimer.dispose();
         if( this._.widgetData ) {
@@ -183,7 +188,7 @@
 
   };
 
-  var onAppear = function() {
+  var onTextAppear = function() {
     if( this._.visibility ) {
       this.show();
     }
@@ -191,16 +196,24 @@
 
   var onKeyPress = function( event ) {
     if( event.getKeyIdentifier() === "Enter" ) {
-      fireSelectionEvent.call( this, "DefaultSelection" );
+      fireEvent.call( this, "DefaultSelection" );
     }
   };
 
   var onSelection = function( event ) {
-    fireSelectionEvent.call( this, "Selection" );
+    fireEvent.call( this, "Selection" );
   };
 
   var onDoubleClick = function( event ) {
-    fireSelectionEvent.call( this, "DefaultSelection" );
+    fireEvent.call( this, "DefaultSelection" );
+  };
+
+  var onAppear = function( event ) {
+    fireEvent.call( this, "Show" );
+  };
+
+  var onDisappear = function( event ) {
+    fireEvent.call( this, "Hide" );
   };
 
   var onFocusChange = function( event ) {
@@ -209,16 +222,17 @@
     this._.hideTimer.start();
   };
 
-  var fireSelectionEvent = function( type ) {
-    var selection = this._.viewer.getSelectedItems();
+  var fireEvent = function( type ) {
     var eventProxy = {
       "widget" : this,
-      "element" : null,
+      "item" : null,
       "type" : eventTypes[ type ]
     };
-    if( selection.length > 0 ) {
-      // TOOD : use input element instead of label
-      eventProxy.element = rwt.util.Encoding.unescape( selection[ 0 ].getLabel() );
+    if( type === "Selection" || type === "DefaultSelection" ) {
+      var selection = this._.viewer.getSelectedItems();
+      if( selection.length > 0 ) {
+        eventProxy.item = rwt.util.Encoding.unescape( selection[ 0 ].getLabel() );
+      }
     }
     notify( this._.events[ type ], eventProxy );
   };

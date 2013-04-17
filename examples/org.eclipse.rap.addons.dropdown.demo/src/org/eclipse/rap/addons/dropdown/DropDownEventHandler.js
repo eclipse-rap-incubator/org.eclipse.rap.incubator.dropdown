@@ -24,12 +24,12 @@ function handleEvent( event ) {
 }
 
 function handleSelection( event ) {
-  if( event.element != null ) {
+  if( event.item != null ) {
     var dropdown = event.widget;
     var text = rap.getObject( dropdown.getData( "text" ) );
     text.setData( "selecting", true );
-    text.setText( event.element );
-    text.setSelection( [ 0, event.element.length ] );
+    text.setText( event.item );
+    text.setSelection( [ 0, event.item.length ] );
   }
 }
 
