@@ -14,15 +14,20 @@ package org.eclipse.rap.addons.dropdown;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.rap.rwt.client.Client;
@@ -31,6 +36,7 @@ import org.eclipse.rap.rwt.internal.remote.RemoteObjectImpl;
 import org.eclipse.rap.rwt.lifecycle.PhaseId;
 import org.eclipse.rap.rwt.lifecycle.WidgetUtil;
 import org.eclipse.rap.rwt.remote.Connection;
+import org.eclipse.rap.rwt.remote.OperationHandler;
 import org.eclipse.rap.rwt.remote.RemoteObject;
 import org.eclipse.rap.rwt.testfixture.Fixture;
 import org.eclipse.swt.SWT;
@@ -43,6 +49,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 
 @SuppressWarnings("restriction")
@@ -53,6 +61,7 @@ public class DropDown_Test {
   private DropDown dropdown;
   private RemoteObject remoteObject;
   private Connection connection;
+  private OperationHandler handler;
 
   @Before
   public void setUp() {
@@ -65,6 +74,13 @@ public class DropDown_Test {
     connection = mock( Connection.class );
     when( connection.createRemoteObject( anyString() ) ).thenReturn( remoteObject );
     Fixture.fakeConnection( connection );
+    doAnswer( new Answer< Object >(){
+      @Override
+      public Object answer( InvocationOnMock invocation ) throws Throwable {
+        handler = ( OperationHandler )invocation.getArguments()[ 0 ];
+        return null;
+      }
+    } ).when( remoteObject ).setHandler( any( OperationHandler.class ) );
     dropdown = new DropDown( text );
   }
 
@@ -128,6 +144,57 @@ public class DropDown_Test {
   }
 
   @Test
+  public void testShow_CallTwiceRenderVisibilityOnce() {
+    dropdown.show();
+    dropdown.show();
+
+    verify( remoteObject, times( 1 ) ).set( "visibility", true );
+  }
+
+  @Test
+  public void testGetVisibility_InitialValueIsFalse() {
+    assertFalse( dropdown.getVisibility() );
+  }
+
+  @Test
+  public void testShow_SetsVisibility() {
+    dropdown.show();
+
+    assertTrue( dropdown.getVisibility() );
+  }
+
+  @Test
+  public void testProcessSetVisibility_ValueIsTrue() {
+    handler.handleSet( createMap( "visibility", true ) );
+
+    assertTrue( dropdown.getVisibility() );
+  }
+
+  @Test
+  public void testProcessSetVisibility_ValueIsFalse() {
+    dropdown.setVisibility( true );
+
+    handler.handleSet( createMap( "visibility", false ) );
+
+    assertFalse( dropdown.getVisibility() );
+  }
+
+  @Test
+  public void testProcessSetVisibility_DoNotRenderToRemoteObject() {
+    handler.handleSet( createMap( "visibility", true ) );
+
+    verify( remoteObject, never() ).set( eq( "visibility" ), anyBoolean() );
+  }
+
+  @Test
+  public void testHide_SetsVisibility() {
+    dropdown.setVisibility( true );
+    dropdown.hide();
+
+    assertFalse( dropdown.getVisibility() );
+  }
+
+  @Test
   public void testSetVisibleItemCount_RendersVisibleItemCount() {
     dropdown.setVisibleItemCount( 7 );
     verify( remoteObject ).set( "visibleItemCount", 7 );
@@ -170,6 +237,7 @@ public class DropDown_Test {
 
   @Test
   public void testHide_RendersVisibilityFalse() {
+    dropdown.show();
     dropdown.hide();
     verify( remoteObject ).set( "visibility", false );
   }
@@ -194,6 +262,12 @@ public class DropDown_Test {
     Client client = mock( Client.class );
     when( client.getService( WidgetDataWhiteList.class ) ).thenReturn( service );
     Fixture.fakeClient( client );
+  }
+
+  private Map<String, Object> createMap( String key, Object value ) {
+    Map<String, Object> properties = new HashMap<String, Object>();
+    properties.put( key, value );
+    return properties;
   }
 
 }

@@ -22,6 +22,7 @@ import org.eclipse.rap.rwt.internal.protocol.IClientObjectAdapter;
 import org.eclipse.rap.rwt.internal.remote.RemoteObjectImpl;
 import org.eclipse.rap.rwt.lifecycle.WidgetAdapter;
 import org.eclipse.rap.rwt.lifecycle.WidgetUtil;
+import org.eclipse.rap.rwt.remote.AbstractOperationHandler;
 import org.eclipse.rap.rwt.remote.RemoteObject;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.internal.widgets.WidgetAdapterImpl;
@@ -33,18 +34,21 @@ import org.eclipse.swt.widgets.Widget;
 @SuppressWarnings("restriction")
 public class DropDown extends Widget {
 
+
   private static final String REMOTE_TYPE = "rwt.dropdown.DropDown";
   private RemoteObject remoteObject;
   private boolean disposed = false;
   private Object widgetAdapter;
   private Control parent;
   private Listener disposeListener;
+  private boolean visibility = false;
 
   public DropDown( Control parent ) {
     super( parent, 0 );
     this.parent = parent;
     DropDownResources.ensure();
     getRemoteObject().set( "parent", WidgetUtil.getId( parent ) );
+    getRemoteObject().setHandler( new InternalOperationHandler() );
     disposeListener = new Listener() {
       public void handleEvent( Event event ) {
         DropDown.this.dispose();
@@ -75,6 +79,26 @@ public class DropDown extends Widget {
     return parent;
   }
 
+  public void show() {
+    setVisibility( true );
+  }
+
+  public void hide() {
+    setVisibility( false );
+  }
+
+  public void setVisibility( boolean value ) {
+    checkDisposed();
+    if( visibility != value ) {
+      setVisibilityImpl( value );
+      remoteObject.set( "visibility", value );
+    }
+  }
+
+  public boolean getVisibility() {
+    return visibility;
+  }
+
   @Override
   public void dispose() {
     if( !disposed ) {
@@ -91,18 +115,26 @@ public class DropDown extends Widget {
     renderData( key, value );
   }
 
-  public void show() {
-    checkDisposed();
-    remoteObject.set( "visibility", true );
-  }
-
-  public void hide() {
-    checkDisposed();
-    remoteObject.set( "visibility", false );
-  }
-
   public void setVisibleItemCount( int itemCount ) {
     remoteObject.set( "visibleItemCount", itemCount );
+  }
+
+  ////////////
+  // Internals
+
+  private class InternalOperationHandler extends AbstractOperationHandler {
+
+    @Override
+    public void handleSet( Map<String, Object> properties ) {
+      if( properties.containsKey( "visibility" ) ) {
+        setVisibilityImpl( ( Boolean )properties.get( "visibility" ) );
+      }
+    }
+
+  }
+
+  private void setVisibilityImpl( boolean value ) {
+    visibility = value;
   }
 
   private void checkDisposed() {

@@ -48,9 +48,10 @@ public class DropDownDemo extends AbstractEntryPoint {
     getShell().setLayout( new GridLayout( 1, false ) );
     WidgetDataWhiteList list = RWT.getClient().getService( WidgetDataWhiteList.class );
     list.setKeys( new String[]{ "dropdown", "text", "data" } );
-    createNationsExample( parent );
-    createMoviesExample( parent );
     createKFZExample( parent );
+    createNationsExample( parent );
+    create90sMoviesExample( parent );
+    create80sMoviesExample( parent );
   }
 
   private void createNationsExample( Composite parent ) {
@@ -74,7 +75,7 @@ public class DropDownDemo extends AbstractEntryPoint {
     dropdown.setData( "data", getClientData( "Nations" ) );
   }
 
-  private void createMoviesExample( Composite parent ) {
+  private void create90sMoviesExample( Composite parent ) {
     Group group = new Group( parent, SWT.NONE );
     group.setText( "DropDown only, 1157 entries cached" );
     group.setLayout( new GridLayout( 1, true ) );
@@ -82,6 +83,28 @@ public class DropDownDemo extends AbstractEntryPoint {
     text.setMessage( "90's Movies" );
     DropDown dropdown = createDropDown( text, text );
     dropdown.setData( "data", getClientData( "Movies" ) );
+  }
+
+  private void create80sMoviesExample( Composite parent ) {
+    Group group = new Group( parent, SWT.NONE );
+    //group.setVisible( false );
+    group.setText( "DropDown only, 760 entries, no ClientScripting" );
+    group.setLayout( new GridLayout( 1, true ) );
+    final Text text = new Text( group, SWT.BORDER );
+    GridData gridData = new GridData( 200, 23 );
+    gridData.verticalAlignment = SWT.TOP;
+    text.setLayoutData( gridData );
+    text.setMessage( "80's Movies" );
+    final DropDown dropdown = new DropDown( text );
+    text.addListener( SWT.Modify, new Listener() {
+      public void handleEvent( Event event ) {
+        if( text.getText().length() >= 3 ) {
+          dropdown.show();
+        } else {
+          dropdown.hide();
+        }
+      }
+    } );
   }
 
   private void createKFZExample( Composite parent ) {

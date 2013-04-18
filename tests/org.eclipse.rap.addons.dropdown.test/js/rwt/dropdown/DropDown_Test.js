@@ -188,11 +188,72 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       assertFalse( popup.isSeeable() );
     },
 
+    testHide_SendsVisibility : function() {
+      prepare();
+
+      dropdown.hide();
+      rwt.remote.Server.getInstance().send();
+
+      var message = TestUtil.getMessageObject();
+      assertFalse( message.findSetProperty( "w3", "visibility" ) );
+    },
+
+    testHide_DoesNotSendVisibilityInResponse : function() {
+      prepare();
+      TestUtil.clearRequestLog();
+
+      TestUtil.fakeResponse( true );
+      dropdown.hide();
+      TestUtil.fakeResponse( false );
+      rwt.remote.Server.getInstance().send();
+
+      var message = TestUtil.getMessageObject();
+      assertNull( message.findSetOperation( "w3", "visibility" ) );
+    },
+
+    testHide_DoesNotSendVisibilityIfAlreadyInvisible : function() {
+      dropdown.hide();
+      rwt.remote.Server.getInstance().send();
+
+      var message = TestUtil.getMessageObject();
+      assertNull( message.findSetOperation( "w3", "visibility" ) );
+    },
+
     testShow_PositionsPopUp : function() {
       prepare();
 
       assertEquals( 20, popup.getLeft() );
       assertEquals( 70, popup.getTop() );
+    },
+
+    testShow_SendsVisibility : function() {
+      prepare();
+      rwt.remote.Server.getInstance().send();
+
+      var message = TestUtil.getMessageObject();
+      assertTrue( message.findSetProperty( "w3", "visibility" ) );
+    },
+
+
+    testShow_DoesNotSendVisibilityInResponse : function() {
+      TestUtil.fakeResponse( true );
+      prepare();
+      TestUtil.fakeResponse( false );
+      rwt.remote.Server.getInstance().send();
+
+      var message = TestUtil.getMessageObject();
+      assertNull( message.findSetOperation( "w3", "visibility" ) );
+    },
+
+    testShow_DoesNotSendVisibilityIfAlreadyVisible : function() {
+      prepare();
+      TestUtil.clearRequestLog();
+
+      dropdown.show();
+      rwt.remote.Server.getInstance().send();
+
+      var message = TestUtil.getMessageObject();
+      assertNull( message.findSetOperation( "w3", "visibility" ) );
     },
 
     testShow_SetsPopUpWidth : function() {
@@ -575,6 +636,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       widget.setLocation( 10, 20 );
       widget.setDimension( 100, 30 );
       dropdown = new rwt.dropdown.DropDown( widget );
+      rwt.remote.ObjectRegistry.add( "w3", dropdown );
       popup = dropdown._.popup;
       viewer = dropdown._.viewer;
       hideTimer = dropdown._.hideTimer;

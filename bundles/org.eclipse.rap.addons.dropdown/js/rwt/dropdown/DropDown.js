@@ -79,6 +79,7 @@
       this._.viewer.selectItem( index );
     },
 
+
     setVisibility : function( value ) {
       if( value ) {
         this.show();
@@ -89,7 +90,10 @@
 
     show : function() {
       checkDisposed( this );
-      this._.visibility = true;
+      if( !this._.visibility && !rwt.remote.EventUtil.getSuspended() ) {
+        rap.getRemoteObject( this ).set( "visibility", true );
+        this._.visibility = true;
+      }
       if( this._.parent.isCreated() && !this._.popup.isSeeable() ) {
         var yOffset = this._.parent.getHeight();
         var control = this._.parent;
@@ -107,6 +111,9 @@
 
     hide : function() {
       checkDisposed( this );
+      if( this._.visibility && !rwt.remote.EventUtil.getSuspended() ) {
+        rap.getRemoteObject( this ).set( "visibility", false );
+      }
       this._.visibility = false;
       this._.popup.hide();
     },
@@ -151,6 +158,7 @@
       if( !this.isDisposed() ) {
         var focusRoot = this._.parent.getFocusRoot();
         focusRoot.removeEventListener( "changeFocusedChild", onFocusChange, this );
+        this._.popup.getFocusRoot().removeEventListener( "changeFocusedChild", onFocusChange, this );
         this._.parent.removeEventListener( "appear", onTextAppear, this );
         this._.popup.destroy();
         this._.hideTimer.dispose();
@@ -249,6 +257,7 @@
 
   var onDisappear = function( event ) {
     fireEvent.call( this, "Hide" );
+    //this._.parent.setFocused( true );
   };
 
   var onFocusChange = function( event ) {
