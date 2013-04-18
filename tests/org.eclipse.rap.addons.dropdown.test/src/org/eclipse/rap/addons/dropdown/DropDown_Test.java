@@ -253,6 +253,22 @@ public class DropDown_Test {
     }
   }
 
+  @Test
+  public void testSetItem_RenderItems() {
+    dropdown.setItems( new String[]{ "a", "b", "c" } );
+
+    verify( remoteObject ).set( eq( "items" ), eq( new String[]{ "a", "b", "c" } ) );
+  }
+
+  @Test
+  public void testSetItem_RenderItemsSaveCopy() {
+    String[] strings = new String[]{ "a", "b", "c" };
+    dropdown.setItems( strings );
+    strings[ 1 ] = "x";
+
+    verify( remoteObject ).set( eq( "items" ), eq( new String[]{ "a", "b", "c" } ) );
+  }
+
   ///////////
   // Helper
 

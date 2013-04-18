@@ -92,8 +92,8 @@
       checkDisposed( this );
       if( !this._.visibility && !rwt.remote.EventUtil.getSuspended() ) {
         rap.getRemoteObject( this ).set( "visibility", true );
-        this._.visibility = true;
       }
+      this._.visibility = true;
       if( this._.parent.isCreated() && !this._.popup.isSeeable() ) {
         var yOffset = this._.parent.getHeight();
         var control = this._.parent;
@@ -283,7 +283,7 @@
 
   var checkFocus = function() {
     this._.hideTimer.stop();
-    if( !hasFocus( this._.parent ) && !hasFocus( this._.popup ) ) {
+    if( !hasFocus( this._.parent ) && !hasFocus( this._.popup ) && this._.visibility ) {
       this.hide();
     }
   };

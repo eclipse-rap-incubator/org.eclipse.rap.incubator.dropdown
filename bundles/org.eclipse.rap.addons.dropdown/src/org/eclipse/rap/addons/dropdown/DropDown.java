@@ -79,6 +79,10 @@ public class DropDown extends Widget {
     return parent;
   }
 
+  public void setItems( String[] strings ) {
+    remoteObject.set( "items", strings.clone() );
+  }
+
   public void show() {
     setVisibility( true );
   }

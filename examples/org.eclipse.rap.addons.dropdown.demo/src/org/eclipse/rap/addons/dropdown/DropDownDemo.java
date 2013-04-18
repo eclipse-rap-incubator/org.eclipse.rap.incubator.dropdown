@@ -11,7 +11,9 @@
 
 package org.eclipse.rap.addons.dropdown;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.rap.clientscripting.ClientListener;
@@ -100,6 +102,7 @@ public class DropDownDemo extends AbstractEntryPoint {
       public void handleEvent( Event event ) {
         if( text.getText().length() >= 3 ) {
           dropdown.show();
+          dropdown.setItems( filter( Movies.VALUES, text.getText().toLowerCase(), 10 ) );
         } else {
           dropdown.hide();
         }
@@ -238,6 +241,16 @@ public class DropDownDemo extends AbstractEntryPoint {
     RemoteObject remoteObject
       = RWT.getUISession().getConnection().createRemoteObject( "clientData." + type );
     return ( ( RemoteObjectImpl )remoteObject ).getId();
+  }
+
+  private String[] filter( String[] values, String text, int limit ) {
+    List<String> result = new ArrayList<String>( limit );
+    for( int i = 0; result.size() < limit && i < values.length; i++ ) {
+      if( values[ i ].toLowerCase().startsWith( text ) ) {
+        result.add( values[ i ] );
+      }
+    }
+    return result.toArray( new String[ result.size() ] );
   }
 
 }

@@ -19,7 +19,7 @@
       return new rwt.dropdown.DropDown( control );
     },
 
-    properties : [ "visibility", "visibleItemCount" ],
+    properties : [ "items", "visibility", "visibleItemCount" ],
 
     methods : [ "setData" ],
 
