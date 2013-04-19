@@ -433,6 +433,18 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       assertEquals( 1, logger.getLog().length );
     },
 
+    testAddDefaultSelectionListener_FiresNotOnTextEnterWithoutSelection : function() {
+      dropdown.setItems( [ "a", "b", "c" ] );
+      prepare();
+      var logger = TestUtil.getLogger();
+
+      dropdown.addListener( "DefaultSelection", logger.log );
+      widget.focus();
+      TestUtil.pressOnce( widget, "Enter" );
+
+      assertEquals( 0, logger.getLog().length );
+    },
+
     testAddDefaultSelectionListener_FiresOnDoubleClick : function() {
       dropdown.setItems( [ "a", "b", "c" ] );
       prepare();
@@ -459,20 +471,6 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       assertIdentical( 14, event.type );
     },
 
-    testDefaultSelectionEventFields_NoItemSelected : function() {
-      dropdown.setItems( [ "a", "b", "c" ] );
-      prepare();
-      var logger = TestUtil.getLogger();
-
-      dropdown.addListener( "DefaultSelection", logger.log );
-      dropdown.setSelectionIndex( -1 );
-      TestUtil.pressOnce( viewer, "Enter" );
-
-      var event = logger.getLog()[ 0 ];
-      assertIdentical( dropdown, event.widget );
-      assertIdentical( null, event.item );
-    },
-
     testGetSelectionIndex_InitialValueIsMinusOne : function() {
       dropdown.setItems( [ "a", "b", "c" ] );
 
@@ -480,6 +478,14 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
     },
 
     testGetSelectionIndex_ValueIsMinusOneForNoItems : function() {
+      assertEquals( -1, dropdown.getSelectionIndex() );
+    },
+
+    testGetSelectionIndex_ResetValueIsMinusOne : function() {
+      dropdown.setItems( [ "a", "b", "c" ] );
+      dropdown.setSelectionIndex( 1 );
+      dropdown.setItems( [ "a", "b", "c" ] );
+
       assertEquals( -1, dropdown.getSelectionIndex() );
     },
 
@@ -584,6 +590,46 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       assertEquals( 2, logger.getLog().length );
       assertTrue( logger.getLog()[ 0 ].getDefaultPrevented() );
       assertTrue( logger.getLog()[ 1 ].getDefaultPrevented() );
+    },
+
+    testPressDownAfterSelectionResetSelectsFirstItem : function() {
+      dropdown.setItems( [ "a", "b", "c" ] );
+      dropdown.setSelectionIndex( 1 );
+      prepare();
+
+      dropdown.setSelectionIndex( -1 );
+      TestUtil.flush();
+
+      widget.focus();
+      TestUtil.pressOnce( widget, "Down" );
+
+      assertEquals( 0, dropdown.getSelectionIndex() );
+    },
+
+    testSelectionResetResetsLeadItem : function() {
+      dropdown.setItems( [ "a", "b", "c" ] );
+      prepare();
+      widget.focus();
+      TestUtil.pressOnce( widget, "Down" );// calling setSelectionIndex would not change lead item
+
+      dropdown.setSelectionIndex( -1 );
+      TestUtil.pressOnce( widget, "Down" );
+
+      assertEquals( 0, dropdown.getSelectionIndex() );
+    },
+
+    testPressDownAfterItemResetSelectsFirstItem : function() {
+      dropdown.setItems( [ "a", "b", "c" ] );
+      prepare();
+      dropdown.setSelectionIndex( 2 );
+
+      dropdown.setItems( [ "x", "y" ] );
+      TestUtil.flush();
+
+      widget.focus();
+      TestUtil.pressOnce( widget, "Down" );
+
+      assertEquals( 0, dropdown.getSelectionIndex() );
     },
 
     testDestroy_DisposesDropDown : function() {

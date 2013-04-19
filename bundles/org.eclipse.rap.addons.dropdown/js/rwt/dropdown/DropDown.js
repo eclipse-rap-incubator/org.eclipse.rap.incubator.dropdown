@@ -73,6 +73,7 @@
   rwt.dropdown.DropDown.prototype = {
 
     setItems : function( items ) {
+      this.setSelectionIndex( -1 );
       this._.viewer.setItems( items );
       updateScrollBars.call( this );
     },
@@ -87,6 +88,9 @@
         throw new Error( "Can not select item: Index " + index + " not valid" );
       }
       this._.viewer.selectItem( index );
+      if( index === -1 ) {
+        this._.viewer.getManager().setLeadItem( null );
+      }
     },
 
 
@@ -297,8 +301,12 @@
       if( selection.length > 0 ) {
         eventProxy.item = rwt.util.Encoding.unescape( selection[ 0 ].getLabel() );
       }
+      if( selection.length > 0 || type !== "DefaultSelection" ) {
+        notify( this._.events[ type ], eventProxy );
+      }
+    } else {
+      notify( this._.events[ type ], eventProxy );
     }
-    notify( this._.events[ type ], eventProxy );
   };
 
   var checkFocus = function() {
