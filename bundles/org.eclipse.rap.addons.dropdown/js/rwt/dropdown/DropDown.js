@@ -26,6 +26,14 @@
     Hide : 23
   };
 
+  var forwardedKeys = {
+    Enter : true,
+    Up : true,
+    Down : true,
+    PageUp : true,
+    PageDown : true
+  };
+
   /**
    * @public
    * @namespace
@@ -49,8 +57,10 @@
     this._.visibleItemCount = 5;
     this._.parent = parent;
     this._.events = createEventsMap();
+    this._.parent.addEventListener( "keydown", onTextKeyEvent, this );
+    this._.parent.addEventListener( "keypress", onTextKeyEvent, this );
     this._.viewer.getManager().addEventListener( "changeSelection", onSelection, this );
-    this._.viewer.addEventListener( "keypress", onKeyPress, this );
+    this._.viewer.addEventListener( "keydown", onKeyEvent, this );
     this._.viewer.addEventListener( "dblclick", onDoubleClick, this );
     this._.popup.addEventListener( "appear", onAppear, this );
     this._.popup.addEventListener( "disappear", onDisappear, this );
@@ -160,6 +170,8 @@
         focusRoot.removeEventListener( "changeFocusedChild", onFocusChange, this );
         this._.popup.getFocusRoot().removeEventListener( "changeFocusedChild", onFocusChange, this );
         this._.parent.removeEventListener( "appear", onTextAppear, this );
+        this._.parent.removeEventListener( "keydown", onTextKeyEvent, this );
+        this._.parent.removeEventListener( "keypress", onTextKeyEvent, this );
         this._.popup.destroy();
         this._.hideTimer.dispose();
         if( this._.widgetData ) {
@@ -237,7 +249,15 @@
     }
   };
 
-  var onKeyPress = function( event ) {
+  var onTextKeyEvent = function( event ) {
+    var key = event.getKeyIdentifier();
+    if( this._.visibility && forwardedKeys[ key ] ) {
+      event.preventDefault();
+      this._.viewer.dispatchEvent( event );
+    }
+  };
+
+  var onKeyEvent = function( event ) {
     if( event.getKeyIdentifier() === "Enter" ) {
       fireEvent.call( this, "DefaultSelection" );
     }

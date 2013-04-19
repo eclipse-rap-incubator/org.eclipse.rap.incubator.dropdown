@@ -65,28 +65,9 @@ function handleKeyDown( event ) {
   var dropdown = rap.getObject( widget.getData( "dropdown" ) );
   if( dropdown.getVisibility() ) {
     switch( event.keyCode ) {
-      case SWT.ARROW_UP:
-        var index = dropdown.getSelectionIndex() - 1;
-        if( index >= 0 ) {
-          dropdown.setSelectionIndex( index );
-        }
-        event.doit = false; // prevent the cursor from moving
-      break;
-      case SWT.ARROW_DOWN:
-        var index = dropdown.getSelectionIndex() + 1;
-        if( index < dropdown.getItemCount() ) {
-          dropdown.setSelectionIndex( index );
-        }
-        event.doit = false;
-      break;
       case SWT.CR:
         var sel = widget.getSelection();
         widget.setSelection( [ sel[ 1 ], sel[ 1 ] ] );
-        if( dropdown.getItemCount() === 1 || dropdown.getSelectionIndex() >= 0 ) {
-          dropdown.hide();
-          dropdown.setSelectionIndex( -1 ); // should this happen automatically?
-        }
-        event.doit = false;
       break;
       case SWT.ESC: // TODO [tb] : Dropdown itself can not implement this easily, it has no focus
         dropdown.hide();

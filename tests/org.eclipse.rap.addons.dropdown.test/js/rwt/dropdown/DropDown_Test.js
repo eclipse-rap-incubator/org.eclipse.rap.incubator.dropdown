@@ -420,6 +420,19 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       assertEquals( 1, logger.getLog().length );
     },
 
+    testAddDefaultSelectionListener_FiresOnTextEnter : function() {
+      dropdown.setItems( [ "a", "b", "c" ] );
+      prepare();
+      var logger = TestUtil.getLogger();
+
+      dropdown.addListener( "DefaultSelection", logger.log );
+      clickItem( 1 );
+      widget.focus();
+      TestUtil.pressOnce( widget, "Enter" );
+
+      assertEquals( 1, logger.getLog().length );
+    },
+
     testAddDefaultSelectionListener_FiresOnDoubleClick : function() {
       dropdown.setItems( [ "a", "b", "c" ] );
       prepare();
@@ -504,6 +517,73 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       } catch( ex ) {
         // expected
       }
+    },
+
+    testKeyEventForawarding_Up : function() {
+      prepare();
+      var logger = TestUtil.getLogger();
+
+      viewer.addEventListener( "keydown", logger.log );
+      viewer.addEventListener( "keypress", logger.log );
+      widget.focus();
+      TestUtil.pressOnce( widget, "Up" );
+
+      assertEquals( 2, logger.getLog().length );
+      assertTrue( logger.getLog()[ 0 ].getDefaultPrevented() );
+      assertTrue( logger.getLog()[ 1 ].getDefaultPrevented() );
+    },
+
+    testKeyEventForawarding_UpNotVisible : function() {
+      var logger = TestUtil.getLogger();
+
+      viewer.addEventListener( "keypress", logger.log );
+      viewer.addEventListener( "keydown", logger.log );
+      widget.focus();
+      TestUtil.pressOnce( widget, "Up" );
+
+      assertEquals( 0, logger.getLog().length );
+    },
+
+    testKeyEventForawarding_Down : function() {
+      prepare();
+      var logger = TestUtil.getLogger();
+
+      viewer.addEventListener( "keydown", logger.log );
+      viewer.addEventListener( "keypress", logger.log );
+      widget.focus();
+      TestUtil.pressOnce( widget, "Down" );
+
+      assertEquals( 2, logger.getLog().length );
+      assertTrue( logger.getLog()[ 0 ].getDefaultPrevented() );
+      assertTrue( logger.getLog()[ 1 ].getDefaultPrevented() );
+    },
+
+    testKeyEventForawarding_PageUp : function() {
+      prepare();
+      var logger = TestUtil.getLogger();
+
+      viewer.addEventListener( "keydown", logger.log );
+      viewer.addEventListener( "keypress", logger.log );
+      widget.focus();
+      TestUtil.pressOnce( widget, "PageUp" );
+
+      assertEquals( 2, logger.getLog().length );
+      assertTrue( logger.getLog()[ 0 ].getDefaultPrevented() );
+      assertTrue( logger.getLog()[ 1 ].getDefaultPrevented() );
+    },
+
+    testKeyEventForawarding_PageDown : function() {
+      prepare();
+      var logger = TestUtil.getLogger();
+
+      viewer.addEventListener( "keydown", logger.log );
+      viewer.addEventListener( "keypress", logger.log );
+      widget.focus();
+      TestUtil.pressOnce( widget, "PageDown" );
+
+      assertEquals( 2, logger.getLog().length );
+      assertTrue( logger.getLog()[ 0 ].getDefaultPrevented() );
+      assertTrue( logger.getLog()[ 1 ].getDefaultPrevented() );
     },
 
     testDestroy_DisposesDropDown : function() {

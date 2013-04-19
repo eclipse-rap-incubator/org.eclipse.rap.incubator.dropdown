@@ -199,7 +199,7 @@ public class DropDownDemo extends AbstractEntryPoint {
   }
 
   private DropDown createDropDown( Text text, Control parent ) {
-    DropDown dropdown = new DropDown( parent );
+    DropDown dropdown = new DropDown( text );
     dropdown.setData( "text", WidgetUtil.getId( text ) );
     text.setData( "dropdown", WidgetUtil.getId( dropdown ) );
     addDropDownClientListener( dropdown );
