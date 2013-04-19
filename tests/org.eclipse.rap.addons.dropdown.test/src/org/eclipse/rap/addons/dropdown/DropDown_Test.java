@@ -27,7 +27,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.rap.rwt.client.Client;
@@ -180,6 +182,21 @@ public class DropDown_Test {
   }
 
   @Test
+  public void testProcessSetSelectionIndex() {
+    handler.handleSet( createMap( "selectionIndex", 7 ) );
+
+    assertEquals( 7, dropdown.getSelectionIndex() );
+  }
+
+  @Test
+  public void testSetItems_ResetsSelectionIndex() {
+    handler.handleSet( createMap( "selectionIndex", 7 ) );
+    dropdown.setItems( new String[]{ "a" } );
+
+    assertEquals( -1, dropdown.getSelectionIndex() );
+  }
+
+  @Test
   public void testProcessSetVisibility_DoNotRenderToRemoteObject() {
     handler.handleSet( createMap( "visibility", true ) );
 
@@ -254,6 +271,11 @@ public class DropDown_Test {
   }
 
   @Test
+  public void testGetSelectionIndex_InitialValue() {
+    assertEquals( -1, dropdown.getSelectionIndex() );
+  }
+
+  @Test
   public void testSetItem_RenderItems() {
     dropdown.setItems( new String[]{ "a", "b", "c" } );
 
@@ -269,6 +291,84 @@ public class DropDown_Test {
     verify( remoteObject ).set( eq( "items" ), eq( new String[]{ "a", "b", "c" } ) );
   }
 
+  @Test
+  public void testAddListener_SelectionRenderListenTrue() {
+    Listener listener = mock( Listener.class );
+    dropdown.addListener( SWT.Selection, listener );
+
+    verify( remoteObject ).listen( eq( "Selection" ), eq( true ) );
+  }
+
+  @Test
+  public void testRemoveListener_SelectionRenderListenFalse() {
+    Listener listener = mock( Listener.class );
+    dropdown.addListener( SWT.Selection, listener );
+    //Mockito.reset( remoteObject );
+    dropdown.removeListener( SWT.Selection, listener );
+
+    verify( remoteObject ).listen( eq( "Selection" ), eq( false ) );
+  }
+
+  @Test
+  public void testAddListener_DefaultSelectionRenderListenTrue() {
+    Listener listener = mock( Listener.class );
+    dropdown.addListener( SWT.DefaultSelection, listener );
+
+    verify( remoteObject ).listen( eq( "DefaultSelection" ), eq( true ) );
+  }
+
+  @Test
+  public void testRemoveListener_DefaultSelectionRenderListenFalse() {
+    Listener listener = mock( Listener.class );
+    dropdown.addListener( SWT.DefaultSelection, listener );
+    //Mockito.reset( remoteObject );
+    dropdown.removeListener( SWT.DefaultSelection, listener );
+
+    verify( remoteObject ).listen( eq( "DefaultSelection" ), eq( false ) );
+  }
+
+  @Test
+  public void testFireSelectionEvent() {
+    Fixture.fakePhase( PhaseId.PROCESS_ACTION );
+    final List< Event > log = new ArrayList< Event >();
+    dropdown.addListener( SWT.Selection, new Listener() {
+      @Override
+      public void handleEvent( Event event ) {
+        log.add( event );
+      }
+    } );
+
+    handler.handleNotify( "Selection", createMap(
+      "index", 2,
+      "text", "foo"
+    ) );
+
+    assertEquals( 1, log.size() );
+    assertEquals( 2, log.get( 0 ).index );
+    assertEquals( "foo", log.get( 0 ).text );
+  }
+
+  @Test
+  public void testFireDefaultSelectionEvent() {
+    Fixture.fakePhase( PhaseId.PROCESS_ACTION );
+    final List< Event > log = new ArrayList< Event >();
+    dropdown.addListener( SWT.DefaultSelection, new Listener() {
+      @Override
+      public void handleEvent( Event event ) {
+        log.add( event );
+      }
+    } );
+
+    handler.handleNotify( "DefaultSelection", createMap(
+      "index", 2,
+      "text", "foo"
+    ) );
+
+    assertEquals( 1, log.size() );
+    assertEquals( 2, log.get( 0 ).index );
+    assertEquals( "foo", log.get( 0 ).text );
+  }
+
   ///////////
   // Helper
 
@@ -280,9 +380,11 @@ public class DropDown_Test {
     Fixture.fakeClient( client );
   }
 
-  private Map<String, Object> createMap( String key, Object value ) {
+  private Map<String, Object> createMap( Object... values ) {
     Map<String, Object> properties = new HashMap<String, Object>();
-    properties.put( key, value );
+    for( int i = 0; i < values.length; i += 2 ) {
+      properties.put( ( String )values[ i ], values[ i + 1 ] );
+    }
     return properties;
   }
 

@@ -21,6 +21,8 @@
 
     properties : [ "items", "visibility", "visibleItemCount" ],
 
+    events : [ "Selection", "DefaultSelection" ],
+
     methods : [ "setData" ],
 
     destructor : "destroy"

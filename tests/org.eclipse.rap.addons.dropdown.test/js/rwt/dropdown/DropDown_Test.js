@@ -398,7 +398,8 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
 
       var event = logger.getLog()[ 0 ];
       assertIdentical( dropdown, event.widget );
-      assertIdentical( "b", event.item );
+      assertIdentical( "b", event.text );
+      assertIdentical( 1, event.index );
       assertIdentical( 13, event.type );
     },
 
@@ -413,7 +414,32 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
 
       var event = logger.getLog()[ 0 ];
       assertIdentical( dropdown, event.widget );
-      assertIdentical( null, event.item );
+      assertEquals( "", event.text );
+    },
+
+    testSelectionEventNotify_NoItemSelected : function() {
+      dropdown.setItems( [ "a", "b", "c" ] );
+      prepare();
+      dropdown.setSelectionIndex( 1 );
+
+      TestUtil.protocolListen( "w3", { "Selection" : true } );
+      dropdown.setSelectionIndex( -1 );
+
+      var message = TestUtil.getMessageObject();
+      assertEquals( "", message.findNotifyProperty( "w3", "Selection", "text" ) );
+      assertEquals( -1, message.findNotifyProperty( "w3", "Selection", "index" ) );
+    },
+
+    testSelectionEventNotify : function() {
+      dropdown.setItems( [ "a", "b", "c" ] );
+      prepare();
+
+      TestUtil.protocolListen( "w3", { "Selection" : true } );
+      dropdown.setSelectionIndex( 1 );
+
+      var message = TestUtil.getMessageObject();
+      assertEquals( "b", message.findNotifyProperty( "w3", "Selection", "text" ) );
+      assertEquals( 1, message.findNotifyProperty( "w3", "Selection", "index" ) );
     },
 
     testAddDefaultSelectionListener_FiresOnEnter : function() {
@@ -475,7 +501,8 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
 
       var event = logger.getLog()[ 0 ];
       assertIdentical( dropdown, event.widget );
-      assertIdentical( "b", event.item );
+      assertIdentical( "b", event.text );
+      assertIdentical( 1, event.index );
       assertIdentical( 14, event.type );
     },
 
@@ -512,6 +539,30 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       dropdown.setSelectionIndex( 1 );
 
       assertEquals( 1, dropdown.getSelectionIndex() );
+    },
+
+    testSetSelectionIndex_RemoteSet : function() {
+      dropdown.setItems( [ "a", "b", "c" ] );
+
+      dropdown.setSelectionIndex( 1 );
+      rwt.remote.Server.getInstance().send();
+
+      var message = TestUtil.getMessageObject();
+      assertEquals( 1, message.findSetProperty( "w3", "selectionIndex" ) );
+    },
+
+    testSetItemsFromServerDoesNotRemoteSetIndex : function() {
+      dropdown.setItems( [ "a", "b", "c" ] );
+      dropdown.setSelectionIndex( 1 );
+      TestUtil.clearRequestLog();
+
+      TestUtil.fakeResponse( true );
+      dropdown.setItems( [ "a", "b", "c" ] );
+      TestUtil.fakeResponse( false );
+      rwt.remote.Server.getInstance().send();
+
+      var message = TestUtil.getMessageObject();
+      assertNull( message.findSetOperation( "w3", "selectionIndex" ) );
     },
 
     testSetSelectionIndex_ValueIsMinusOne : function() {
@@ -782,7 +833,11 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       widget.setLocation( 10, 20 );
       widget.setDimension( 100, 30 );
       dropdown = new rwt.dropdown.DropDown( widget );
-      rwt.remote.ObjectRegistry.add( "w3", dropdown );
+      rwt.remote.ObjectRegistry.add(
+        "w3",
+        dropdown,
+        rwt.remote.HandlerRegistry.getHandler( "rwt.dropdown.DropDown" )
+      );
       popup = dropdown._.popup;
       viewer = dropdown._.viewer;
       hideTimer = dropdown._.hideTimer;

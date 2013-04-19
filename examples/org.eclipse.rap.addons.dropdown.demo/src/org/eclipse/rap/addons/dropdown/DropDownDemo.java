@@ -89,7 +89,6 @@ public class DropDownDemo extends AbstractEntryPoint {
 
   private void create80sMoviesExample( Composite parent ) {
     Group group = new Group( parent, SWT.NONE );
-    //group.setVisible( false );
     group.setText( "DropDown only, 760 entries, no ClientScripting" );
     group.setLayout( new GridLayout( 1, true ) );
     final Text text = new Text( group, SWT.BORDER );
@@ -100,12 +99,31 @@ public class DropDownDemo extends AbstractEntryPoint {
     final DropDown dropdown = new DropDown( text );
     text.addListener( SWT.Modify, new Listener() {
       public void handleEvent( Event event ) {
-        if( text.getText().length() >= 3 ) {
-          dropdown.show();
-          dropdown.setItems( filter( Movies.VALUES, text.getText().toLowerCase(), 10 ) );
-        } else {
-          dropdown.hide();
+        if( text.getData( "selecting" ) != Boolean.TRUE ) {
+          if( text.getText().length() >= 3 ) {
+            dropdown.show();
+            dropdown.setItems( filter( Movies.VALUES, text.getText().toLowerCase(), 10 ) );
+          } else {
+            dropdown.hide();
+          }
         }
+      }
+    } );
+    dropdown.addListener( SWT.Selection, new Listener() {
+      public void handleEvent( Event event ) {
+        if( event.text.length() > 0 ) {
+          text.setData( "selecting", true );
+          text.setText( event.text );
+          text.setData( "selecting", false );
+          text.selectAll();
+        }
+      }
+    } );
+    dropdown.addListener( SWT.DefaultSelection, new Listener() {
+      public void handleEvent( Event event ) {
+        text.setText( event.text );
+        text.setSelection( event.text.length() );
+        dropdown.hide();
       }
     } );
   }

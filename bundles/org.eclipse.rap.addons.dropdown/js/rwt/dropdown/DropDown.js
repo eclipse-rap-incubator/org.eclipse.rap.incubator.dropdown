@@ -271,6 +271,9 @@
   };
 
   var onSelection = function( event ) {
+    if( !rwt.remote.EventUtil.getSuspended() ) {
+      rap.getRemoteObject( this ).set( "selectionIndex", this.getSelectionIndex() );
+    }
     fireEvent.call( this, "Selection" );
   };
 
@@ -294,21 +297,25 @@
   };
 
   var fireEvent = function( type ) {
-    var eventProxy = {
-      "widget" : this,
-      "item" : null,
-      "type" : eventTypes[ type ]
+    var event = {
+      "text" : "",
+      "index" : -1
     };
     if( type === "Selection" || type === "DefaultSelection" ) {
       var selection = this._.viewer.getSelectedItems();
       if( selection.length > 0 ) {
-        eventProxy.item = rwt.util.Encoding.unescape( selection[ 0 ].getLabel() );
+        event.text = rwt.util.Encoding.unescape( selection[ 0 ].getLabel() );
+        event.index = this.getSelectionIndex();
       }
       if( selection.length > 0 || type !== "DefaultSelection" ) {
-        notify( this._.events[ type ], eventProxy );
+        notify.apply( this, [ type, event ] );
+        if( !rwt.remote.EventUtil.getSuspended() ) { // TODO [tb] : ClientScripting must reset flag
+          // TODO : merge multiple changes? How long?
+          rap.getRemoteObject( this ).notify( type, event );
+        }
       }
     } else {
-      notify( this._.events[ type ], eventProxy );
+      notify.apply( this, [ type, event ] );
     }
   };
 
@@ -325,9 +332,14 @@
     this._.viewer.setScrollBarsVisible( false, scrollable );
   };
 
-  var notify = function( listeners, event ) {
+  var notify = function( type, event ) {
+    var listeners = this._.events[ type ];
+    var eventProxy = rwt.util.Objects.merge( {
+      "widget" : this,
+      "type" : eventTypes[ type ]
+    }, event );
     for( var i = 0; i < listeners.length; i++ ) {
-      listeners[ i ]( event );
+      listeners[ i ]( eventProxy );
     }
   };
 

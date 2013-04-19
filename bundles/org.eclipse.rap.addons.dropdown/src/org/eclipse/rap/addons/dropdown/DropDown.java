@@ -36,12 +36,16 @@ public class DropDown extends Widget {
 
 
   private static final String REMOTE_TYPE = "rwt.dropdown.DropDown";
+  private static final String SELECTION = "Selection";
+  private static final String DEFAULT_SELECTION = "DefaultSelection";
+
   private RemoteObject remoteObject;
   private boolean disposed = false;
   private Object widgetAdapter;
   private Control parent;
   private Listener disposeListener;
   private boolean visibility = false;
+  private int selectionIndex = -1;
 
   public DropDown( Control parent ) {
     super( parent, 0 );
@@ -81,6 +85,11 @@ public class DropDown extends Widget {
 
   public void setItems( String[] strings ) {
     remoteObject.set( "items", strings.clone() );
+    setSelectionIndexImpl( -1 );
+  }
+
+  public int getSelectionIndex() {
+    return selectionIndex;
   }
 
   public void show() {
@@ -123,6 +132,24 @@ public class DropDown extends Widget {
     remoteObject.set( "visibleItemCount", itemCount );
   }
 
+  @Override
+  public void addListener( int type, Listener listener ) {
+    super.addListener( type, listener );
+    String remoteType = evenTypeToString( type );
+    if( remoteType != null ) {
+      remoteObject.listen( remoteType, true );
+    }
+  }
+
+  @Override
+  public void removeListener( int type, Listener listener ) {
+    super.removeListener( type, listener );
+    String remoteType = evenTypeToString( type );
+    if( remoteType != null ) {
+      remoteObject.listen( remoteType, false );
+    }
+  }
+
   ////////////
   // Internals
 
@@ -133,12 +160,29 @@ public class DropDown extends Widget {
       if( properties.containsKey( "visibility" ) ) {
         setVisibilityImpl( ( Boolean )properties.get( "visibility" ) );
       }
+      if( properties.containsKey( "selectionIndex" ) ) {
+        setSelectionIndexImpl( ( Integer )properties.get( "selectionIndex" ) );
+      }
+    }
+
+    @Override
+    public void handleNotify( String type, Map<String, Object> properties ) {
+      if( SELECTION.equals( type ) || DEFAULT_SELECTION.equals( type )) {
+        Event event = new Event();
+        event.index = ( Integer )properties.get( "index" );
+        event.text = ( String )properties.get( "text" );
+        DropDown.this.notifyListeners( stringToEventType( type ), event );
+      }
     }
 
   }
 
   private void setVisibilityImpl( boolean value ) {
     visibility = value;
+  }
+
+  private void setSelectionIndexImpl( int value ) {
+    selectionIndex = value;
   }
 
   private void checkDisposed() {
@@ -169,6 +213,32 @@ public class DropDown extends Widget {
       data.put( key, value );
       remoteObject.call( "setData", data );
     }
+  }
+
+  private static String evenTypeToString( int type ) {
+    String result;
+    switch( type ) {
+      case SWT.Selection:
+        result = SELECTION;
+      break;
+      case SWT.DefaultSelection:
+        result = DEFAULT_SELECTION;
+      break;
+      default:
+        result = null;
+      break;
+    }
+    return result;
+  }
+
+  private static int stringToEventType( String str ) {
+    int result = -1;
+    if( SELECTION.equals( str ) ) {
+      result = SWT.Selection;
+    } else if( DEFAULT_SELECTION.equals( str ) ) {
+      result = SWT.DefaultSelection;
+    }
+    return result;
   }
 
 }
