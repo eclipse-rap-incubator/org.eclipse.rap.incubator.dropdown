@@ -75,9 +75,6 @@ function handleKeyDown( event ) {
         var sel = widget.getSelection();
         widget.setSelection( [ sel[ 1 ], sel[ 1 ] ] );
       break;
-      case SWT.ESC: // TODO [tb] : Dropdown itself can not implement this easily, it has no focus
-        dropdown.hide();
-      break;
     }
   }
 }

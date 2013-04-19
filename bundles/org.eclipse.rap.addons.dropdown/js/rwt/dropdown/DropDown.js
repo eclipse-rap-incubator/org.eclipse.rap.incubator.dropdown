@@ -31,7 +31,8 @@
     Up : true,
     Down : true,
     PageUp : true,
-    PageDown : true
+    PageDown : true,
+    Escape : true
   };
 
   /**
@@ -264,6 +265,8 @@
   var onKeyEvent = function( event ) {
     if( event.getKeyIdentifier() === "Enter" ) {
       fireEvent.call( this, "DefaultSelection" );
+    } else if( event.getKeyIdentifier() === "Escape" ) {
+      this.hide();
     }
   };
 

@@ -159,6 +159,14 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       assertFalse( popup.isSeeable() );
     },
 
+    testHideOnEscape : function() {
+      prepare();
+
+      TestUtil.press( viewer, "Escape" );
+
+      assertFalse( popup.isSeeable() );
+    },
+
     testShellClickAfterDisposeDoesNotCrash : function() {
       prepare();
       dropdown.destroy();
@@ -523,6 +531,18 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       } catch( ex ) {
         // expected
       }
+    },
+
+    testKeyEventForawarding_Escape : function() {
+      prepare();
+      var logger = TestUtil.getLogger();
+
+      viewer.addEventListener( "keydown", logger.log );
+      widget.focus();
+      TestUtil.pressOnce( widget, "Escape" );
+
+      assertEquals( 1, logger.getLog().length );
+      assertTrue( logger.getLog()[ 0 ].getDefaultPrevented() );
     },
 
     testKeyEventForawarding_Up : function() {
