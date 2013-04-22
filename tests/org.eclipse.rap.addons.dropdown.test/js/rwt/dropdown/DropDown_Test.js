@@ -450,6 +450,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       dropdown.addListener( "DefaultSelection", logger.log );
       clickItem( 1 );
       TestUtil.pressOnce( viewer, "Enter" );
+      TestUtil.forceTimerOnce();
 
       assertEquals( 1, logger.getLog().length );
     },
@@ -463,6 +464,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       clickItem( 1 );
       widget.focus();
       TestUtil.pressOnce( widget, "Enter" );
+      TestUtil.forceTimerOnce();
 
       assertEquals( 1, logger.getLog().length );
     },
@@ -475,6 +477,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       dropdown.addListener( "DefaultSelection", logger.log );
       widget.focus();
       TestUtil.pressOnce( widget, "Enter" );
+      TestUtil.forceTimerOnce();
 
       assertEquals( 0, logger.getLog().length );
     },
@@ -498,6 +501,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       dropdown.addListener( "DefaultSelection", logger.log );
       clickItem( 1 );
       TestUtil.pressOnce( viewer, "Enter" );
+      TestUtil.forceTimerOnce();
 
       var event = logger.getLog()[ 0 ];
       assertIdentical( dropdown, event.widget );

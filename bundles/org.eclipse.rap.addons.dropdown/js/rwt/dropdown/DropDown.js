@@ -94,7 +94,6 @@
       }
     },
 
-
     setVisibility : function( value ) {
       if( value ) {
         this.show();
@@ -264,7 +263,13 @@
 
   var onKeyEvent = function( event ) {
     if( event.getKeyIdentifier() === "Enter" ) {
-      fireEvent.call( this, "DefaultSelection" );
+      rwt.client.Timer.once( function() {
+        // NOTE : This async call ensures that the key events is processed before the
+        //        DefaultSelection event. A better solution would be to do this for all forwarded
+        //        key events, but this would be complicated since the event is disposed by the
+        //        time dispatch would be called on the viewer.
+        fireEvent.call( this, "DefaultSelection" );
+      }, this, 0 );
     } else if( event.getKeyIdentifier() === "Escape" ) {
       this.hide();
     }

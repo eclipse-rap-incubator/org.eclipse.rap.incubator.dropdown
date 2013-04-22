@@ -28,13 +28,13 @@ function handleEvent( event ) {
 }
 
 function handleSelection( event ) {
-  if( event.item != null ) {
+  if( event.text.length > 0 ) {
     var dropdown = event.widget;
     var viewer = rap.getObject( dropdown.getData( VIEWER_KEY ) );
     var text = rap.getObject( viewer.get( "text" ) );
     text.setData( "selecting", true );
-    text.setText( event.item );
-    text.setSelection( [ 0, event.item.length ] );
+    text.setText( event.text );
+    text.setSelection( [ 0, event.text.length ] );
   }
 }
 
