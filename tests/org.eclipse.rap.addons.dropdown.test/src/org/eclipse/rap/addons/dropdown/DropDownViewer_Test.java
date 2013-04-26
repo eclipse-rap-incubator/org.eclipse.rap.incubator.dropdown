@@ -225,6 +225,7 @@ public class DropDownViewer_Test {
   }
 
   @Test
+  @SuppressWarnings( "boxing" )
   public void testSetInput_AddsElementsToRemoteObject() {
     createViewer();
     List<?> input = Arrays.asList( 7, 14, 21 );
@@ -238,6 +239,7 @@ public class DropDownViewer_Test {
   }
 
   @Test
+  @SuppressWarnings( "boxing" )
   public void testSetLabelProvide_UpdatesElements() {
     createViewer();
     List<?> input = Arrays.asList( 7, 14, 21 );
@@ -257,6 +259,7 @@ public class DropDownViewer_Test {
   }
 
   @Test
+  @SuppressWarnings( "boxing" )
   public void testProcessSelectionChangedEvent() {
     createViewer();
     List<?> input = Arrays.asList( 7, 14, 21 );
@@ -277,6 +280,7 @@ public class DropDownViewer_Test {
   }
 
   @Test
+  @SuppressWarnings( "boxing" )
   public void testProcessSelectionChangedEvent_ElementField() {
     createViewer();
     List<?> input = Arrays.asList( 7, 14, 21 );
@@ -343,6 +347,5 @@ public class DropDownViewer_Test {
   private String[] getElements() {
     return ( String[] )viewer.getRemoteObject().get( ELEMENTS_KEY );
   }
-
 
 }
