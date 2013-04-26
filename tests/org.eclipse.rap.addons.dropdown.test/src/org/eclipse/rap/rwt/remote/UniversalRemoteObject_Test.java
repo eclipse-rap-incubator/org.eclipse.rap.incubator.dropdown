@@ -52,7 +52,6 @@ public class UniversalRemoteObject_Test {
     Fixture.fakeConnection( connection );
     remoteObject = mock( RemoteObjectImpl.class );
     doAnswer( new Answer< Object >() {
-        @Override
         public Object answer( InvocationOnMock invocation ) {
             Object[] args = invocation.getArguments();
             operationHandler = ( OperationHandler )args[ 0 ];
@@ -198,7 +197,6 @@ public class UniversalRemoteObject_Test {
 
   private void markDestroyed() {
     doAnswer( new Answer< Boolean >() {
-      @Override
       public Boolean answer( InvocationOnMock invocation ) {
           return true;
       }

@@ -28,20 +28,17 @@ public class DropDownResourcesContribution implements TestContribution {
   public static String[] concat( String[] array1, String[] array2 ) {
     ArrayList< String > baseArray = new ArrayList< String >( Arrays.asList( array1 ) );
     baseArray.addAll( Arrays.asList( array2 ) );
-    return ( String[] )baseArray.toArray( new String[ baseArray.size() ] );
+    return baseArray.toArray( new String[ baseArray.size() ] );
   }
 
-  @Override
   public String getName() {
     return "dropdown-resources";
   }
 
-  @Override
   public String[] getResources() {
     return concat( DropDownResources.SCRIPTS, ADDITIONAL_RESOURCES );
   }
 
-  @Override
   public InputStream getResourceAsStream( String resourceName ) throws IOException {
     return DropDownResources.getResourceAsStream( resourceName );
   }

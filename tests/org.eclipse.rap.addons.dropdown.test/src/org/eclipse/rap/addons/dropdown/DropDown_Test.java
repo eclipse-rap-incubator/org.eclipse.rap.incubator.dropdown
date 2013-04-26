@@ -77,7 +77,6 @@ public class DropDown_Test {
     when( connection.createRemoteObject( anyString() ) ).thenReturn( remoteObject );
     Fixture.fakeConnection( connection );
     doAnswer( new Answer< Object >(){
-      @Override
       public Object answer( InvocationOnMock invocation ) throws Throwable {
         handler = ( OperationHandler )invocation.getArguments()[ 0 ];
         return null;
@@ -332,7 +331,6 @@ public class DropDown_Test {
     Fixture.fakePhase( PhaseId.PROCESS_ACTION );
     final List< Event > log = new ArrayList< Event >();
     dropdown.addListener( SWT.Selection, new Listener() {
-      @Override
       public void handleEvent( Event event ) {
         log.add( event );
       }
@@ -353,7 +351,6 @@ public class DropDown_Test {
     Fixture.fakePhase( PhaseId.PROCESS_ACTION );
     final List< Event > log = new ArrayList< Event >();
     dropdown.addListener( SWT.DefaultSelection, new Listener() {
-      @Override
       public void handleEvent( Event event ) {
         log.add( event );
       }

@@ -264,7 +264,6 @@ public class DropDownViewer_Test {
     viewer.setLabelProvider( new LabelProvider() );
     viewer.setInput( input );
     viewer.addSelectionChangedListener( new SelectionChangedListener() {
-      @Override
       public void selectionChanged( SelectionChangedEvent event ) {
         log.add( event );
       }
@@ -285,7 +284,6 @@ public class DropDownViewer_Test {
     viewer.setLabelProvider( new LabelProvider() );
     viewer.setInput( input );
     viewer.addSelectionChangedListener( new SelectionChangedListener() {
-      @Override
       public void selectionChanged( SelectionChangedEvent event ) {
         log.add( event );
       }

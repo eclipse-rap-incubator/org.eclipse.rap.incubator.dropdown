@@ -26,17 +26,14 @@ public class DropDownTestContribution implements TestContribution {
     "/rwt/remote/UniversalRemoteObject_Test.js",
   };
 
-  @Override
   public String getName() {
     return "dropdown-tests";
   }
 
-  @Override
   public String[] getResources() {
     return ALL_TEST_RESOURCES;
   }
 
-  @Override
   public InputStream getResourceAsStream( String resourceName ) throws IOException {
     return CLASSLOADER.getResourceAsStream( resourceName );
   }
