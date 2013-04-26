@@ -157,9 +157,8 @@ public class DropDownDemo extends AbstractEntryPoint {
         String[] entry = ( ( String[] )object );
         if( entry.length == 4 ) {
           return entry[ 2 ]; // germany
-        } else {
-          return entry[ 1 ]; // austria
         }
+        return entry[ 1 ]; // austria
       }
     } );
     viewer.addSelectionChangedListener( new SelectionChangedListener() {

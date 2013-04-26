@@ -44,6 +44,7 @@ public class DropDownViewer_Test {
 
   // TODO : test reading scripts and attaching listener when possible
 
+  private static final List<Integer> INTEGER_LIST = Arrays.asList( Integer.valueOf( 7 ), Integer.valueOf( 14 ), Integer.valueOf( 21 ) );
   private static final String VIEWER_LINK =
       "org.eclipse.rap.addons.dropdown.DropDownViewer#viewer";
   private static String DROPDOWN_KEY = "dropDown";
@@ -225,13 +226,11 @@ public class DropDownViewer_Test {
   }
 
   @Test
-  @SuppressWarnings( "boxing" )
   public void testSetInput_AddsElementsToRemoteObject() {
     createViewer();
-    List<?> input = Arrays.asList( 7, 14, 21 );
 
     viewer.setLabelProvider( new LabelProvider() );
-    viewer.setInput( input );
+    viewer.setInput( INTEGER_LIST );
 
     String[] result = getElements();
     List<String> expected = Arrays.asList( new String[]{ "7", "14", "21"} );
@@ -239,13 +238,11 @@ public class DropDownViewer_Test {
   }
 
   @Test
-  @SuppressWarnings( "boxing" )
   public void testSetLabelProvide_UpdatesElements() {
     createViewer();
-    List<?> input = Arrays.asList( 7, 14, 21 );
 
     viewer.setLabelProvider( new LabelProvider() );
-    viewer.setInput( input );
+    viewer.setInput( INTEGER_LIST );
     viewer.setLabelProvider( new LabelProvider() {
       @Override
       public String getText( Object element ) {
@@ -259,13 +256,11 @@ public class DropDownViewer_Test {
   }
 
   @Test
-  @SuppressWarnings( "boxing" )
   public void testProcessSelectionChangedEvent() {
     createViewer();
-    List<?> input = Arrays.asList( 7, 14, 21 );
     final List<SelectionChangedEvent> log = new ArrayList<SelectionChangedEvent>();
     viewer.setLabelProvider( new LabelProvider() );
-    viewer.setInput( input );
+    viewer.setInput( INTEGER_LIST );
     viewer.addSelectionChangedListener( new SelectionChangedListener() {
       public void selectionChanged( SelectionChangedEvent event ) {
         log.add( event );
@@ -273,20 +268,18 @@ public class DropDownViewer_Test {
     } );
 
     Map<String, Object> event = new HashMap<String, Object>();
-    event.put( "index", 2 );
+    event.put( "index", Integer.valueOf( 2 ) );
     viewer.getRemoteObject().notify( "SelectionChanged", event );
 
     assertEquals( 1, log.size() );
   }
 
   @Test
-  @SuppressWarnings( "boxing" )
   public void testProcessSelectionChangedEvent_ElementField() {
     createViewer();
-    List<?> input = Arrays.asList( 7, 14, 21 );
     final List<SelectionChangedEvent> log = new ArrayList<SelectionChangedEvent>();
     viewer.setLabelProvider( new LabelProvider() );
-    viewer.setInput( input );
+    viewer.setInput( INTEGER_LIST );
     viewer.addSelectionChangedListener( new SelectionChangedListener() {
       public void selectionChanged( SelectionChangedEvent event ) {
         log.add( event );
@@ -294,7 +287,7 @@ public class DropDownViewer_Test {
     } );
 
     Map<String, Object> event = new HashMap<String, Object>();
-    event.put( "index", 2 );
+    event.put( "index", Integer.valueOf( 2 ) );
     viewer.getRemoteObject().notify( "SelectionChanged", event );
 
     assertEquals( new Integer( 21 ), log.get( 0 ).item );
