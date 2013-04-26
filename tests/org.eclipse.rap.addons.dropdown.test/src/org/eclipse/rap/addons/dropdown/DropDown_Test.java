@@ -166,7 +166,7 @@ public class DropDown_Test {
 
   @Test
   public void testProcessSetVisibility_ValueIsTrue() {
-    handler.handleSet( createMap( "visibility", true ) );
+    handler.handleSet( createMap( "visibility", Boolean.TRUE ) );
 
     assertTrue( dropdown.getVisibility() );
   }
@@ -175,21 +175,21 @@ public class DropDown_Test {
   public void testProcessSetVisibility_ValueIsFalse() {
     dropdown.setVisibility( true );
 
-    handler.handleSet( createMap( "visibility", false ) );
+    handler.handleSet( createMap( "visibility", Boolean.FALSE ) );
 
     assertFalse( dropdown.getVisibility() );
   }
 
   @Test
   public void testProcessSetSelectionIndex() {
-    handler.handleSet( createMap( "selectionIndex", 7 ) );
+    handler.handleSet( createMap( "selectionIndex", Integer.valueOf( 7 ) ) );
 
     assertEquals( 7, dropdown.getSelectionIndex() );
   }
 
   @Test
   public void testSetItems_ResetsSelectionIndex() {
-    handler.handleSet( createMap( "selectionIndex", 7 ) );
+    handler.handleSet( createMap( "selectionIndex", Integer.valueOf( 7 ) ) );
     dropdown.setItems( new String[]{ "a" } );
 
     assertEquals( -1, dropdown.getSelectionIndex() );
@@ -197,7 +197,7 @@ public class DropDown_Test {
 
   @Test
   public void testProcessSetVisibility_DoNotRenderToRemoteObject() {
-    handler.handleSet( createMap( "visibility", true ) );
+    handler.handleSet( createMap( "visibility", Boolean.TRUE ) );
 
     verify( remoteObject, never() ).set( eq( "visibility" ), anyBoolean() );
   }
@@ -337,7 +337,7 @@ public class DropDown_Test {
     } );
 
     handler.handleNotify( "Selection", createMap(
-      "index", 2,
+      "index", Integer.valueOf( 2 ),
       "text", "foo"
     ) );
 
@@ -357,7 +357,7 @@ public class DropDown_Test {
     } );
 
     handler.handleNotify( "DefaultSelection", createMap(
-      "index", 2,
+      "index", Integer.valueOf( 2 ),
       "text", "foo"
     ) );
 

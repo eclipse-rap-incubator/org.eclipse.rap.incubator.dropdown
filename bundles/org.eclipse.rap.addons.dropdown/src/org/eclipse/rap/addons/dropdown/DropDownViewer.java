@@ -42,13 +42,13 @@ public class DropDownViewer {
   private static String TEXT_KEY = "text";
   private static String ELEMENTS_KEY = "elements";
 
-  private DropDown dropDown;
-  private Text text;
+  private final DropDown dropDown;
+  private final Text text;
   private Object[] input;
-  private ClientListenerHolder clientListener;
-  private UniversalRemoteObject remoteObject;
+  private final ClientListenerHolder clientListener;
+  private final UniversalRemoteObject remoteObject;
   private ILabelProvider labelProvider;
-  private List< SelectionChangedListener > selectionChangedListeners
+  private final List< SelectionChangedListener > selectionChangedListeners
     = new ArrayList< SelectionChangedListener >();
 
   public DropDownViewer( Text text ) {
@@ -95,9 +95,9 @@ public class DropDownViewer {
   }
 
   private void updateElements() {
-    String[] elements = new String[ this.input.length ];
+    String[] elements = new String[ input.length ];
     for( int i = 0; i < elements.length; i++ ) {
-      elements[ i ] = labelProvider.getText( this.input[ i ] );
+      elements[ i ] = labelProvider.getText( input[ i ] );
     }
     setElements( elements );
   }
@@ -159,7 +159,7 @@ public class DropDownViewer {
       if( !list.contains( keys[ i ] ) ) {
         list.add( keys[ i ] );
       }
-    };
+    }
     service.setKeys( list.toArray( new String[ list.size() ]) );
   }
 
@@ -185,7 +185,7 @@ public class DropDownViewer {
 
   ClientListener getDropDownDefaultSelectionListener() {
     return clientListener.getDropDownDefaultSelectionListener();
-  };
+  }
 
   public ClientListener getDropDownShowListener() {
     return clientListener.getDropDownShowListener();
@@ -215,7 +215,7 @@ public class DropDownViewer {
     public void handleNotify( String event, Map<String, Object> properties ) {
       if( SELECTION_CHANGED.equals( event ) ) {
         int index = ( ( Integer )properties.get( "index" ) ).intValue();
-        DropDownViewer.this.fireSelectionChanged( index );
+        fireSelectionChanged( index );
       }
     }
 
@@ -223,7 +223,7 @@ public class DropDownViewer {
 
   private static class ClientListenerHolder {
 
-    private String PREFIX = "org/eclipse/rap/addons/dropdown/internal/resources/";
+    private final String PREFIX = "org/eclipse/rap/addons/dropdown/internal/resources/";
 
     private final ClientListener textListener = createListener( "TextEventListener.js" );
     private final ClientListener dropDownListener = createListener( "DropDownEventListener.js" );

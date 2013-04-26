@@ -42,8 +42,8 @@ public class DropDown extends Widget {
   private RemoteObject remoteObject;
   private boolean disposed = false;
   private Object widgetAdapter;
-  private Control parent;
-  private Listener disposeListener;
+  private final Control parent;
+  private final Listener disposeListener;
   private boolean visibility = false;
   private int selectionIndex = -1;
 
@@ -158,10 +158,10 @@ public class DropDown extends Widget {
     @Override
     public void handleSet( Map<String, Object> properties ) {
       if( properties.containsKey( "visibility" ) ) {
-        setVisibilityImpl( ( Boolean )properties.get( "visibility" ) );
+        setVisibilityImpl( (( Boolean )properties.get( "visibility" )).booleanValue() );
       }
       if( properties.containsKey( "selectionIndex" ) ) {
-        setSelectionIndexImpl( ( Integer )properties.get( "selectionIndex" ) );
+        setSelectionIndexImpl( (( Integer )properties.get( "selectionIndex" )).intValue() );
       }
     }
 
@@ -169,9 +169,9 @@ public class DropDown extends Widget {
     public void handleNotify( String type, Map<String, Object> properties ) {
       if( SELECTION.equals( type ) || DEFAULT_SELECTION.equals( type )) {
         Event event = new Event();
-        event.index = ( Integer )properties.get( "index" );
+        event.index = (( Integer )properties.get( "index" )).intValue();
         event.text = ( String )properties.get( "text" );
-        DropDown.this.notifyListeners( stringToEventType( type ), event );
+        notifyListeners( stringToEventType( type ), event );
       }
     }
 

@@ -42,7 +42,7 @@ import org.eclipse.swt.widgets.Text;
 @SuppressWarnings("restriction")
 public class DropDownDemo extends AbstractEntryPoint {
 
-  private String PATH_PREFIX = "/org/eclipse/rap/addons/dropdown/";
+  private final String PATH_PREFIX = "/org/eclipse/rap/addons/dropdown/";
   DropDownViewer viewer = null;
 
   @Override
@@ -112,9 +112,9 @@ public class DropDownDemo extends AbstractEntryPoint {
     dropdown.addListener( SWT.Selection, new Listener() {
       public void handleEvent( Event event ) {
         if( event.text.length() > 0 ) {
-          text.setData( "selecting", true );
+          text.setData( "selecting", Boolean.TRUE );
           text.setText( event.text );
-          text.setData( "selecting", false );
+          text.setData( "selecting", Boolean.FALSE );
           text.selectAll();
         }
       }

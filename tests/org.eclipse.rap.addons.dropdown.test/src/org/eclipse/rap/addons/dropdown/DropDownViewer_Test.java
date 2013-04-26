@@ -80,7 +80,7 @@ public class DropDownViewer_Test {
   public void testConstructor_SetEmptyElements() {
     createViewer();
 
-    List< String > expected = new ArrayList< String >();
+    List<String> expected = new ArrayList<String>();
     assertEquals( expected, Arrays.asList( getElements() ) );
   }
 
@@ -198,7 +198,7 @@ public class DropDownViewer_Test {
 
     createViewer();
 
-    List< String > list = Arrays.asList( service.getKeys() );;
+    List<String> list = Arrays.asList( service.getKeys() );
     assertTrue( list.contains( VIEWER_LINK ) );
   }
 
@@ -209,7 +209,7 @@ public class DropDownViewer_Test {
 
     createViewer();
 
-    List< String > list = Arrays.asList( service.getKeys() );;
+    List<String> list = Arrays.asList( service.getKeys() );
     assertTrue( list.contains( "foo" ) );
   }
 
@@ -220,7 +220,7 @@ public class DropDownViewer_Test {
 
     createViewer();
 
-    List< String > list = Arrays.asList( service.getKeys() );;
+    List<String> list = Arrays.asList( service.getKeys() );
     assertEquals( list.lastIndexOf( VIEWER_LINK ), list.indexOf( VIEWER_LINK ) );
   }
 
@@ -233,7 +233,7 @@ public class DropDownViewer_Test {
     viewer.setInput( input );
 
     String[] result = getElements();
-    List< String > expected = Arrays.asList( new String[]{ "7", "14", "21"} );
+    List<String> expected = Arrays.asList( new String[]{ "7", "14", "21"} );
     assertEquals( expected, Arrays.asList( result ) );
   }
 
@@ -248,11 +248,11 @@ public class DropDownViewer_Test {
       @Override
       public String getText( Object element ) {
         return "Item " + element;
-      };
+      }
     } );
 
     String[] result = getElements();
-    List< String > expected = Arrays.asList( new String[]{ "Item 7", "Item 14", "Item 21"} );
+    List<String> expected = Arrays.asList( new String[]{ "Item 7", "Item 14", "Item 21"} );
     assertEquals( expected, Arrays.asList( result ) );
   }
 
@@ -269,7 +269,7 @@ public class DropDownViewer_Test {
       }
     } );
 
-    Map< String, Object > event = new HashMap< String, Object >();
+    Map<String, Object> event = new HashMap<String, Object>();
     event.put( "index", 2 );
     viewer.getRemoteObject().notify( "SelectionChanged", event );
 
@@ -289,7 +289,7 @@ public class DropDownViewer_Test {
       }
     } );
 
-    Map< String, Object > event = new HashMap< String, Object >();
+    Map<String, Object> event = new HashMap<String, Object>();
     event.put( "index", 2 );
     viewer.getRemoteObject().notify( "SelectionChanged", event );
 

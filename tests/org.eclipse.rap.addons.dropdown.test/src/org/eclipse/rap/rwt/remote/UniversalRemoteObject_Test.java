@@ -12,6 +12,7 @@
 package org.eclipse.rap.rwt.remote;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
@@ -127,7 +128,7 @@ public class UniversalRemoteObject_Test {
     uro.set( "myObject", new Object[ 0 ] );
     uro.set( "myString", "yourString" );
 
-    assertEquals( false, uro.getBoolean( "myBool" ) );
+    assertFalse( uro.getBoolean( "myBool" ) );
     assertTrue( 1000100.101 == uro.getDouble( "myDouble" ) );
     assertEquals( 34, uro.getInt( "myInt" ) );
     assertEquals( 0, ( ( Object[] )uro.get( "myObject" ) ).length );
@@ -198,7 +199,7 @@ public class UniversalRemoteObject_Test {
   private void markDestroyed() {
     doAnswer( new Answer< Boolean >() {
       public Boolean answer( InvocationOnMock invocation ) {
-          return true;
+          return Boolean.TRUE;
       }
     } ).when( remoteObject ).isDestroyed();
   }
