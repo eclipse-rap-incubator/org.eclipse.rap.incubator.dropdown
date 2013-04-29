@@ -8,8 +8,7 @@
  * Contributors:
  *    EclipseSource - initial API and implementation
  ******************************************************************************/
-
-package org.eclipse.rap.addons.dropdown;
+package org.eclipse.rap.addons.dropdown.demo;
 
 import org.eclipse.rap.rwt.application.Application;
 import org.eclipse.rap.rwt.application.ApplicationConfiguration;
@@ -20,4 +19,5 @@ public class DropDownApplicationConfiguration implements ApplicationConfiguratio
   public void configure( Application application ) {
     application.addEntryPoint( "/dropdown", DropDownDemo.class, null );
   }
+
 }
