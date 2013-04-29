@@ -99,8 +99,10 @@ public class DropDownViewer {
   }
 
   public void addSelectionChangedListener( SelectionChangedListener listener ) {
-    selectionChangedListeners.add( listener );
-    remoteObject.listen( SELECTION_CHANGED, true );
+    if( !selectionChangedListeners.contains( listener ) ) {
+      selectionChangedListeners.add( listener );
+      remoteObject.listen( SELECTION_CHANGED, true );
+    }
   }
 
   ////////////

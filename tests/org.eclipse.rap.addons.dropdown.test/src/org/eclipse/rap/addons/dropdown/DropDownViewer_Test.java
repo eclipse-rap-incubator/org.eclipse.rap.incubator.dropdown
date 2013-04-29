@@ -281,8 +281,26 @@ public class DropDownViewer_Test {
       }
     } );
 
-    Map<String, Object> event = new HashMap<String, Object>();
-    event.put( "index", Integer.valueOf( 2 ) );
+    Map<String, Object> event = createMap( "index", Integer.valueOf( 2 ) );
+    viewer.getRemoteObject().notify( "SelectionChanged", event );
+
+    assertEquals( 1, log.size() );
+  }
+
+  @Test
+  public void testAddSelectionChangedListener_AddTwiceOnlyAddsOnce() {
+    createViewer();
+    final List<SelectionChangedEvent> log = new ArrayList<SelectionChangedEvent>();
+    viewer.setInput( INTEGER_LIST );
+    SelectionChangedListener listener = new SelectionChangedListener() {
+      public void selectionChanged( SelectionChangedEvent event ) {
+        log.add( event );
+      }
+    };
+
+    viewer.addSelectionChangedListener( listener );
+    viewer.addSelectionChangedListener( listener );
+    Map<String, Object> event = createMap( "index", Integer.valueOf( 2 ) );
     viewer.getRemoteObject().notify( "SelectionChanged", event );
 
     assertEquals( 1, log.size() );
@@ -299,8 +317,7 @@ public class DropDownViewer_Test {
       }
     } );
 
-    Map<String, Object> event = new HashMap<String, Object>();
-    event.put( "index", Integer.valueOf( 2 ) );
+    Map<String, Object> event = createMap( "index", Integer.valueOf( 2 ) );
     viewer.getRemoteObject().notify( "SelectionChanged", event );
 
     assertEquals( new Integer( 21 ), log.get( 0 ).item );
@@ -455,5 +472,12 @@ public class DropDownViewer_Test {
   private String[] getElements() {
     return ( String[] )viewer.getRemoteObject().get( ELEMENTS_KEY );
   }
+
+  private Map<String, Object> createMap( String key, Object value ) {
+    Map<String, Object> event = new HashMap<String, Object>();
+    event.put( key, value );
+    return event;
+  }
+
 
 }
