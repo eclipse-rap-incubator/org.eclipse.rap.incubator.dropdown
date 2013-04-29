@@ -11,12 +11,10 @@
 
 package org.eclipse.rap.addons.dropdown;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
-import org.eclipse.jface.viewers.ILabelProvider;
+import org.eclipse.jface.viewers.*;
 import org.eclipse.rap.addons.dropdown.internal.resources.ResourceLoaderUtil;
 import org.eclipse.rap.clientscripting.ClientListener;
 import org.eclipse.rap.rwt.RWT;
@@ -26,9 +24,7 @@ import org.eclipse.rap.rwt.lifecycle.WidgetUtil;
 import org.eclipse.rap.rwt.remote.AbstractOperationHandler;
 import org.eclipse.rap.rwt.remote.UniversalRemoteObject;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.*;
 
 
 @SuppressWarnings("restriction")
@@ -44,12 +40,14 @@ public class DropDownViewer {
 
   private final DropDown dropDown;
   private final Text text;
-  private Object[] input;
+  private Object input;
+  private Object[] elements;
   private final ClientListenerHolder clientListener;
   private final UniversalRemoteObject remoteObject;
   private ILabelProvider labelProvider;
   private final List< SelectionChangedListener > selectionChangedListeners
     = new ArrayList< SelectionChangedListener >();
+  private IStructuredContentProvider contentProvider;
 
   public DropDownViewer( Text text ) {
     this.text = text;
@@ -58,7 +56,7 @@ public class DropDownViewer {
     clientListener = getClientListenerHolder();
     remoteObject = new UniversalRemoteObject();
     remoteObject.setHandler( new InternalOperationHandler() );
-    setElements( new String[ 0 ] );
+    setClientElements( new String[ 0 ] );
     attachClientListener();
     linkClientObjects();
     attachDisposeListener();
@@ -71,12 +69,32 @@ public class DropDownViewer {
   public void setLabelProvider( ILabelProvider provider ) {
     labelProvider = provider;
     if( input != null ) {
+      updateClientElements();
+    }
+  }
+
+  public void setContentProvider( IContentProvider contentProvider ) {
+    this.contentProvider = ( IStructuredContentProvider )contentProvider;
+    if( input != null ) {
       updateElements();
     }
   }
 
-  public void setInput( List<?> input ) {
-    this.input = input.toArray();
+  public IContentProvider  getContentProvider() {
+    return contentProvider;
+  }
+
+  public void setInput( Object input ) {
+    if( dropDown == null || dropDown.isDisposed() ) {
+      String message =   "Need an underlying widget to be able to set the input."
+                       + "(Has the widget been disposed?)";
+      throw new IllegalStateException( message );
+    }
+    Object oldInput = this.input;
+    this.input = input;
+    if( contentProvider != null ) {
+      contentProvider.inputChanged( null, oldInput, input );
+    }
     updateElements();
   }
 
@@ -95,14 +113,27 @@ public class DropDownViewer {
   }
 
   private void updateElements() {
-    String[] elements = new String[ input.length ];
-    for( int i = 0; i < elements.length; i++ ) {
-      elements[ i ] = labelProvider.getText( input[ i ] );
+    if( contentProvider == null ) {
+      String message = "DropDownViewer must have a content provider when input is set.";
+      throw new IllegalStateException( message );
     }
-    setElements( elements );
+    elements = contentProvider.getElements( input );
+    updateClientElements();
   }
 
-  private void setElements( String[] elements ) {
+  private void updateClientElements() {
+    if( labelProvider == null ) {
+      String message = "DropDownViewer must have a label provider when input is set.";
+      throw new IllegalStateException( message );
+    }
+    String[] clientElements = new String[ elements.length ];
+    for( int i = 0; i < elements.length; i++ ) {
+      clientElements[ i ] = labelProvider.getText( elements[ i ] );
+    }
+    setClientElements( clientElements );
+  }
+
+  private void setClientElements( String[] elements ) {
     // TODO : Using a separate client object (e.g. "RemoteList") for the elements might allow
     //        sharing and incremental updates
     remoteObject.set( ELEMENTS_KEY, elements );
@@ -146,6 +177,9 @@ public class DropDownViewer {
         unlinkClientObjects();
         detachClientListener();
         remoteObject.destroy();
+        if( contentProvider != null ) {
+          contentProvider.dispose();
+        }
       }
     } );
   }
@@ -202,7 +236,7 @@ public class DropDownViewer {
   }
 
   private void fireSelectionChanged( int index ) {
-    Object element = input[ index ];
+    Object element = elements[ index ];
     SelectionChangedEvent event = new SelectionChangedEvent( element );
     for( SelectionChangedListener listener : selectionChangedListeners ) {
       listener.selectionChanged( event );

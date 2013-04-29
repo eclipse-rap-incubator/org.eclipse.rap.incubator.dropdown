@@ -12,10 +12,9 @@
 package org.eclipse.rap.addons.dropdown;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.*;
 import org.eclipse.rap.clientscripting.ClientListener;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.application.AbstractEntryPoint;
@@ -29,14 +28,7 @@ import org.eclipse.rap.rwt.widgets.DialogUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Group;
-import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.MessageBox;
-import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.*;
 
 
 @SuppressWarnings("restriction")
@@ -161,6 +153,17 @@ public class DropDownDemo extends AbstractEntryPoint {
         return entry[ 1 ]; // austria
       }
     } );
+    viewer.setContentProvider( new IStructuredContentProvider() {
+      public void inputChanged( Viewer viewer, Object oldInput, Object newInput ) {
+      }
+
+      public void dispose() {
+      }
+
+      public Object[] getElements( Object inputElement ) {
+        return ( Object[] )inputElement;
+      }
+    } );
     viewer.addSelectionChangedListener( new SelectionChangedListener() {
       public void selectionChanged( SelectionChangedEvent event ) {
         String[] city = ( String[] )event.item;
@@ -199,11 +202,11 @@ public class DropDownDemo extends AbstractEntryPoint {
   }
 
   void loadGermany() {
-    viewer.setInput( Arrays.asList( KFZ.DE ) );
+    viewer.setInput( KFZ.DE );
   }
 
   void loadAustria() {
-    viewer.setInput( Arrays.asList( KFZ.AT ) );
+    viewer.setInput( KFZ.AT );
   }
 
   private Text createText( Composite parent, int style ) {

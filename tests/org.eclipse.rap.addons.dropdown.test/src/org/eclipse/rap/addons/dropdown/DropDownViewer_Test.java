@@ -16,14 +16,17 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.stub;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
-import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.*;
 import org.eclipse.rap.clientscripting.ClientListener;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteList;
@@ -31,12 +34,8 @@ import org.eclipse.rap.rwt.lifecycle.PhaseId;
 import org.eclipse.rap.rwt.lifecycle.WidgetUtil;
 import org.eclipse.rap.rwt.testfixture.Fixture;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.eclipse.swt.widgets.*;
+import org.junit.*;
 
 
 @SuppressWarnings("restriction")
@@ -44,7 +43,11 @@ public class DropDownViewer_Test {
 
   // TODO : test reading scripts and attaching listener when possible
 
-  private static final List<Integer> INTEGER_LIST = Arrays.asList( Integer.valueOf( 7 ), Integer.valueOf( 14 ), Integer.valueOf( 21 ) );
+  private static final List<Integer> INTEGER_LIST = Arrays.asList(
+    Integer.valueOf( 7 ),
+    Integer.valueOf( 14 ),
+    Integer.valueOf( 21 )
+  );
   private static final String VIEWER_LINK =
       "org.eclipse.rap.addons.dropdown.DropDownViewer#viewer";
   private static String DROPDOWN_KEY = "dropDown";
@@ -56,6 +59,20 @@ public class DropDownViewer_Test {
   private Shell shell;
   private DropDown dropDown;
 
+  private static class MyContentProvider implements IStructuredContentProvider {
+
+    public void dispose() {
+    }
+
+    public void inputChanged( Viewer viewer, Object oldInput, Object newInput ) {
+    }
+
+    @SuppressWarnings( "unchecked" )
+    public Object[] getElements( Object inputElement ) {
+      return ( ( List< Integer > )inputElement ).toArray();
+    }
+
+  }
 
   @Before
   public void setUp() {
@@ -199,7 +216,7 @@ public class DropDownViewer_Test {
 
     createViewer();
 
-    List<String> list = Arrays.asList( service.getKeys() );
+    List< String > list = Arrays.asList( service.getKeys() );
     assertTrue( list.contains( VIEWER_LINK ) );
   }
 
@@ -229,7 +246,6 @@ public class DropDownViewer_Test {
   public void testSetInput_AddsElementsToRemoteObject() {
     createViewer();
 
-    viewer.setLabelProvider( new LabelProvider() );
     viewer.setInput( INTEGER_LIST );
 
     String[] result = getElements();
@@ -241,7 +257,6 @@ public class DropDownViewer_Test {
   public void testSetLabelProvide_UpdatesElements() {
     createViewer();
 
-    viewer.setLabelProvider( new LabelProvider() );
     viewer.setInput( INTEGER_LIST );
     viewer.setLabelProvider( new LabelProvider() {
       @Override
@@ -259,7 +274,6 @@ public class DropDownViewer_Test {
   public void testProcessSelectionChangedEvent() {
     createViewer();
     final List<SelectionChangedEvent> log = new ArrayList<SelectionChangedEvent>();
-    viewer.setLabelProvider( new LabelProvider() );
     viewer.setInput( INTEGER_LIST );
     viewer.addSelectionChangedListener( new SelectionChangedListener() {
       public void selectionChanged( SelectionChangedEvent event ) {
@@ -278,7 +292,6 @@ public class DropDownViewer_Test {
   public void testProcessSelectionChangedEvent_ElementField() {
     createViewer();
     final List<SelectionChangedEvent> log = new ArrayList<SelectionChangedEvent>();
-    viewer.setLabelProvider( new LabelProvider() );
     viewer.setInput( INTEGER_LIST );
     viewer.addSelectionChangedListener( new SelectionChangedListener() {
       public void selectionChanged( SelectionChangedEvent event ) {
@@ -329,12 +342,114 @@ public class DropDownViewer_Test {
     }
   }
 
+  @Test
+  public void testSetContentProvider() {
+    IContentProvider provider = mock( IStructuredContentProvider.class );
+    createViewer();
+
+    viewer.setContentProvider( provider );
+
+    assertSame( provider, viewer.getContentProvider() );
+  }
+
+  @Test
+  public void testSetInput_CallsContentProvider() {
+    createViewer();
+    IStructuredContentProvider provider = mock( IStructuredContentProvider.class );
+    stub( provider.getElements( anyObject() ) ).toReturn( new Object[]{} );
+    viewer.setContentProvider( provider );
+    Object input = new Object();
+
+    viewer.setInput( input );
+
+    verify( provider ).getElements( eq( input ) );
+  }
+
+  @Test
+  public void testSetContentProvider_CallsContentProvider() {
+    createViewer();
+    IStructuredContentProvider provider = mock( IStructuredContentProvider.class );
+    stub( provider.getElements( anyObject() ) ).toReturn( new Object[]{} );
+    viewer.setInput( INTEGER_LIST );
+
+    viewer.setContentProvider( provider );
+
+    verify( provider, times( 1 ) ).getElements( eq( INTEGER_LIST ) );
+  }
+
+  @Test
+  public void testSetInput_ExceptionWithDisposedWidget() {
+    createViewer();
+    viewer.getDropDown().dispose();
+
+    try {
+      viewer.setInput( INTEGER_LIST );
+      fail();
+    } catch( IllegalStateException ex ) {
+      // expected
+    }
+  }
+
+  @Test
+  public void testSetInput_ExceptionWithNoContentProvider() {
+    createViewer();
+    viewer.setContentProvider( null );
+
+    try {
+      viewer.setInput( INTEGER_LIST );
+      fail();
+    } catch( IllegalStateException ex ) {
+      // expected
+    }
+  }
+
+  @Test
+  public void testSetInput_ExceptionWithNoLabelProvider() {
+    createViewer();
+    viewer.setLabelProvider( null );
+
+    try {
+      viewer.setInput( INTEGER_LIST );
+      fail();
+    } catch( IllegalStateException ex ) {
+      // expected
+    }
+  }
+
+  @Test
+  public void testSetInput_CallsInputChanged() {
+    createViewer();
+    viewer.setInput( INTEGER_LIST );
+    IStructuredContentProvider provider = mock( IStructuredContentProvider.class );
+    stub( provider.getElements( anyObject() ) ).toReturn( new Object[]{} );
+    viewer.setContentProvider( provider );
+    List< Integer > newList = new ArrayList< Integer >();
+
+    viewer.setInput( newList );
+
+    verify( provider ).inputChanged( ( Viewer )eq( null ), eq( INTEGER_LIST ), eq( newList ) );
+  }
+
+  @Test
+  public void testCallDisposeOnContentProvide() {
+    Fixture.fakePhase( PhaseId.PROCESS_ACTION );
+    createViewer();
+    IStructuredContentProvider provider = mock( IStructuredContentProvider.class );
+    viewer.setContentProvider( provider );
+
+    viewer.getDropDown().dispose();
+
+    verify( provider ).dispose();
+  }
+
   //////////
   // Helpers
 
   private void createViewer() {
     viewer = new DropDownViewer( text );
     dropDown = viewer.getDropDown();
+    viewer.setContentProvider( new MyContentProvider() );
+    viewer.setLabelProvider( new LabelProvider() );
   }
 
   private String[] getElements() {
