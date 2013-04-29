@@ -8,13 +8,15 @@
  * Contributors:
  *    EclipseSource - initial API and implementation
  ******************************************************************************/
-
-package org.eclipse.rap.addons.dropdown;
+package org.eclipse.rap.addons.dropdown.demo;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.viewers.*;
+import org.eclipse.rap.addons.dropdown.*;
+import org.eclipse.rap.addons.dropdown.viewer.*;
+import org.eclipse.rap.addons.dropdown.viewer.SelectionChangedEvent;
 import org.eclipse.rap.clientscripting.ClientListener;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.application.AbstractEntryPoint;
@@ -34,7 +36,7 @@ import org.eclipse.swt.widgets.*;
 @SuppressWarnings("restriction")
 public class DropDownDemo extends AbstractEntryPoint {
 
-  private final String PATH_PREFIX = "/org/eclipse/rap/addons/dropdown/";
+  private final String PATH_PREFIX = "/org/eclipse/rap/addons/dropdown/demo/";
   DropDownViewer viewer = null;
 
   @Override

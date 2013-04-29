@@ -9,20 +9,21 @@
  *    EclipseSource - initial API and implementation
  ******************************************************************************/
 
-package org.eclipse.rap.addons.dropdown;
+package org.eclipse.rap.addons.dropdown.viewer;
 
 import java.util.*;
 import java.util.List;
 
 import org.eclipse.jface.viewers.*;
+import org.eclipse.rap.addons.dropdown.DropDown;
 import org.eclipse.rap.addons.dropdown.internal.resources.ResourceLoaderUtil;
+import org.eclipse.rap.addons.dropdown.viewer.internal.remote.UniversalRemoteObject;
 import org.eclipse.rap.clientscripting.ClientListener;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteList;
 import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteListImpl;
 import org.eclipse.rap.rwt.lifecycle.WidgetUtil;
 import org.eclipse.rap.rwt.remote.AbstractOperationHandler;
-import org.eclipse.rap.rwt.remote.UniversalRemoteObject;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.*;
 

@@ -9,7 +9,7 @@
  *    EclipseSource - initial API and implementation
  ******************************************************************************/
 
-package org.eclipse.rap.addons.dropdown;
+package org.eclipse.rap.addons.dropdown.viewer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -27,6 +27,9 @@ import java.util.*;
 import java.util.List;
 
 import org.eclipse.jface.viewers.*;
+import org.eclipse.rap.addons.dropdown.DropDown;
+import org.eclipse.rap.addons.dropdown.viewer.DropDownViewer;
+import org.eclipse.rap.addons.dropdown.viewer.SelectionChangedListener;
 import org.eclipse.rap.clientscripting.ClientListener;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteList;
@@ -36,7 +39,6 @@ import org.eclipse.rap.rwt.testfixture.Fixture;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.*;
 import org.junit.*;
-
 
 @SuppressWarnings("restriction")
 public class DropDownViewer_Test {
@@ -49,7 +51,7 @@ public class DropDownViewer_Test {
     Integer.valueOf( 21 )
   );
   private static final String VIEWER_LINK =
-      "org.eclipse.rap.addons.dropdown.DropDownViewer#viewer";
+      "org.eclipse.rap.addons.dropdown.viewer.DropDownViewer#viewer";
   private static String DROPDOWN_KEY = "dropDown";
   private static final String TEXT_KEY = "text";
   private static String ELEMENTS_KEY = "elements";

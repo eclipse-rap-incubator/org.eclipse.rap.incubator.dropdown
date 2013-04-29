@@ -9,33 +9,38 @@
  *    EclipseSource - initial API and implementation
  ******************************************************************************/
 
-package org.eclipse.rap.addons.dropdown.internal;
+package org.eclipse.rap.addons.dropdown.test.internal;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 
+import org.eclipse.rap.addons.dropdown.internal.resources.DropDownResources;
 import org.eclipse.rap.rwt.jstest.TestContribution;
 
+public class DropDownResourcesContribution implements TestContribution {
 
-public class DropDownTestContribution implements TestContribution {
-
-  private static final ClassLoader CLASSLOADER = DropDownTestContribution.class.getClassLoader();
-
-  private static final String[] ALL_TEST_RESOURCES = new String[] {
-    "/rwt/dropdown/DropDown_Test.js",
-    "/rwt/remote/UniversalRemoteObject_Test.js",
+  public static String[] ADDITIONAL_RESOURCES = new String[] {
+    "rwt/remote/UniversalRemoteObject.js"
   };
 
+  public static String[] concat( String[] array1, String[] array2 ) {
+    ArrayList< String > baseArray = new ArrayList< String >( Arrays.asList( array1 ) );
+    baseArray.addAll( Arrays.asList( array2 ) );
+    return baseArray.toArray( new String[ baseArray.size() ] );
+  }
+
   public String getName() {
-    return "dropdown-tests";
+    return "dropdown-resources";
   }
 
   public String[] getResources() {
-    return ALL_TEST_RESOURCES;
+    return concat( DropDownResources.SCRIPTS, ADDITIONAL_RESOURCES );
   }
 
   public InputStream getResourceAsStream( String resourceName ) throws IOException {
-    return CLASSLOADER.getResourceAsStream( resourceName );
+    return DropDownResources.getResourceAsStream( resourceName );
   }
 
 }

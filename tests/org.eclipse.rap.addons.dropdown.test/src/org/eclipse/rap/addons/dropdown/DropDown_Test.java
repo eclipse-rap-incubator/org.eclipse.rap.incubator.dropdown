@@ -30,6 +30,7 @@ import static org.mockito.Mockito.when;
 import java.util.*;
 import java.util.List;
 
+import org.eclipse.rap.addons.dropdown.DropDown;
 import org.eclipse.rap.rwt.client.Client;
 import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteList;
 import org.eclipse.rap.rwt.internal.remote.RemoteObjectImpl;

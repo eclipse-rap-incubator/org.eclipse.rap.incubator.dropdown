@@ -9,7 +9,7 @@
  *    EclipseSource - initial API and implementation
  ******************************************************************************/
 
-var VIEWER_KEY = "org.eclipse.rap.addons.dropdown.DropDownViewer#viewer";
+var VIEWER_KEY = "org.eclipse.rap.addons.dropdown.viewer.DropDownViewer#viewer";
 var searchItems = rwt.dropdown.DropDown.searchItems;
 var createQuery = rwt.dropdown.DropDown.createQuery;
 

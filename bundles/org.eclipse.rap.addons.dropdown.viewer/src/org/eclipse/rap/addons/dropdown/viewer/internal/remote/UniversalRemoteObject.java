@@ -8,8 +8,7 @@
  * Contributors:
  *    EclipseSource - initial API and implementation
  ******************************************************************************/
-
-package org.eclipse.rap.rwt.remote;
+package org.eclipse.rap.addons.dropdown.viewer.internal.remote;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +16,10 @@ import java.util.Map;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.client.service.JavaScriptLoader;
 import org.eclipse.rap.rwt.internal.remote.RemoteObjectImpl;
+import org.eclipse.rap.rwt.remote.OperationHandler;
+import org.eclipse.rap.rwt.remote.RemoteObject;
 import org.eclipse.rap.rwt.service.ResourceManager;
+
 
 @SuppressWarnings("restriction")
 public class UniversalRemoteObject implements RemoteObject {
@@ -26,10 +28,9 @@ public class UniversalRemoteObject implements RemoteObject {
   private static final String UNIVERSAL_REMOTE_OBJECT_JS
     = "rwt/remote/UniversalRemoteObject.js";
 
-  private RemoteObjectImpl remoteObject;
-  private Map<String, Object> properties = new HashMap<String, Object>();
+  private final RemoteObjectImpl remoteObject;
+  private final Map<String, Object> properties = new HashMap<String, Object>();
   private OperationHandler handler;
-
 
   public UniversalRemoteObject() {
     ensureTypeHandler();

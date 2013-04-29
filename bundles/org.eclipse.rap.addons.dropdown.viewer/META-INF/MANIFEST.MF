@@ -1,13 +1,13 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: DropDown Demo
-Bundle-SymbolicName: org.eclipse.rap.addons.dropdown.demo
+Bundle-Name: DropDown Viewer
+Bundle-SymbolicName: org.eclipse.rap.addons.dropdown.viewer
 Bundle-Version: 0.0.1.qualifier
+Bundle-Vendor: Eclipse.org - RAP Incubator
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Require-Bundle: org.eclipse.rap.rwt;bundle-version="2.1.0",
  org.eclipse.rap.jface;bundle-version="2.1.0",
  org.eclipse.rap.addons.dropdown;bundle-version="0.0.1",
- org.eclipse.rap.addons.dropdown.viewer;bundle-version="0.0.1",
  org.eclipse.rap.clientscripting;bundle-version="0.1.100"
-Service-Component: OSGI-INF/config.xml
-Bundle-Vendor: Eclipse.org - RAP Incubator
+Export-Package: org.eclipse.rap.addons.dropdown.viewer,
+ org.eclipse.rap.addons.dropdown.viewer.internal.remote;x-internal:=true

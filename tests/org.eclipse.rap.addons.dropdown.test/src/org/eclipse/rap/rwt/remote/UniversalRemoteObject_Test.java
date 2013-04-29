@@ -8,7 +8,6 @@
  * Contributors:
  *    EclipseSource - initial API and implementation
  ******************************************************************************/
-
 package org.eclipse.rap.rwt.remote;
 
 import static org.junit.Assert.assertEquals;
@@ -24,6 +23,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.*;
 
+import org.eclipse.rap.addons.dropdown.viewer.internal.remote.UniversalRemoteObject;
 import org.eclipse.rap.rwt.internal.remote.RemoteObjectImpl;
 import org.eclipse.rap.rwt.testfixture.Fixture;
 import org.junit.*;
