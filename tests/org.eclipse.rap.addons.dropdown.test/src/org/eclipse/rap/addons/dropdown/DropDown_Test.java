@@ -8,7 +8,6 @@
  * Contributors:
  *    EclipseSource - initial API and implementation
  ******************************************************************************/
-
 package org.eclipse.rap.addons.dropdown;
 
 import static org.junit.Assert.assertEquals;
@@ -67,7 +66,7 @@ public class DropDown_Test {
     connection = mock( Connection.class );
     when( connection.createRemoteObject( anyString() ) ).thenReturn( remoteObject );
     Fixture.fakeConnection( connection );
-    doAnswer( new Answer< Object >(){
+    doAnswer( new Answer<Object>(){
       public Object answer( InvocationOnMock invocation ) throws Throwable {
         handler = ( OperationHandler )invocation.getArguments()[ 0 ];
         return null;
@@ -216,7 +215,7 @@ public class DropDown_Test {
     dropdown.setData( "foo", "bar" );
 
     @SuppressWarnings("rawtypes")
-    ArgumentCaptor< Map > argument = ArgumentCaptor.forClass( Map.class );
+    ArgumentCaptor<Map> argument = ArgumentCaptor.forClass( Map.class );
     verify( remoteObject ).call( eq( "setData" ), argument.capture() );
     assertEquals( "bar", argument.getValue().get( "foo" ) );
   }
@@ -320,7 +319,7 @@ public class DropDown_Test {
   @Test
   public void testFireSelectionEvent() {
     Fixture.fakePhase( PhaseId.PROCESS_ACTION );
-    final List< Event > log = new ArrayList< Event >();
+    final List<Event> log = new ArrayList<Event>();
     dropdown.addListener( SWT.Selection, new Listener() {
       public void handleEvent( Event event ) {
         log.add( event );
@@ -340,7 +339,7 @@ public class DropDown_Test {
   @Test
   public void testFireDefaultSelectionEvent() {
     Fixture.fakePhase( PhaseId.PROCESS_ACTION );
-    final List< Event > log = new ArrayList< Event >();
+    final List<Event> log = new ArrayList<Event>();
     dropdown.addListener( SWT.DefaultSelection, new Listener() {
       public void handleEvent( Event event ) {
         log.add( event );

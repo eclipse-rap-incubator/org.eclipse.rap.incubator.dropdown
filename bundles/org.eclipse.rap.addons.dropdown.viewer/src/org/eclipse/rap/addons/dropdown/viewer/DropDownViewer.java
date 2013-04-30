@@ -16,6 +16,7 @@ import java.util.List;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.rap.addons.dropdown.DropDown;
 import org.eclipse.rap.addons.dropdown.viewer.internal.remote.UniversalRemoteObject;
+import org.eclipse.rap.addons.dropdown.viewer.internal.resources.ResourceLoaderUtil;
 import org.eclipse.rap.clientscripting.ClientListener;
 import org.eclipse.rap.clientscripting.WidgetDataWhiteList;
 import org.eclipse.rap.rwt.RWT;
@@ -42,8 +43,8 @@ public class DropDownViewer {
   private final ClientListenerHolder clientListener;
   private final UniversalRemoteObject remoteObject;
   private ILabelProvider labelProvider;
-  private final List< SelectionChangedListener > selectionChangedListeners
-    = new ArrayList< SelectionChangedListener >();
+  private final List<SelectionChangedListener> selectionChangedListeners
+    = new ArrayList<SelectionChangedListener>();
   private IStructuredContentProvider contentProvider;
 
   public DropDownViewer( Text text ) {
@@ -243,7 +244,7 @@ public class DropDownViewer {
 
   private static class ClientListenerHolder {
 
-    private final String PREFIX = "org/eclipse/rap/addons/dropdown/viewer/";
+    private final String PREFIX = "org/eclipse/rap/addons/dropdown/viewer/internal/resources/";
 
     private final ClientListener textListener = createListener( "TextEventListener.js" );
     private final ClientListener dropDownListener = createListener( "DropDownEventListener.js" );

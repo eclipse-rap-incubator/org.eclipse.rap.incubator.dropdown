@@ -12,12 +12,11 @@ package org.eclipse.rap.addons.dropdown.test.internal;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 import org.eclipse.rap.addons.dropdown.internal.resources.DropDownResources;
 import org.eclipse.rap.addons.dropdown.viewer.internal.remote.UniversalRemoteObject;
 import org.eclipse.rap.rwt.jstest.TestContribution;
+
 
 @SuppressWarnings( "restriction" )
 public class DropDownResourcesContribution implements TestContribution {
@@ -25,12 +24,6 @@ public class DropDownResourcesContribution implements TestContribution {
   public static String[] ADDITIONAL_RESOURCES = new String[] {
     "rwt/remote/UniversalRemoteObject.js"
   };
-
-  public static String[] concat( String[] array1, String[] array2 ) {
-    ArrayList<String> baseArray = new ArrayList< String >( Arrays.asList( array1 ) );
-    baseArray.addAll( Arrays.asList( array2 ) );
-    return baseArray.toArray( new String[ baseArray.size() ] );
-  }
 
   public String getName() {
     return "dropdown-resources";
@@ -45,6 +38,13 @@ public class DropDownResourcesContribution implements TestContribution {
       return UniversalRemoteObject.class.getClassLoader().getResourceAsStream( resourceName );
     }
     return DropDownResources.getResourceAsStream( resourceName );
+  }
+
+  private static String[] concat( String[] array1, String[] array2 ) {
+    String[] result = new String[ array1.length + array2.length ];
+    System.arraycopy( array1, 0, result, 0, array1.length );
+    System.arraycopy( array2, 0, result, array1.length, array2.length );
+    return result;
   }
 
 }

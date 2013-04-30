@@ -8,7 +8,6 @@
  * Contributors:
  *    EclipseSource - initial API and implementation
  ******************************************************************************/
-
 package org.eclipse.rap.addons.dropdown.viewer;
 
 import static org.junit.Assert.assertEquals;
@@ -39,6 +38,7 @@ import org.eclipse.rap.rwt.testfixture.Fixture;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.*;
 import org.junit.*;
+
 
 @SuppressWarnings("restriction")
 public class DropDownViewer_Test {
@@ -71,7 +71,7 @@ public class DropDownViewer_Test {
 
     @SuppressWarnings( "unchecked" )
     public Object[] getElements( Object inputElement ) {
-      return ( ( List< Integer > )inputElement ).toArray();
+      return ( ( List<Integer> )inputElement ).toArray();
     }
 
   }
@@ -218,7 +218,7 @@ public class DropDownViewer_Test {
 
     createViewer();
 
-    List< String > list = Arrays.asList( service.getKeys() );
+    List<String> list = Arrays.asList( service.getKeys() );
     assertTrue( list.contains( VIEWER_LINK ) );
   }
 
@@ -442,7 +442,7 @@ public class DropDownViewer_Test {
     IStructuredContentProvider provider = mock( IStructuredContentProvider.class );
     stub( provider.getElements( anyObject() ) ).toReturn( new Object[]{} );
     viewer.setContentProvider( provider );
-    List< Integer > newList = new ArrayList< Integer >();
+    List<Integer> newList = new ArrayList<Integer>();
 
     viewer.setInput( newList );
 
@@ -480,6 +480,5 @@ public class DropDownViewer_Test {
     event.put( key, value );
     return event;
   }
-
 
 }

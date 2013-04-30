@@ -47,7 +47,7 @@ public class UniversalRemoteObject_Test {
     connection = mock( Connection.class );
     Fixture.fakeConnection( connection );
     remoteObject = mock( RemoteObjectImpl.class );
-    doAnswer( new Answer< Object >() {
+    doAnswer( new Answer<Object>() {
         public Object answer( InvocationOnMock invocation ) {
             Object[] args = invocation.getArguments();
             operationHandler = ( OperationHandler )args[ 0 ];
@@ -153,7 +153,7 @@ public class UniversalRemoteObject_Test {
 
   @Test
   public void testHandleNotifyOperation() {
-    final List< Map< String, Object > > log = new ArrayList< Map< String, Object > >();
+    final List<Map<String, Object>> log = new ArrayList<Map<String, Object>>();
     uro.setHandler( new AbstractOperationHandler() {
       @Override
       public void handleNotify( String event, Map<String, Object> properties ) {
@@ -163,7 +163,7 @@ public class UniversalRemoteObject_Test {
       }
     } );
 
-    Map< String, Object > properties = new HashMap< String, Object >();
+    Map<String, Object> properties = new HashMap<String, Object>();
     properties.put( "index", new Integer( 23 ) );
     operationHandler.handleNotify( "Selection", properties );
 
@@ -173,7 +173,7 @@ public class UniversalRemoteObject_Test {
 
   @Test
   public void testHandleNotifyLocalCall() {
-    final List< Map< String, Object > > log = new ArrayList< Map< String, Object > >();
+    final List<Map<String, Object>> log = new ArrayList<Map<String, Object>>();
     uro.setHandler( new AbstractOperationHandler() {
       @Override
       public void handleNotify( String event, Map<String, Object> properties ) {
@@ -183,7 +183,7 @@ public class UniversalRemoteObject_Test {
       }
     } );
 
-    Map< String, Object > properties = new HashMap< String, Object >();
+    Map<String, Object> properties = new HashMap<String, Object>();
     properties.put( "index", new Integer( 23 ) );
     uro.notify( "Selection", properties );
 
@@ -192,7 +192,7 @@ public class UniversalRemoteObject_Test {
   }
 
   private void markDestroyed() {
-    doAnswer( new Answer< Boolean >() {
+    doAnswer( new Answer<Boolean>() {
       public Boolean answer( InvocationOnMock invocation ) {
           return Boolean.TRUE;
       }
