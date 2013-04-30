@@ -14,9 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.viewers.*;
-import org.eclipse.rap.addons.dropdown.*;
-import org.eclipse.rap.addons.dropdown.viewer.*;
-import org.eclipse.rap.addons.dropdown.viewer.SelectionChangedEvent;
+import org.eclipse.rap.addons.dropdown.DropDown;
+import org.eclipse.rap.addons.dropdown.viewer.DropDownViewer;
 import org.eclipse.rap.clientscripting.ClientListener;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.application.AbstractEntryPoint;
@@ -126,24 +125,11 @@ public class DropDownDemo extends AbstractEntryPoint {
     Group group = new Group( parent, SWT.NONE );
     group.setText( "DropDownViewer + server-side expand button, dynamic input (586 entries max)" );
     group.setLayout( new GridLayout( 2, false) );
-    Composite textBox = new Composite( group, SWT.BORDER );
-    GridLayout layout = new GridLayout( 2, false );
-    layout.marginHeight = 0;
-    layout.marginWidth = 0;
-    textBox.setLayoutData( new GridData( SWT.CENTER, SWT.CENTER, false, false) );
-    textBox.setLayout( layout );
-    Text text = new Text( textBox, SWT.NONE );
+    Text text = new Text( group, SWT.BORDER );
     GridData gridData = new GridData( 200, 23 );
     gridData.verticalAlignment = SWT.TOP;
     text.setLayoutData( gridData );
     text.setMessage( "City" );
-    Button open = new Button( textBox, SWT.ARROW | SWT.DOWN );
-    open.setLayoutData( new GridData( SWT.RIGHT, SWT.FILL, false, true ) );
-    open.addListener( SWT.Selection, new Listener() {
-      public void handleEvent( Event event ) {
-        viewer.getDropDown().show();
-      }
-    } );
     viewer = new DropDownViewer( text );
     viewer.setLabelProvider( new LabelProvider() {
       @Override
@@ -166,9 +152,10 @@ public class DropDownDemo extends AbstractEntryPoint {
         return ( Object[] )inputElement;
       }
     } );
-    viewer.addSelectionChangedListener( new SelectionChangedListener() {
+    viewer.addSelectionChangedListener( new ISelectionChangedListener() {
       public void selectionChanged( SelectionChangedEvent event ) {
-        String[] city = ( String[] )event.item;
+        IStructuredSelection selection = ( IStructuredSelection )event.getSelection();
+        String[] city = ( String[] )selection.getFirstElement();
         MessageBox box = new MessageBox( getShell() );
         box.setMessage(
            "Your area identifier is "

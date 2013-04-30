@@ -17,6 +17,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.stub;
 import static org.mockito.Mockito.times;
@@ -27,8 +28,6 @@ import java.util.List;
 
 import org.eclipse.jface.viewers.*;
 import org.eclipse.rap.addons.dropdown.DropDown;
-import org.eclipse.rap.addons.dropdown.viewer.DropDownViewer;
-import org.eclipse.rap.addons.dropdown.viewer.SelectionChangedListener;
 import org.eclipse.rap.clientscripting.ClientListener;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteList;
@@ -60,21 +59,6 @@ public class DropDownViewer_Test {
   private DropDownViewer viewer;
   private Shell shell;
   private DropDown dropDown;
-
-  private static class MyContentProvider implements IStructuredContentProvider {
-
-    public void dispose() {
-    }
-
-    public void inputChanged( Viewer viewer, Object oldInput, Object newInput ) {
-    }
-
-    @SuppressWarnings( "unchecked" )
-    public Object[] getElements( Object inputElement ) {
-      return ( ( List<Integer> )inputElement ).toArray();
-    }
-
-  }
 
   @Before
   public void setUp() {
@@ -277,7 +261,7 @@ public class DropDownViewer_Test {
     createViewer();
     final List<SelectionChangedEvent> log = new ArrayList<SelectionChangedEvent>();
     viewer.setInput( INTEGER_LIST );
-    viewer.addSelectionChangedListener( new SelectionChangedListener() {
+    viewer.addSelectionChangedListener( new ISelectionChangedListener() {
       public void selectionChanged( SelectionChangedEvent event ) {
         log.add( event );
       }
@@ -294,7 +278,7 @@ public class DropDownViewer_Test {
     createViewer();
     final List<SelectionChangedEvent> log = new ArrayList<SelectionChangedEvent>();
     viewer.setInput( INTEGER_LIST );
-    SelectionChangedListener listener = new SelectionChangedListener() {
+    ISelectionChangedListener listener = new ISelectionChangedListener() {
       public void selectionChanged( SelectionChangedEvent event ) {
         log.add( event );
       }
@@ -313,7 +297,7 @@ public class DropDownViewer_Test {
     createViewer();
     final List<SelectionChangedEvent> log = new ArrayList<SelectionChangedEvent>();
     viewer.setInput( INTEGER_LIST );
-    viewer.addSelectionChangedListener( new SelectionChangedListener() {
+    viewer.addSelectionChangedListener( new ISelectionChangedListener() {
       public void selectionChanged( SelectionChangedEvent event ) {
         log.add( event );
       }
@@ -322,7 +306,8 @@ public class DropDownViewer_Test {
     Map<String, Object> event = createMap( "index", Integer.valueOf( 2 ) );
     viewer.getRemoteObject().notify( "SelectionChanged", event );
 
-    assertEquals( new Integer( 21 ), log.get( 0 ).item );
+    IStructuredSelection selection = ( IStructuredSelection )log.get( 0 ).getSelection();
+    assertEquals( new Integer( 21 ), selection.getFirstElement() );
   }
 
   @Test
@@ -330,7 +315,7 @@ public class DropDownViewer_Test {
     Fixture.fakePhase( PhaseId.PROCESS_ACTION );
     createViewer();
 
-    viewer.getDropDown().dispose();
+    viewer.getControl().dispose();
 
     assertTrue( viewer.getRemoteObject().isDestroyed() );
   }
@@ -345,19 +330,6 @@ public class DropDownViewer_Test {
       fail();
     } catch( IllegalStateException ex ) {
       // expected
-    }
-  }
-
-  @Test
-  public void testCreateViewerAgainAfterDispose() {
-    Fixture.fakePhase( PhaseId.PROCESS_ACTION );
-    createViewer();
-    dropDown.dispose();
-
-    try {
-      createViewer();
-    } catch( IllegalStateException ex ) {
-      fail();
     }
   }
 
@@ -397,45 +369,6 @@ public class DropDownViewer_Test {
   }
 
   @Test
-  public void testSetInput_ExceptionWithDisposedWidget() {
-    createViewer();
-    viewer.getDropDown().dispose();
-
-    try {
-      viewer.setInput( INTEGER_LIST );
-      fail();
-    } catch( IllegalStateException ex ) {
-      // expected
-    }
-  }
-
-  @Test
-  public void testSetInput_ExceptionWithNoContentProvider() {
-    createViewer();
-    viewer.setContentProvider( null );
-
-    try {
-      viewer.setInput( INTEGER_LIST );
-      fail();
-    } catch( IllegalStateException ex ) {
-      // expected
-    }
-  }
-
-  @Test
-  public void testSetInput_ExceptionWithNoLabelProvider() {
-    createViewer();
-    viewer.setLabelProvider( null );
-
-    try {
-      viewer.setInput( INTEGER_LIST );
-      fail();
-    } catch( IllegalStateException ex ) {
-      // expected
-    }
-  }
-
-  @Test
   public void testSetInput_CallsInputChanged() {
     createViewer();
     viewer.setInput( INTEGER_LIST );
@@ -446,7 +379,7 @@ public class DropDownViewer_Test {
 
     viewer.setInput( newList );
 
-    verify( provider ).inputChanged( ( Viewer )eq( null ), eq( INTEGER_LIST ), eq( newList ) );
+    verify( provider ).inputChanged( same( viewer ), eq( INTEGER_LIST ), eq( newList ) );
   }
 
   @Test
@@ -456,7 +389,7 @@ public class DropDownViewer_Test {
     IStructuredContentProvider provider = mock( IStructuredContentProvider.class );
     viewer.setContentProvider( provider );
 
-    viewer.getDropDown().dispose();
+    viewer.getControl().dispose();
 
     verify( provider ).dispose();
   }
@@ -479,6 +412,21 @@ public class DropDownViewer_Test {
     Map<String, Object> event = new HashMap<String, Object>();
     event.put( key, value );
     return event;
+  }
+
+  private static class MyContentProvider implements IStructuredContentProvider {
+
+    public void dispose() {
+    }
+
+    public void inputChanged( Viewer viewer, Object oldInput, Object newInput ) {
+    }
+
+    @SuppressWarnings( "unchecked" )
+    public Object[] getElements( Object inputElement ) {
+      return ( ( List<Integer> )inputElement ).toArray();
+    }
+
   }
 
 }

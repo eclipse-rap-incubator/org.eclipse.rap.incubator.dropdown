@@ -10,8 +10,7 @@
  ******************************************************************************/
 package org.eclipse.rap.addons.dropdown.viewer;
 
-import java.util.*;
-import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jface.viewers.*;
 import org.eclipse.rap.addons.dropdown.DropDown;
@@ -22,85 +21,76 @@ import org.eclipse.rap.clientscripting.WidgetDataWhiteList;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.lifecycle.WidgetUtil;
 import org.eclipse.rap.rwt.remote.AbstractOperationHandler;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Text;
 
 
-public class DropDownViewer {
+public class DropDownViewer extends ContentViewer {
 
   private static final String ATTR_CLIENT_LISTNER_HOLDER
     = ClientListenerHolder.class.getName() + "#instance";
   private static final String SELECTION_CHANGED = "SelectionChanged";
-  private static String VIEWER_LINK = DropDownViewer.class.getName() + "#viewer";
-  private static String DROPDOWN_KEY = "dropDown";
-  private static String TEXT_KEY = "text";
-  private static String ELEMENTS_KEY = "elements";
+  private static final String VIEWER_LINK = DropDownViewer.class.getName() + "#viewer";
+  private static final String DROPDOWN_KEY = "dropDown";
+  private static final String TEXT_KEY = "text";
+  private static final String ELEMENTS_KEY = "elements";
 
   private final DropDown dropDown;
   private final Text text;
-  private Object input;
-  private Object[] elements;
-  private final ClientListenerHolder clientListener;
+  private final ClientListenerHolder clientListeners;
   private final UniversalRemoteObject remoteObject;
-  private ILabelProvider labelProvider;
-  private final List<SelectionChangedListener> selectionChangedListeners
-    = new ArrayList<SelectionChangedListener>();
-  private IStructuredContentProvider contentProvider;
+  private Object[] elements;
 
   public DropDownViewer( Text text ) {
     this.text = text;
     checkParent();
     dropDown = new DropDown( text );
-    clientListener = getClientListenerHolder();
+    clientListeners = getClientListenerHolder();
     remoteObject = new UniversalRemoteObject();
     remoteObject.setHandler( new InternalOperationHandler() );
     setClientElements( new String[ 0 ] );
     attachClientListener();
     linkClientObjects();
-    attachDisposeListener();
+    hookControl( text );
   }
 
-  public DropDown getDropDown() {
-    return dropDown;
+  @Override
+  public Control getControl() {
+    return text;
   }
 
-  public void setLabelProvider( ILabelProvider provider ) {
-    labelProvider = provider;
-    if( input != null ) {
-      updateClientElements();
-    }
+  @Override
+  public ISelection getSelection() {
+    return null;
   }
 
-  public void setContentProvider( IContentProvider contentProvider ) {
-    this.contentProvider = ( IStructuredContentProvider )contentProvider;
-    if( input != null ) {
-      updateElements();
-    }
-  }
-
-  public IContentProvider  getContentProvider() {
-    return contentProvider;
-  }
-
-  public void setInput( Object input ) {
-    if( dropDown == null || dropDown.isDisposed() ) {
-      String message =   "Need an underlying widget to be able to set the input."
-                       + "(Has the widget been disposed?)";
-      throw new IllegalStateException( message );
-    }
-    Object oldInput = this.input;
-    this.input = input;
-    if( contentProvider != null ) {
-      contentProvider.inputChanged( null, oldInput, input );
-    }
+  @Override
+  public void refresh() {
     updateElements();
   }
 
-  public void addSelectionChangedListener( SelectionChangedListener listener ) {
-    if( !selectionChangedListeners.contains( listener ) ) {
-      selectionChangedListeners.add( listener );
-      remoteObject.listen( SELECTION_CHANGED, true );
-    }
+  @Override
+  public void setSelection( ISelection selection, boolean reveal ) {
+    throw new UnsupportedOperationException( "Setting the selection is currently not supported" );
+  }
+
+  @Override
+  public void addSelectionChangedListener( ISelectionChangedListener listener ) {
+    super.addSelectionChangedListener( listener );
+    // can't remove selection listener, listener list is private in viewer
+    remoteObject.listen( SELECTION_CHANGED, true );
+  }
+
+  @Override
+  protected void inputChanged( Object input, Object oldInput ) {
+    updateElements();
+  }
+
+  @Override
+  protected void handleDispose( DisposeEvent event ) {
+    super.handleDispose( event );
+    remoteObject.destroy();
   }
 
   ////////////
@@ -113,24 +103,23 @@ public class DropDownViewer {
   }
 
   private void updateElements() {
-    if( contentProvider == null ) {
-      String message = "DropDownViewer must have a content provider when input is set.";
-      throw new IllegalStateException( message );
+    IStructuredContentProvider contentProvider = ( IStructuredContentProvider )getContentProvider();
+    Object input = getInput();
+    if( contentProvider != null && input != null ) {
+      elements = contentProvider.getElements( input );
+      updateClientElements();
     }
-    elements = contentProvider.getElements( input );
-    updateClientElements();
   }
 
   private void updateClientElements() {
-    if( labelProvider == null ) {
-      String message = "DropDownViewer must have a label provider when input is set.";
-      throw new IllegalStateException( message );
+    ILabelProvider labelProvider = ( ILabelProvider )getLabelProvider();
+    if( elements != null ) {
+      String[] clientElements = new String[ elements.length ];
+      for( int i = 0; i < elements.length; i++ ) {
+        clientElements[ i ] = labelProvider.getText( elements[ i ] );
+      }
+      setClientElements( clientElements );
     }
-    String[] clientElements = new String[ elements.length ];
-    for( int i = 0; i < elements.length; i++ ) {
-      clientElements[ i ] = labelProvider.getText( elements[ i ] );
-    }
-    setClientElements( clientElements );
   }
 
   private void setClientElements( String[] elements ) {
@@ -148,15 +137,6 @@ public class DropDownViewer {
     getDropDownShowListener().addTo( dropDown, ClientListener.Show );
   }
 
-  private void detachClientListener() {
-    getTextModifyListener().removeFrom( text, ClientListener.Modify );
-    getTextVerifyListener().removeFrom( text, ClientListener.Verify );
-    getTextKeyDownListener().removeFrom( text, ClientListener.KeyDown );
-    getDropDownSelectionListener().removeFrom( dropDown, ClientListener.Selection );
-    getDropDownDefaultSelectionListener().removeFrom( dropDown, ClientListener.DefaultSelection );
-    getDropDownShowListener().removeFrom( dropDown, ClientListener.Show );
-  }
-
   private void linkClientObjects() {
     // NOTE : Order is relevant, DropDown renders immediately!
     WidgetDataWhiteList.addKey( VIEWER_LINK );
@@ -166,50 +146,36 @@ public class DropDownViewer {
     remoteObject.set( TEXT_KEY, WidgetUtil.getId( text ) );
   }
 
-  private void unlinkClientObjects() {
-    text.setData( VIEWER_LINK, null );
-    dropDown.setData( VIEWER_LINK, null );
-  }
-
-  private void attachDisposeListener() {
-    dropDown.addListener( SWT.Dispose, new Listener() {
-      public void handleEvent( Event event ) {
-        unlinkClientObjects();
-        detachClientListener();
-        remoteObject.destroy();
-        if( contentProvider != null ) {
-          contentProvider.dispose();
-        }
-      }
-    } );
-  }
-
   UniversalRemoteObject getRemoteObject() {
     return remoteObject;
   }
 
   ClientListener getTextModifyListener() {
-    return clientListener.getTextModifyListener();
+    return clientListeners.getTextModifyListener();
   }
 
   ClientListener getTextVerifyListener() {
-    return clientListener.getTextVerifyListener();
+    return clientListeners.getTextVerifyListener();
   }
 
   ClientListener getTextKeyDownListener() {
-    return clientListener.getTextKeyDownListener();
+    return clientListeners.getTextKeyDownListener();
+  }
+
+  DropDown getDropDown() {
+    return dropDown;
   }
 
   ClientListener getDropDownSelectionListener() {
-    return clientListener.getDropDownSelectionListener();
+    return clientListeners.getDropDownSelectionListener();
   }
 
   ClientListener getDropDownDefaultSelectionListener() {
-    return clientListener.getDropDownDefaultSelectionListener();
+    return clientListeners.getDropDownDefaultSelectionListener();
   }
 
   public ClientListener getDropDownShowListener() {
-    return clientListener.getDropDownShowListener();
+    return clientListeners.getDropDownShowListener();
   }
 
   // TODO : make exchangeable by accepting a class that extends the holder in the constructor
@@ -224,10 +190,8 @@ public class DropDownViewer {
 
   private void fireSelectionChanged( int index ) {
     Object element = elements[ index ];
-    SelectionChangedEvent event = new SelectionChangedEvent( element );
-    for( SelectionChangedListener listener : selectionChangedListeners ) {
-      listener.selectionChanged( event );
-    }
+    ISelection selection = new StructuredSelection( element );
+    fireSelectionChanged( new SelectionChangedEvent( this, selection ) );
   }
 
   private class InternalOperationHandler extends AbstractOperationHandler {
