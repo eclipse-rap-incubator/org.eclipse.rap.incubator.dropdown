@@ -8,7 +8,6 @@
  * Contributors:
  *    EclipseSource - initial API and implementation
  ******************************************************************************/
-
 package org.eclipse.rap.addons.dropdown.viewer;
 
 import java.util.*;
@@ -16,7 +15,6 @@ import java.util.List;
 
 import org.eclipse.jface.viewers.*;
 import org.eclipse.rap.addons.dropdown.DropDown;
-import org.eclipse.rap.addons.dropdown.internal.resources.ResourceLoaderUtil;
 import org.eclipse.rap.addons.dropdown.viewer.internal.remote.UniversalRemoteObject;
 import org.eclipse.rap.clientscripting.ClientListener;
 import org.eclipse.rap.clientscripting.WidgetDataWhiteList;
@@ -27,7 +25,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.*;
 
 
-@SuppressWarnings("restriction")
 public class DropDownViewer {
 
   private static final String ATTR_CLIENT_LISTNER_HOLDER
@@ -246,7 +243,7 @@ public class DropDownViewer {
 
   private static class ClientListenerHolder {
 
-    private final String PREFIX = "org/eclipse/rap/addons/dropdown/internal/resources/";
+    private final String PREFIX = "org/eclipse/rap/addons/dropdown/viewer/";
 
     private final ClientListener textListener = createListener( "TextEventListener.js" );
     private final ClientListener dropDownListener = createListener( "DropDownEventListener.js" );

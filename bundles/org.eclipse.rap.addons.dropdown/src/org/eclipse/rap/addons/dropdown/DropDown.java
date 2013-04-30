@@ -8,7 +8,6 @@
  * Contributors:
  *    EclipseSource - initial API and implementation
  ******************************************************************************/
-
 package org.eclipse.rap.addons.dropdown;
 
 import java.util.Arrays;
@@ -31,9 +30,9 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Widget;
 
+
 @SuppressWarnings("restriction")
 public class DropDown extends Widget {
-
 
   private static final String REMOTE_TYPE = "rwt.dropdown.DropDown";
   private static final String SELECTION = "Selection";

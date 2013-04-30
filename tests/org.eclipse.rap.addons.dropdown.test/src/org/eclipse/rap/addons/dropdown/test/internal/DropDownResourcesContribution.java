@@ -8,7 +8,6 @@
  * Contributors:
  *    EclipseSource - initial API and implementation
  ******************************************************************************/
-
 package org.eclipse.rap.addons.dropdown.test.internal;
 
 import java.io.IOException;
@@ -17,8 +16,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.eclipse.rap.addons.dropdown.internal.resources.DropDownResources;
+import org.eclipse.rap.addons.dropdown.viewer.internal.remote.UniversalRemoteObject;
 import org.eclipse.rap.rwt.jstest.TestContribution;
 
+@SuppressWarnings( "restriction" )
 public class DropDownResourcesContribution implements TestContribution {
 
   public static String[] ADDITIONAL_RESOURCES = new String[] {
@@ -26,7 +27,7 @@ public class DropDownResourcesContribution implements TestContribution {
   };
 
   public static String[] concat( String[] array1, String[] array2 ) {
-    ArrayList< String > baseArray = new ArrayList< String >( Arrays.asList( array1 ) );
+    ArrayList<String> baseArray = new ArrayList< String >( Arrays.asList( array1 ) );
     baseArray.addAll( Arrays.asList( array2 ) );
     return baseArray.toArray( new String[ baseArray.size() ] );
   }
@@ -40,6 +41,9 @@ public class DropDownResourcesContribution implements TestContribution {
   }
 
   public InputStream getResourceAsStream( String resourceName ) throws IOException {
+    if( resourceName.equals( ADDITIONAL_RESOURCES[0] ) ) {
+      return UniversalRemoteObject.class.getClassLoader().getResourceAsStream( resourceName );
+    }
     return DropDownResources.getResourceAsStream( resourceName );
   }
 
