@@ -132,6 +132,7 @@ public class DropDownViewer extends ContentViewer {
     getTextModifyListener().addTo( text, ClientListener.Modify );
     getTextVerifyListener().addTo( text, ClientListener.Verify );
     getTextKeyDownListener().addTo( text, ClientListener.KeyDown );
+    getTextMouseDownListener().addTo( text, ClientListener.MouseDown );
     getDropDownSelectionListener().addTo( dropDown, ClientListener.Selection );
     getDropDownDefaultSelectionListener().addTo( dropDown, ClientListener.DefaultSelection );
     getDropDownShowListener().addTo( dropDown, ClientListener.Show );
@@ -162,6 +163,10 @@ public class DropDownViewer extends ContentViewer {
     return clientListeners.getTextKeyDownListener();
   }
 
+  ClientListener getTextMouseDownListener() {
+    return clientListeners.getTextMouseDownListener();
+  }
+
   DropDown getDropDown() {
     return dropDown;
   }
@@ -174,7 +179,7 @@ public class DropDownViewer extends ContentViewer {
     return clientListeners.getDropDownDefaultSelectionListener();
   }
 
-  public ClientListener getDropDownShowListener() {
+  ClientListener getDropDownShowListener() {
     return clientListeners.getDropDownShowListener();
   }
 
@@ -234,6 +239,10 @@ public class DropDownViewer extends ContentViewer {
     }
 
     public ClientListener getTextKeyDownListener() {
+      return textListener;
+    }
+
+    public ClientListener getTextMouseDownListener() {
       return textListener;
     }
 

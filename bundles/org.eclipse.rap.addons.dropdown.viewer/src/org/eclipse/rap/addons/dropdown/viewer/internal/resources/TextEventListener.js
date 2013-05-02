@@ -24,6 +24,9 @@ function handleEvent( event ) {
     case SWT.KeyDown:
       handleKeyDown( event );
     break;
+    case SWT.MouseDown:
+      handleMouseDown( event );
+    break;
   }
 }
 
@@ -77,6 +80,13 @@ function handleKeyDown( event ) {
       break;
     }
   }
+}
+
+function handleMouseDown( event ) {
+  var widget = event.widget;
+  var viewer = rap.getObject( widget.getData( VIEWER_KEY ) );
+  var dropdown = rap.getObject( viewer.get( "dropDown" ) );
+  dropdown.setVisibility( !dropdown.getVisibility() );
 }
 
 function commonText( items ) {

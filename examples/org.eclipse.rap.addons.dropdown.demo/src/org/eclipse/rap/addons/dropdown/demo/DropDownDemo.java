@@ -126,6 +126,8 @@ public class DropDownDemo extends AbstractEntryPoint {
     group.setText( "DropDownViewer + server-side expand button, dynamic input (586 entries max)" );
     group.setLayout( new GridLayout( 2, false) );
     Text text = new Text( group, SWT.BORDER );
+    text.setData( RWT.CUSTOM_VARIANT, "dropdown" );
+    text.setCursor( text.getDisplay().getSystemCursor( SWT.CURSOR_ARROW ) );
     GridData gridData = new GridData( 200, 23 );
     gridData.verticalAlignment = SWT.TOP;
     text.setLayoutData( gridData );

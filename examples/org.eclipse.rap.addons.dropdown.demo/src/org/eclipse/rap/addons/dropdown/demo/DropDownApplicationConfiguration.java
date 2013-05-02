@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.eclipse.rap.addons.dropdown.demo;
 
+import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.application.Application;
 import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 
@@ -17,6 +18,7 @@ import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 public class DropDownApplicationConfiguration implements ApplicationConfiguration {
 
   public void configure( Application application ) {
+    application.addStyleSheet( RWT.DEFAULT_THEME_ID, "theme/theme.css" );
     application.addEntryPoint( "/dropdown", DropDownDemo.class, null );
   }
 

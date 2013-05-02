@@ -1,0 +1,7 @@
+Text.dropdown {
+  border-radius: 0; /* otherwise IE won't support background position */
+  padding: 5px 20px 5px 10px; /* give space to the icon */
+  background-image: url( theme/arrow-down.png );
+  background-repeat: no-repeat;
+  background-position: right center;
+}
