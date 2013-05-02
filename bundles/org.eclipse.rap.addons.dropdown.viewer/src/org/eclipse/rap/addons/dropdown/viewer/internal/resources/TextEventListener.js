@@ -46,12 +46,15 @@ function handleModify( event ) {
   var dropdown = rap.getObject( viewer.get( "dropDown" ) );
   var data = viewer.get( "elements" );
   var result = searchItems( data, createQuery( text ) );
+  if( result.items.length === 0 ) {
+    result = searchItems( data, /.*/ );
+  }
   var typing = widget.getData( "typing" );
   var selecting = widget.getData( "selecting" );
   widget.setData( "typing", false );
   widget.setData( "selecting", false );
   if( !selecting ) {
-    if( ( text.length >= 2 || ( dropdown.getVisibility() && typing ) ) && result.items.length > 0 ) {
+    if( result.items.length > 0 ) {
       dropdown.setItems( result.items );
       dropdown.setData( "indexMapping", result.indicies );
       dropdown.show();
