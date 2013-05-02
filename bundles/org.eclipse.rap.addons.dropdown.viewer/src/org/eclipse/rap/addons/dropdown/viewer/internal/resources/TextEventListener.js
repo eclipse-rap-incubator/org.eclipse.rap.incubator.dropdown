@@ -56,7 +56,9 @@ function handleModify( event ) {
       dropdown.setData( "indexMapping", result.indicies );
       dropdown.show();
       var common = commonText( result.items );
-      if( typing && common && common.length > text.length ) {
+      if( typing && result.items.length === 1 ) {
+        dropdown.setSelectionIndex( 0 );
+      } else if( typing && common && common.length > text.length ) {
         var sel = widget.getSelection();
         var newSel = [ sel[ 0 ], common.length ];
         widget.setText( common );

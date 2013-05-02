@@ -35,6 +35,9 @@ function handleSelection( event ) {
     text.setData( "selecting", true );
     text.setText( event.text );
     text.setSelection( [ 0, event.text.length ] );
+    if( event.widget.getItemCount() === 1 ) {
+      handleDefaultSelection( event );
+    }
   }
 }
 
