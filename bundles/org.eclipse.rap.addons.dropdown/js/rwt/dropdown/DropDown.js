@@ -10,7 +10,6 @@
  ******************************************************************************/
 
 (function(){
-  'use strict';
 
   // TODO [tb] : take values from theming or parent, or introduce setter
   var ITEM_HEIGHT = 20;
