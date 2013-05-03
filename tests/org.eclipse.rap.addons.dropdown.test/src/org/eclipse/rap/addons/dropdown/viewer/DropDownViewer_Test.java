@@ -31,6 +31,7 @@ import org.eclipse.rap.addons.dropdown.DropDown;
 import org.eclipse.rap.clientscripting.ClientListener;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteList;
+import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteListImpl;
 import org.eclipse.rap.rwt.lifecycle.PhaseId;
 import org.eclipse.rap.rwt.lifecycle.WidgetUtil;
 import org.eclipse.rap.rwt.testfixture.Fixture;
@@ -208,7 +209,8 @@ public class DropDownViewer_Test {
 
   @Test
   public void testAddKeysToWidgetDataWhiteList() {
-    WidgetDataWhiteList service = RWT.getClient().getService( WidgetDataWhiteList.class );
+    WidgetDataWhiteListImpl service
+      = ( WidgetDataWhiteListImpl )RWT.getClient().getService( WidgetDataWhiteList.class );
     service.setKeys( new String[ 0 ] );
 
     createViewer();
@@ -219,7 +221,8 @@ public class DropDownViewer_Test {
 
   @Test
   public void testAddKeysToWidgetDataWhiteListAndKeepExistingKeys() {
-    WidgetDataWhiteList service = RWT.getClient().getService( WidgetDataWhiteList.class );
+    WidgetDataWhiteListImpl service
+      = ( WidgetDataWhiteListImpl )RWT.getClient().getService( WidgetDataWhiteList.class );
     service.setKeys( new String[]{ "foo" } );
 
     createViewer();
@@ -230,7 +233,8 @@ public class DropDownViewer_Test {
 
   @Test
   public void testAddKeysToWidgetDataWhiteListOnlyOnce() {
-    WidgetDataWhiteList service = RWT.getClient().getService( WidgetDataWhiteList.class );
+    WidgetDataWhiteListImpl service
+      = ( WidgetDataWhiteListImpl )RWT.getClient().getService( WidgetDataWhiteList.class );
     service.setKeys( new String[]{ VIEWER_LINK } );
 
     createViewer();

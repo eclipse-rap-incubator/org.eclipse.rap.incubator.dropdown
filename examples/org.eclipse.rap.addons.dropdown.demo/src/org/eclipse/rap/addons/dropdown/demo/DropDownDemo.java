@@ -21,10 +21,12 @@ import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.application.AbstractEntryPoint;
 import org.eclipse.rap.rwt.client.service.JavaScriptLoader;
 import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteList;
+import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteListImpl;
 import org.eclipse.rap.rwt.internal.remote.RemoteObjectImpl;
 import org.eclipse.rap.rwt.lifecycle.WidgetUtil;
 import org.eclipse.rap.rwt.remote.RemoteObject;
 import org.eclipse.rap.rwt.service.ResourceManager;
+import org.eclipse.rap.rwt.widgets.DialogCallback;
 import org.eclipse.rap.rwt.widgets.DialogUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -41,7 +43,8 @@ public class DropDownDemo extends AbstractEntryPoint {
   @Override
   protected void createContents( Composite parent ) {
     getShell().setLayout( new GridLayout( 1, false ) );
-    WidgetDataWhiteList list = RWT.getClient().getService( WidgetDataWhiteList.class );
+    WidgetDataWhiteListImpl list
+      = ( WidgetDataWhiteListImpl )RWT.getClient().getService( WidgetDataWhiteList.class );
     list.setKeys( new String[]{ "dropdown", "text", "data" } );
     createKFZExample( parent );
     createNationsExample( parent );
@@ -125,7 +128,7 @@ public class DropDownDemo extends AbstractEntryPoint {
     Group group = new Group( parent, SWT.NONE );
     group.setText( "DropDownViewer + server-side expand button, dynamic input (586 entries max)" );
     group.setLayout( new GridLayout( 2, false) );
-    Text text = new Text( group, SWT.BORDER );
+    final Text text = new Text( group, SWT.BORDER );
     text.setData( RWT.CUSTOM_VARIANT, "dropdown" );
     text.setCursor( text.getDisplay().getSystemCursor( SWT.CURSOR_ARROW ) );
     GridData gridData = new GridData( 200, 23 );
@@ -165,7 +168,11 @@ public class DropDownDemo extends AbstractEntryPoint {
           + ", which is "
           + city[ 1 ]
         );
-        DialogUtil.open( box, null );
+        DialogUtil.open( box, new DialogCallback() {
+          public void dialogClosed( int returnCode ) {
+            text.forceFocus();
+          }
+        } );
       }
     } );
     Group location = new Group( group, SWT.NONE );
