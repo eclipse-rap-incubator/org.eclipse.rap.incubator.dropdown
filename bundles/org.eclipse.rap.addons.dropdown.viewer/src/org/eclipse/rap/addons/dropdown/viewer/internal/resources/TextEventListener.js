@@ -48,6 +48,13 @@ function handleModify( event ) {
   var result = searchItems( data, createQuery( text ), 20 );
   if( result.items.length === 0 ) {
     result = searchItems( data, /.*/, 20 );
+    if( text.length >= 1 ) {
+      widget.setBackground( [ 255, 255, 128 ] );
+    } else {
+      widget.setBackground( null );
+    }
+  } else {
+    widget.setBackground( null );
   }
   var typing = widget.getData( "typing" );
   var selecting = widget.getData( "selecting" );
