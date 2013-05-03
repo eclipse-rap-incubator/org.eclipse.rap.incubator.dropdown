@@ -49,12 +49,12 @@ function handleModify( event ) {
   if( result.items.length === 0 ) {
     result = searchItems( data, /.*/, 20 );
     if( text.length >= 1 ) {
-      widget.setBackground( [ 255, 255, 128 ] );
+      showError( viewer, true )
     } else {
-      widget.setBackground( null );
+      showError( viewer, false )
     }
   } else {
-    widget.setBackground( null );
+    showError( viewer, false )
   }
   var typing = widget.getData( "typing" );
   var selecting = widget.getData( "selecting" );
@@ -131,3 +131,9 @@ function commonText( items ) {
   return result;
 }
 
+function showError( viewer, value ) {
+  var text = rap.getObject( viewer.get( "text" ) );
+  var decorator = rap.getObject( viewer.get( "decorator" ) );
+  text.setBackground( value ? [ 255, 255, 128 ] : null );
+  decorator.setVisible( value );
+}

@@ -12,6 +12,8 @@ package org.eclipse.rap.addons.dropdown.viewer;
 
 import java.util.Map;
 
+import org.eclipse.jface.fieldassist.FieldDecoration;
+import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.rap.addons.dropdown.DropDown;
 import org.eclipse.rap.addons.dropdown.viewer.internal.remote.UniversalRemoteObject;
@@ -21,11 +23,15 @@ import org.eclipse.rap.clientscripting.WidgetDataWhiteList;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.lifecycle.WidgetUtil;
 import org.eclipse.rap.rwt.remote.AbstractOperationHandler;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.internal.widgets.ControlDecorator;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
 
 
+@SuppressWarnings( "restriction" )
 public class DropDownViewer extends ContentViewer {
 
   private static final String ATTR_CLIENT_LISTNER_HOLDER
@@ -34,6 +40,7 @@ public class DropDownViewer extends ContentViewer {
   private static final String VIEWER_LINK = DropDownViewer.class.getName() + "#viewer";
   private static final String DROPDOWN_KEY = "dropDown";
   private static final String TEXT_KEY = "text";
+  private static final String DECORATOR_KEY = "decorator";
   private static final String ELEMENTS_KEY = "elements";
 
   private final DropDown dropDown;
@@ -41,6 +48,7 @@ public class DropDownViewer extends ContentViewer {
   private final ClientListenerHolder clientListeners;
   private final UniversalRemoteObject remoteObject;
   private Object[] elements;
+  private ControlDecorator decorator;
 
   public DropDownViewer( Text text ) {
     this.text = text;
@@ -50,6 +58,7 @@ public class DropDownViewer extends ContentViewer {
     remoteObject = new UniversalRemoteObject();
     remoteObject.setHandler( new InternalOperationHandler() );
     setClientElements( new String[ 0 ] );
+    createControlDecorator();
     attachClientListener();
     linkClientObjects();
     hookControl( text );
@@ -128,6 +137,19 @@ public class DropDownViewer extends ContentViewer {
     remoteObject.set( ELEMENTS_KEY, elements );
   }
 
+  private void createControlDecorator() {
+    decorator = new ControlDecorator( text, SWT.LEFT | SWT.TOP, null );
+    decorator.setMarginWidth( 2 );
+    decorator.setImage( getDecorationImage( FieldDecorationRegistry.DEC_ERROR ) );
+    decorator.hide();
+  }
+
+  private static Image getDecorationImage( String id ) {
+    FieldDecorationRegistry registry = FieldDecorationRegistry.getDefault();
+    FieldDecoration decoration = registry.getFieldDecoration( id );
+    return decoration.getImage();
+  }
+
   private void attachClientListener() {
     getTextModifyListener().addTo( text, ClientListener.Modify );
     getTextVerifyListener().addTo( text, ClientListener.Verify );
@@ -145,6 +167,7 @@ public class DropDownViewer extends ContentViewer {
     dropDown.setData( VIEWER_LINK, remoteObject.getId() );
     remoteObject.set( DROPDOWN_KEY, WidgetUtil.getId( dropDown ) );
     remoteObject.set( TEXT_KEY, WidgetUtil.getId( text ) );
+    remoteObject.set( DECORATOR_KEY, WidgetUtil.getId( decorator ) );
   }
 
   UniversalRemoteObject getRemoteObject() {
@@ -169,6 +192,10 @@ public class DropDownViewer extends ContentViewer {
 
   DropDown getDropDown() {
     return dropDown;
+  }
+
+  ControlDecorator getDecorator() {
+    return decorator;
   }
 
   ClientListener getDropDownSelectionListener() {

@@ -11,6 +11,7 @@
 package org.eclipse.rap.addons.dropdown.viewer;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
@@ -54,6 +55,7 @@ public class DropDownViewer_Test {
       "org.eclipse.rap.addons.dropdown.viewer.DropDownViewer#viewer";
   private static String DROPDOWN_KEY = "dropDown";
   private static final String TEXT_KEY = "text";
+  private static final String DECORATOR_KEY = "decorator";
   private static String ELEMENTS_KEY = "elements";
   private Display display;
   private Text text;
@@ -79,6 +81,15 @@ public class DropDownViewer_Test {
   public void testContructor_CreatesDropDownWithParent() {
     createViewer();
     assertSame( text, viewer.getDropDown().getParent() );
+  }
+
+  @Test
+  public void testContructor_CreatesDecorator() {
+    createViewer();
+    assertSame( text, viewer.getDecorator().getControl() );
+    assertEquals( 2, viewer.getDecorator().getMarginWidth() );
+    assertFalse( viewer.getDecorator().isVisible() );
+    assertNotNull( viewer.getDecorator().getImage() );
   }
 
   @Test
@@ -205,6 +216,14 @@ public class DropDownViewer_Test {
 
     String expected = WidgetUtil.getId( text );
     assertEquals( expected, viewer.getRemoteObject().getString( TEXT_KEY ) );
+  }
+
+  @Test
+  public void testLinkRemoteObjectToDecorator() {
+    createViewer();
+
+    String expected = WidgetUtil.getId( viewer.getDecorator() );
+    assertEquals( expected, viewer.getRemoteObject().getString( DECORATOR_KEY ) );
   }
 
   @Test
