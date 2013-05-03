@@ -56,6 +56,7 @@
     this._.viewer = createViewer( this._.popup );
     this._.visibleItemCount = 5;
     this._.parent = parent;
+    this._.items = [];
     this._.events = createEventsMap();
     this._.parent.addEventListener( "keydown", onTextKeyEvent, this );
     this._.parent.addEventListener( "keypress", onTextKeyEvent, this );
@@ -74,6 +75,7 @@
 
     setItems : function( items ) {
       this.setSelectionIndex( -1 );
+      this._.items = rwt.util.Arrays.copy( items );
       this._.viewer.setItems( items );
       updateScrollBars.call( this );
     },
@@ -308,8 +310,8 @@
     if( type === "Selection" || type === "DefaultSelection" ) {
       var selection = this._.viewer.getSelectedItems();
       if( selection.length > 0 ) {
-        event.text = rwt.util.Encoding.unescape( selection[ 0 ].getLabel() );
         event.index = this.getSelectionIndex();
+        event.text = this._.items[ event.index ];
       }
       if( selection.length > 0 || type !== "DefaultSelection" ) {
         notify.apply( this, [ type, event ] );

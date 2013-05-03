@@ -403,6 +403,18 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       assertIdentical( 13, event.type );
     },
 
+    testSelectionEventFields_Unescaped : function() {
+      dropdown.setItems( [ "a", "&bb ", "c" ] ); // the *trailing* space is important
+      prepare();
+      var logger = TestUtil.getLogger();
+
+      dropdown.addListener( "Selection", logger.log );
+      clickItem( 1 );
+
+      var event = logger.getLog()[ 0 ];
+      assertIdentical( "&bb ", event.text );
+    },
+
     testSelectionEventFields_NoItemSelected : function() {
       dropdown.setItems( [ "a", "b", "c" ] );
       prepare();
