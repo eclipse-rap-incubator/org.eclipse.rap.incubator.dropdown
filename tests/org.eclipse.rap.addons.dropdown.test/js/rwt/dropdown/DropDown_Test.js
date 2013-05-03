@@ -242,7 +242,6 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       assertTrue( message.findSetProperty( "w3", "visibility" ) );
     },
 
-
     testShow_DoesNotSendVisibilityInResponse : function() {
       TestUtil.fakeResponse( true );
       prepare();
@@ -298,6 +297,31 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
 
       assertEquals( popup.getInnerWidth(), viewer.getWidth() );
       assertEquals( popup.getInnerHeight(), viewer.getHeight() );
+    },
+
+    testShow_SetsViewerFont : function() {
+      var font = rwt.html.Font.fromString( "Arial 12px" );
+      shell.setFont( font );
+      widget.setFont( "inherit" );
+      prepare();
+
+      assertIdentical( font, viewer.getFont() );
+    },
+
+    testShow_SetsItemHeightFor10pxFont : function() {
+      var font = rwt.html.Font.fromString( "Arial 10px" );
+      widget.setFont( font );
+      prepare();
+
+      assertEquals( 5 + 5 + 10, viewer._itemHeight );
+    },
+
+    testShow_SetsItemHeightFor12pxFont : function() {
+      var font = rwt.html.Font.fromString( "Arial 12px" );
+      widget.setFont( font );
+      prepare();
+
+      assertEquals( 5 + 5 + 12, viewer._itemHeight );
     },
 
     testSetItems_SetsItemsOnViewer : function() {
@@ -845,6 +869,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
 
     createExample : function() {
       widget = new rwt.widgets.Composite();
+      widget.setFont( rwt.html.Font.fromString( "Arial 10px" ) );
       widget.setParent( shell );
       widget.setLocation( 10, 20 );
       widget.setDimension( 100, 30 );

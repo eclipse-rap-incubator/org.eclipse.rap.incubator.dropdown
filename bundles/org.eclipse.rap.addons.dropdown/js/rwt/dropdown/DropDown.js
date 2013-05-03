@@ -16,6 +16,7 @@
   var ITEM_FONT = rwt.html.Font.fromArray( [ [ "Arial" ], 12, false, false ] );
   var POPUP_BORDER = new rwt.html.Border( 1, "solid", "#000000" );
   var FRAMEWIDTH = 2;
+  var PADDING = 5;
 
   // Values identical to SWT
   var eventTypes = {
@@ -112,12 +113,15 @@
       if( this._.parent.isCreated() && !this._.popup.isSeeable() ) {
         var yOffset = this._.parent.getHeight();
         var control = this._.parent;
+        var font = control.getFont();
+        var itemHeight = font.getSize() + PADDING * 2;
         this._.popup.positionRelativeTo( control, 0, yOffset );
         this._.popup.setWidth( control.getWidth() );
-        this._.popup.setHeight( this._.visibleItemCount * ITEM_HEIGHT + FRAMEWIDTH );
-        this._.popup.show();
+        this._.popup.setHeight( this._.visibleItemCount * itemHeight + FRAMEWIDTH );
+        this._.viewer.setFont( font );
         this._.viewer.setDimension( this._.popup.getInnerWidth(), this._.popup.getInnerHeight() );
-        this._.viewer.setItemDimensions( "100%", ITEM_HEIGHT );
+        this._.viewer.setItemDimensions( "100%", itemHeight );
+        this._.popup.show();
         if( !hasFocus( control ) ) {
           this._.viewer.getFocusRoot().setFocusedChild( this._.viewer );
         }
