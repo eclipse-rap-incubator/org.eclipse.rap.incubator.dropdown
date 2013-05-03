@@ -45,9 +45,9 @@ function handleModify( event ) {
   var viewer = rap.getObject( widget.getData( VIEWER_KEY ) );
   var dropdown = rap.getObject( viewer.get( "dropDown" ) );
   var data = viewer.get( "elements" );
-  var result = searchItems( data, createQuery( text ) );
+  var result = searchItems( data, createQuery( text ), 20 );
   if( result.items.length === 0 ) {
-    result = searchItems( data, /.*/ );
+    result = searchItems( data, /.*/, 20 );
   }
   var typing = widget.getData( "typing" );
   var selecting = widget.getData( "selecting" );
@@ -57,7 +57,9 @@ function handleModify( event ) {
     if( result.items.length > 0 ) {
       dropdown.setItems( result.items );
       dropdown.setData( "indexMapping", result.indicies );
+      dropdown.setData( "internalShow", true );
       dropdown.show();
+      dropdown.setData( "internalShow", false );
       var common = commonText( result.items );
       if( typing && result.items.length === 1 ) {
         dropdown.setSelectionIndex( 0 );

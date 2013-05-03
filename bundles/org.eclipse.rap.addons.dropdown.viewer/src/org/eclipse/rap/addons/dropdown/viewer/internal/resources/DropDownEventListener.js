@@ -56,11 +56,13 @@ function handleDefaultSelection( event ) {
 
 function handleShow( event ) {
   var dropdown = event.widget;
-  var viewer = rap.getObject( dropdown.getData( VIEWER_KEY ) );
-  var data = viewer.get( "elements" );
-  var text = rap.getObject( viewer.get( "text" ) );
-  var str = text.getText();
-  var result = searchItems( data, createQuery( str ) );
-  dropdown.setItems( result.items );
-  dropdown.setData( "indexMapping", result.indicies );
+  if( dropdown.getData( "internalShow" ) !== true ) {
+    var viewer = rap.getObject( dropdown.getData( VIEWER_KEY ) );
+    var data = viewer.get( "elements" );
+    var text = rap.getObject( viewer.get( "text" ) );
+    var str = text.getText();
+    var result = searchItems( data, createQuery( str ), 20 );
+    dropdown.setItems( result.items );
+    dropdown.setData( "indexMapping", result.indicies );
+  }
 }
