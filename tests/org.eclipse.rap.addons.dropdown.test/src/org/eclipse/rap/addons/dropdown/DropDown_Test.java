@@ -29,6 +29,7 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.rap.clientscripting.ClientListener;
 import org.eclipse.rap.json.JsonArray;
 import org.eclipse.rap.json.JsonObject;
 import org.eclipse.rap.rwt.client.Client;
@@ -275,21 +276,46 @@ public class DropDown_Test {
   }
 
   @Test
-  public void testAddListener_SelectionRenderListenTrue() {
-    Listener listener = mock( Listener.class );
-    dropdown.addListener( SWT.Selection, listener );
+  public void testAddListener_Selection_sendsListen() {
+    dropdown.addListener( SWT.Selection, mock( Listener.class ) );
 
     verify( remoteObject ).listen( eq( "Selection" ), eq( true ) );
   }
 
   @Test
-  public void testRemoveListener_SelectionRenderListenFalse() {
+  public void testAddListener_Selection_doesNotSendListenTwice() {
+    dropdown.addListener( SWT.Selection, mock( Listener.class ) );
+    dropdown.addListener( SWT.Selection, mock( Listener.class ) );
+
+    verify( remoteObject, times( 1 ) ).listen( eq( "Selection" ), eq( true ) );
+  }
+
+  @Test
+  public void testAddListener_Selection_doesNotSendListenForClientListener() {
+    dropdown.addListener( SWT.Selection, new ClientListener( "foo" ) );
+
+    verify( remoteObject, times( 0 ) ).listen( eq( "Selection" ), eq( true ) );
+  }
+
+  @Test
+  public void testRemoveListener_Selection_sendsListen() {
     Listener listener = mock( Listener.class );
     dropdown.addListener( SWT.Selection, listener );
-    //Mockito.reset( remoteObject );
+
     dropdown.removeListener( SWT.Selection, listener );
 
     verify( remoteObject ).listen( eq( "Selection" ), eq( false ) );
+  }
+
+  @Test
+  public void testRemoveListener_Selection_doesNotSendListenIfStillListening() {
+    dropdown.addListener( SWT.Selection, mock( Listener.class ) );
+    Listener listener = mock( Listener.class );
+    dropdown.addListener( SWT.Selection, listener );
+
+    dropdown.removeListener( SWT.Selection, listener );
+
+    verify( remoteObject, times( 0 ) ).listen( eq( "Selection" ), eq( false ) );
   }
 
   @Test

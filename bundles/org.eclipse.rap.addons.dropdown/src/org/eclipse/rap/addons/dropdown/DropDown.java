@@ -23,6 +23,7 @@ import org.eclipse.rap.rwt.lifecycle.WidgetUtil;
 import org.eclipse.rap.rwt.remote.AbstractOperationHandler;
 import org.eclipse.rap.rwt.remote.RemoteObject;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.internal.events.EventLCAUtil;
 import org.eclipse.swt.internal.widgets.WidgetAdapterImpl;
 import org.eclipse.swt.widgets.*;
 
@@ -126,19 +127,23 @@ public class DropDown extends Widget {
   }
 
   @Override
-  public void addListener( int type, Listener listener ) {
-    super.addListener( type, listener );
-    String remoteType = evenTypeToString( type );
-    if( remoteType != null ) {
+  public void addListener( int eventType, Listener listener ) {
+    boolean wasListening = EventLCAUtil.isListening( this, eventType );
+    super.addListener( eventType, listener );
+    boolean isListening = EventLCAUtil.isListening( this, eventType );
+    String remoteType = eventTypeToString( eventType );
+    if( remoteType != null && !wasListening && isListening ) {
       remoteObject.listen( remoteType, true );
     }
   }
 
   @Override
-  public void removeListener( int type, Listener listener ) {
-    super.removeListener( type, listener );
-    String remoteType = evenTypeToString( type );
-    if( remoteType != null ) {
+  public void removeListener( int eventType, Listener listener ) {
+    boolean wasListening = EventLCAUtil.isListening( this, eventType );
+    super.removeListener( eventType, listener );
+    boolean isListening = EventLCAUtil.isListening( this, eventType );
+    String remoteType = eventTypeToString( eventType );
+    if( remoteType != null && wasListening && !isListening ) {
       remoteObject.listen( remoteType, false );
     }
   }
@@ -208,7 +213,7 @@ public class DropDown extends Widget {
     }
   }
 
-  private static String evenTypeToString( int type ) {
+  private static String eventTypeToString( int type ) {
     String result;
     switch( type ) {
       case SWT.Selection:
