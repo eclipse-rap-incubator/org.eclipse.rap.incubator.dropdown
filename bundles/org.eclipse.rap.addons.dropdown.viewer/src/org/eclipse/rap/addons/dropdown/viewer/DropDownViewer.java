@@ -10,8 +10,6 @@
  ******************************************************************************/
 package org.eclipse.rap.addons.dropdown.viewer;
 
-import java.util.Map;
-
 import org.eclipse.jface.fieldassist.FieldDecoration;
 import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.jface.viewers.*;
@@ -20,7 +18,9 @@ import org.eclipse.rap.addons.dropdown.viewer.internal.remote.UniversalRemoteObj
 import org.eclipse.rap.addons.dropdown.viewer.internal.resources.ResourceLoaderUtil;
 import org.eclipse.rap.clientscripting.ClientListener;
 import org.eclipse.rap.clientscripting.WidgetDataWhiteList;
+import org.eclipse.rap.json.JsonObject;
 import org.eclipse.rap.rwt.RWT;
+import org.eclipse.rap.rwt.internal.protocol.JsonUtil;
 import org.eclipse.rap.rwt.lifecycle.WidgetUtil;
 import org.eclipse.rap.rwt.remote.AbstractOperationHandler;
 import org.eclipse.swt.SWT;
@@ -134,7 +134,7 @@ public class DropDownViewer extends ContentViewer {
   private void setClientElements( String[] elements ) {
     // TODO : Using a separate client object (e.g. "RemoteList") for the elements might allow
     //        sharing and incremental updates
-    remoteObject.set( ELEMENTS_KEY, elements );
+    remoteObject.set( ELEMENTS_KEY, JsonUtil.createJsonArray( elements ) );
   }
 
   private void createControlDecorator() {
@@ -229,9 +229,9 @@ public class DropDownViewer extends ContentViewer {
   private class InternalOperationHandler extends AbstractOperationHandler {
 
     @Override
-    public void handleNotify( String event, Map<String, Object> properties ) {
+    public void handleNotify( String event, JsonObject properties ) {
       if( SELECTION_CHANGED.equals( event ) ) {
-        int index = ( ( Integer )properties.get( "index" ) ).intValue();
+        int index = properties.get( "index" ).asInt();
         fireSelectionChanged( index );
       }
     }

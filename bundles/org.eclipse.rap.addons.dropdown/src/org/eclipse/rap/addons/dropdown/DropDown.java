@@ -11,13 +11,13 @@
 package org.eclipse.rap.addons.dropdown;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.eclipse.rap.addons.dropdown.internal.resources.DropDownResources;
+import org.eclipse.rap.json.JsonObject;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteList;
 import org.eclipse.rap.rwt.internal.protocol.IClientObjectAdapter;
+import org.eclipse.rap.rwt.internal.protocol.JsonUtil;
 import org.eclipse.rap.rwt.internal.remote.RemoteObjectImpl;
 import org.eclipse.rap.rwt.lifecycle.WidgetAdapter;
 import org.eclipse.rap.rwt.lifecycle.WidgetUtil;
@@ -25,10 +25,7 @@ import org.eclipse.rap.rwt.remote.AbstractOperationHandler;
 import org.eclipse.rap.rwt.remote.RemoteObject;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.internal.widgets.WidgetAdapterImpl;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Widget;
+import org.eclipse.swt.widgets.*;
 
 
 @SuppressWarnings("restriction")
@@ -83,7 +80,7 @@ public class DropDown extends Widget {
   }
 
   public void setItems( String[] strings ) {
-    remoteObject.set( "items", strings.clone() );
+    remoteObject.set( "items", JsonUtil.createJsonArray( strings ) );
     setSelectionIndexImpl( -1 );
   }
 
@@ -155,21 +152,21 @@ public class DropDown extends Widget {
   private class InternalOperationHandler extends AbstractOperationHandler {
 
     @Override
-    public void handleSet( Map<String, Object> properties ) {
-      if( properties.containsKey( "visibility" ) ) {
-        setVisibilityImpl( (( Boolean )properties.get( "visibility" )).booleanValue() );
+    public void handleSet( JsonObject properties ) {
+      if( properties.get( "visibility" ) != null ) {
+        setVisibilityImpl( properties.get( "visibility" ).asBoolean() );
       }
-      if( properties.containsKey( "selectionIndex" ) ) {
-        setSelectionIndexImpl( (( Integer )properties.get( "selectionIndex" )).intValue() );
+      if( properties.get( "selectionIndex" ) != null ) {
+        setSelectionIndexImpl( properties.get( "selectionIndex" ).asInt() );
       }
     }
 
     @Override
-    public void handleNotify( String type, Map<String, Object> properties ) {
+    public void handleNotify( String type, JsonObject properties ) {
       if( SELECTION.equals( type ) || DEFAULT_SELECTION.equals( type )) {
         Event event = new Event();
-        event.index = (( Integer )properties.get( "index" )).intValue();
-        event.text = ( String )properties.get( "text" );
+        event.index = properties.get( "index" ).asInt();
+        event.text = properties.get( "text" ).asString();
         notifyListeners( stringToEventType( type ), event );
       }
     }
@@ -208,8 +205,8 @@ public class DropDown extends Widget {
     WidgetDataWhiteList service = RWT.getClient().getService( WidgetDataWhiteList.class );
     String[] dataKeys = service == null ? null : service.getKeys();
     if( dataKeys != null && Arrays.asList( dataKeys ).contains( key ) ) {
-      Map<String, Object> data = new HashMap<String, Object>();
-      data.put( key, value );
+      @SuppressWarnings( "deprecation" )
+      JsonObject data = new JsonObject().add( key, JsonUtil.createJsonValue( value ) );
       remoteObject.call( "setData", data );
     }
   }

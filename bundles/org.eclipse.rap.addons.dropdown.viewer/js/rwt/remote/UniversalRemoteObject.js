@@ -25,7 +25,6 @@
 
   var UniversalRemoteObject = function() {
     this._ = {
-      //listener : {},
       properties : {}
     };
   };
@@ -44,10 +43,7 @@
         var value = arguments[ 1 ];
         var options = arguments[ 2 ];
         this._.properties[ property ] = value;
-//        if( !options || !options.nosync ) {
-        // TODO : perhaps limit to values created by the server?
-//          rap.getRemoteObject( this ).set( property, value );
-//        }
+
       }
     },
 
@@ -65,31 +61,8 @@
 
     notify : function( event, properties ) {
       rap.getRemoteObject( this ).notify( event, properties );
-//      this._notifyInternal( event, properties );
     }
 
-//    _notifyInternal : function( event, properties ) {
-//      var listeners = this._.listener[ event ];
-//      for( var i = 0; listeners && i < listeners.length; i++ ) {
-//        listeners[ i ]( event );
-//      }
-//    },
-//
-//    addListener : function( type, listener ) {
-//      if( !this._.listener[ type ] ) {
-//        this._.listener[ type ] = [];
-//      }
-//      if( this._.events[ type ].indexOf( listener ) === -1 ) {
-//        this._.events[ type ].push( listener );
-//      }
-//    },
-//
-//    removeListener : function( type, listener ) {
-//      if( this._.listener[ type ] ) {
-//        var index = this._.listener[ type ].indexOf( listener );
-//        rwt.util.Arrays.removeAt( this._.listener[ type ], index );
-//      }
-//    }
 
   };
 

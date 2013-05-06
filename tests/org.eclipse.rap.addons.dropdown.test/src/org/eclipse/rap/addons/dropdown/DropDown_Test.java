@@ -26,12 +26,14 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.rap.addons.dropdown.DropDown;
+import org.eclipse.rap.json.JsonArray;
+import org.eclipse.rap.json.JsonObject;
 import org.eclipse.rap.rwt.client.Client;
 import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteList;
+import org.eclipse.rap.rwt.internal.protocol.JsonUtil;
 import org.eclipse.rap.rwt.internal.remote.RemoteObjectImpl;
 import org.eclipse.rap.rwt.lifecycle.PhaseId;
 import org.eclipse.rap.rwt.lifecycle.WidgetUtil;
@@ -156,7 +158,7 @@ public class DropDown_Test {
 
   @Test
   public void testProcessSetVisibility_ValueIsTrue() {
-    handler.handleSet( createMap( "visibility", Boolean.TRUE ) );
+    handler.handleSet( new JsonObject().add( "visibility", true ) );
 
     assertTrue( dropdown.getVisibility() );
   }
@@ -165,21 +167,21 @@ public class DropDown_Test {
   public void testProcessSetVisibility_ValueIsFalse() {
     dropdown.setVisibility( true );
 
-    handler.handleSet( createMap( "visibility", Boolean.FALSE ) );
+    handler.handleSet( new JsonObject().add( "visibility", false ) );
 
     assertFalse( dropdown.getVisibility() );
   }
 
   @Test
   public void testProcessSetSelectionIndex() {
-    handler.handleSet( createMap( "selectionIndex", Integer.valueOf( 7 ) ) );
+    handler.handleSet( new JsonObject().add( "selectionIndex", 7) );
 
     assertEquals( 7, dropdown.getSelectionIndex() );
   }
 
   @Test
   public void testSetItems_ResetsSelectionIndex() {
-    handler.handleSet( createMap( "selectionIndex", Integer.valueOf( 7 ) ) );
+    handler.handleSet( new JsonObject().add( "selectionIndex", 7) );
     dropdown.setItems( new String[]{ "a" } );
 
     assertEquals( -1, dropdown.getSelectionIndex() );
@@ -187,7 +189,7 @@ public class DropDown_Test {
 
   @Test
   public void testProcessSetVisibility_DoNotRenderToRemoteObject() {
-    handler.handleSet( createMap( "visibility", Boolean.TRUE ) );
+    handler.handleSet( new JsonObject().add( "visibility", true ) );
 
     verify( remoteObject, never() ).set( eq( "visibility" ), anyBoolean() );
   }
@@ -206,7 +208,6 @@ public class DropDown_Test {
     verify( remoteObject ).set( "visibleItemCount", 7 );
   }
 
-  @SuppressWarnings("unchecked")
   @Test
   public void testSetData_RendersDataInWhiteList() {
     Fixture.fakePhase( PhaseId.PROCESS_ACTION );
@@ -215,9 +216,10 @@ public class DropDown_Test {
     dropdown.setData( "foo", "bar" );
 
     @SuppressWarnings("rawtypes")
-    ArgumentCaptor<Map> argument = ArgumentCaptor.forClass( Map.class );
+    ArgumentCaptor<JsonObject> argument = ArgumentCaptor.forClass( JsonObject.class );
     verify( remoteObject ).call( eq( "setData" ), argument.capture() );
-    assertEquals( "bar", argument.getValue().get( "foo" ) );
+
+    assertEquals( "bar", argument.getValue().get( "foo" ).asString() );
   }
 
   @Test
@@ -227,7 +229,7 @@ public class DropDown_Test {
     fakeWidgetDataWhiteList( new String[]{ "foo", "bar" } );
     dropdown.setData( "fool", "bar" );
 
-    verify( remoteObject, never() ).set( eq( "data" ), any() );
+    verify( remoteObject, never() ).set( eq( "data" ), any( JsonObject.class ) );
   }
 
   @Test
@@ -268,16 +270,8 @@ public class DropDown_Test {
   public void testSetItem_RenderItems() {
     dropdown.setItems( new String[]{ "a", "b", "c" } );
 
-    verify( remoteObject ).set( eq( "items" ), eq( new String[]{ "a", "b", "c" } ) );
-  }
-
-  @Test
-  public void testSetItem_RenderItemsSaveCopy() {
-    String[] strings = new String[]{ "a", "b", "c" };
-    dropdown.setItems( strings );
-    strings[ 1 ] = "x";
-
-    verify( remoteObject ).set( eq( "items" ), eq( new String[]{ "a", "b", "c" } ) );
+    JsonArray expected = JsonUtil.createJsonArray( new String[]{ "a", "b", "c" } );
+    verify( remoteObject ).set( eq( "items" ), eq( expected ) );
   }
 
   @Test
@@ -326,10 +320,10 @@ public class DropDown_Test {
       }
     } );
 
-    handler.handleNotify( "Selection", createMap(
-      "index", Integer.valueOf( 2 ),
-      "text", "foo"
-    ) );
+    handler.handleNotify( "Selection", new JsonObject()
+      .add( "index", 2 )
+      .add( "text", "foo" )
+    );
 
     assertEquals( 1, log.size() );
     assertEquals( 2, log.get( 0 ).index );
@@ -346,10 +340,10 @@ public class DropDown_Test {
       }
     } );
 
-    handler.handleNotify( "DefaultSelection", createMap(
-      "index", Integer.valueOf( 2 ),
-      "text", "foo"
-    ) );
+    handler.handleNotify( "DefaultSelection", new JsonObject()
+      .add( "index", 2 )
+      .add( "text", "foo" )
+    );
 
     assertEquals( 1, log.size() );
     assertEquals( 2, log.get( 0 ).index );
@@ -365,14 +359,6 @@ public class DropDown_Test {
     Client client = mock( Client.class );
     when( client.getService( WidgetDataWhiteList.class ) ).thenReturn( service );
     Fixture.fakeClient( client );
-  }
-
-  private Map<String, Object> createMap( Object... values ) {
-    Map<String, Object> properties = new HashMap<String, Object>();
-    for( int i = 0; i < values.length; i += 2 ) {
-      properties.put( ( String )values[ i ], values[ i + 1 ] );
-    }
-    return properties;
   }
 
 }

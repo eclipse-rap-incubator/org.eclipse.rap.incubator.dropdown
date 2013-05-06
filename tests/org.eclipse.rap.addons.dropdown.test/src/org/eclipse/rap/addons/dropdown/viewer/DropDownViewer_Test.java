@@ -30,9 +30,12 @@ import java.util.List;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.rap.addons.dropdown.DropDown;
 import org.eclipse.rap.clientscripting.ClientListener;
+import org.eclipse.rap.json.JsonArray;
+import org.eclipse.rap.json.JsonObject;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteList;
 import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteListImpl;
+import org.eclipse.rap.rwt.internal.protocol.JsonUtil;
 import org.eclipse.rap.rwt.lifecycle.PhaseId;
 import org.eclipse.rap.rwt.lifecycle.WidgetUtil;
 import org.eclipse.rap.rwt.testfixture.Fixture;
@@ -96,8 +99,7 @@ public class DropDownViewer_Test {
   public void testConstructor_SetEmptyElements() {
     createViewer();
 
-    List<String> expected = new ArrayList<String>();
-    assertEquals( expected, Arrays.asList( getElements() ) );
+    assertEquals( 0, getElements().size() );
   }
 
   @Test
@@ -268,9 +270,8 @@ public class DropDownViewer_Test {
 
     viewer.setInput( INTEGER_LIST );
 
-    String[] result = getElements();
-    List<String> expected = Arrays.asList( new String[]{ "7", "14", "21"} );
-    assertEquals( expected, Arrays.asList( result ) );
+    JsonArray expected = JsonUtil.createJsonArray( new String[]{ "7", "14", "21" } );
+    assertEquals( expected, getElements() );
   }
 
   @Test
@@ -285,9 +286,8 @@ public class DropDownViewer_Test {
       }
     } );
 
-    String[] result = getElements();
-    List<String> expected = Arrays.asList( new String[]{ "Item 7", "Item 14", "Item 21"} );
-    assertEquals( expected, Arrays.asList( result ) );
+    JsonArray expected = JsonUtil.createJsonArray( new String[]{ "Item 7", "Item 14", "Item 21" } );
+    assertEquals( expected, getElements() );
   }
 
   @Test
@@ -301,7 +301,7 @@ public class DropDownViewer_Test {
       }
     } );
 
-    Map<String, Object> event = createMap( "index", Integer.valueOf( 2 ) );
+    JsonObject event = new JsonObject().add( "index", 2 );
     viewer.getRemoteObject().notify( "SelectionChanged", event );
 
     assertEquals( 1, log.size() );
@@ -320,7 +320,7 @@ public class DropDownViewer_Test {
 
     viewer.addSelectionChangedListener( listener );
     viewer.addSelectionChangedListener( listener );
-    Map<String, Object> event = createMap( "index", Integer.valueOf( 2 ) );
+    JsonObject event = new JsonObject().add( "index", 2 );
     viewer.getRemoteObject().notify( "SelectionChanged", event );
 
     assertEquals( 1, log.size() );
@@ -337,7 +337,7 @@ public class DropDownViewer_Test {
       }
     } );
 
-    Map<String, Object> event = createMap( "index", Integer.valueOf( 2 ) );
+    JsonObject event = new JsonObject().add( "index", 2 );
     viewer.getRemoteObject().notify( "SelectionChanged", event );
 
     IStructuredSelection selection = ( IStructuredSelection )log.get( 0 ).getSelection();
@@ -438,14 +438,8 @@ public class DropDownViewer_Test {
     viewer.setLabelProvider( new LabelProvider() );
   }
 
-  private String[] getElements() {
-    return ( String[] )viewer.getRemoteObject().get( ELEMENTS_KEY );
-  }
-
-  private Map<String, Object> createMap( String key, Object value ) {
-    Map<String, Object> event = new HashMap<String, Object>();
-    event.put( key, value );
-    return event;
+  private JsonArray getElements() {
+    return ( JsonArray )viewer.getRemoteObject().get( ELEMENTS_KEY );
   }
 
   private static class MyContentProvider implements IStructuredContentProvider {

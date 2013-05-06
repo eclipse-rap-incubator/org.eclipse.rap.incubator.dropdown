@@ -13,6 +13,8 @@ package org.eclipse.rap.addons.dropdown.viewer.internal.remote;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.rap.json.JsonObject;
+import org.eclipse.rap.json.JsonValue;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.client.service.JavaScriptLoader;
 import org.eclipse.rap.rwt.internal.remote.RemoteObjectImpl;
@@ -75,7 +77,7 @@ public class UniversalRemoteObject implements RemoteObject {
     remoteObject.set( name, value );
   }
 
-  public void set( String name, Object value ) {
+  public void set( String name, JsonValue value ) {
     properties.put( name, value );
     remoteObject.set( name, value );
   }
@@ -84,7 +86,7 @@ public class UniversalRemoteObject implements RemoteObject {
     remoteObject.listen( eventType, listen );
   }
 
-  public void call( String method, Map<String, Object> properties ) {
+  public void call( String method, JsonObject parameters ) {
     throw new UnsupportedOperationException( "Operation \"call\" not supported on this type" );
   }
 
@@ -114,7 +116,7 @@ public class UniversalRemoteObject implements RemoteObject {
     return ( String )get( key );
   }
 
-  public void notify( String event, Map<String, Object> properties ) {
+  public void notify( String event, JsonObject properties ) {
     // TODO Currently good for testing, but could also trigger client listener
     handler.handleNotify( event, properties );
   }
