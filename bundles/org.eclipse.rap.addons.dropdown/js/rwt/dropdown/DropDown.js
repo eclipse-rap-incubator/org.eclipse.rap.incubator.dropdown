@@ -16,7 +16,12 @@
   var ITEM_FONT = rwt.html.Font.fromArray( [ [ "Arial" ], 12, false, false ] );
   var POPUP_BORDER = new rwt.html.Border( 1, "solid", "#000000" );
   var FRAMEWIDTH = 2;
-  var PADDING = 5;
+  var PADDING = ( function() {
+    var manager = rwt.theme.AppearanceManager.getInstance();
+    var stylemap = manager.styleFrom( "list-item", {} );
+    return stylemap.padding || [ 5, 5, 5, 5 ];
+  }() );
+
 
   // Values identical to SWT
   var eventTypes = {
@@ -114,7 +119,8 @@
         var yOffset = this._.parent.getHeight();
         var control = this._.parent;
         var font = control.getFont();
-        var itemHeight = font.getSize() + PADDING * 2;
+        // NOTE: Guessing the lineheight to be 1.3
+        var itemHeight = Math.floor( font.getSize() * 1.3 ) + PADDING[ 0 ] + PADDING[ 2 ];
         this._.popup.positionRelativeTo( control, 0, yOffset );
         this._.popup.setWidth( control.getWidth() );
         this._.popup.setHeight( this._.visibleItemCount * itemHeight + FRAMEWIDTH );

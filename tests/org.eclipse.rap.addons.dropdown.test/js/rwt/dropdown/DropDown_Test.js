@@ -273,7 +273,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       dropdown.setVisibleItemCount( 7 );
       prepare();
 
-      assertEquals( 7 * 20, popup.getInnerHeight() );
+      assertEquals( 7 * 23, popup.getInnerHeight() );
     },
 
     testSetVisibleItemCount_UpdatesScrollbar : function() {
@@ -313,7 +313,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       widget.setFont( font );
       prepare();
 
-      assertEquals( 5 + 5 + 10, viewer._itemHeight );
+      assertEquals( 5 + 5 + 13, viewer._itemHeight );
     },
 
     testShow_SetsItemHeightFor12pxFont : function() {
@@ -321,7 +321,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       widget.setFont( font );
       prepare();
 
-      assertEquals( 5 + 5 + 12, viewer._itemHeight );
+      assertEquals( 5 + 5 + 15, viewer._itemHeight );
     },
 
     testSetItems_SetsItemsOnViewer : function() {
