@@ -35,7 +35,6 @@ public class DropDown extends Widget {
   private static final String DEFAULT_SELECTION = "DefaultSelection";
 
   private RemoteObject remoteObject;
-  private boolean disposed = false;
   private Object widgetAdapter;
   private final Control parent;
   private final Listener disposeListener;
@@ -109,11 +108,10 @@ public class DropDown extends Widget {
 
   @Override
   public void dispose() {
-    if( !disposed ) {
+    if( !isDisposed() ) {
       super.dispose();
       parent.removeListener( SWT.Dispose, disposeListener );
       remoteObject.destroy();
-      disposed = true;
     }
   }
 
@@ -181,7 +179,7 @@ public class DropDown extends Widget {
   }
 
   private void checkDisposed() {
-    if( disposed ) {
+    if( isDisposed() ) {
       throw new IllegalStateException( "DropDown is disposed" );
     }
   }
