@@ -38,7 +38,7 @@ public class DropDownViewer extends ContentViewer {
 
   private static final String REMOTE_TYPE = "rwt.remote.UniversalRemoteObject";
   private static final String UNIVERSAL_REMOTE_OBJECT_JS
-  = "rwt/remote/UniversalRemoteObject.js";
+    = "rwt/remote/UniversalRemoteObject.js";
   private static final String ATTR_CLIENT_LISTNER_HOLDER
     = ClientListenerHolder.class.getName() + "#instance";
   private static final String SELECTION_CHANGED = "SelectionChanged";
@@ -157,13 +157,13 @@ public class DropDownViewer extends ContentViewer {
   }
 
   private void attachClientListener() {
-    getTextModifyListener().addTo( text, ClientListener.Modify );
-    getTextVerifyListener().addTo( text, ClientListener.Verify );
-    getTextKeyDownListener().addTo( text, ClientListener.KeyDown );
-    getTextMouseDownListener().addTo( text, ClientListener.MouseDown );
-    getDropDownSelectionListener().addTo( dropDown, ClientListener.Selection );
-    getDropDownDefaultSelectionListener().addTo( dropDown, ClientListener.DefaultSelection );
-    getDropDownShowListener().addTo( dropDown, ClientListener.Show );
+    text.addListener( ClientListener.Modify, getTextModifyListener() );
+    text.addListener( ClientListener.Verify, getTextVerifyListener() );
+    text.addListener( ClientListener.KeyDown, getTextKeyDownListener() );
+    text.addListener( ClientListener.MouseDown, getTextMouseDownListener() );
+    dropDown.addListener( ClientListener.Selection, getDropDownSelectionListener() );
+    dropDown.addListener( ClientListener.DefaultSelection, getDropDownDefaultSelectionListener() );
+    dropDown.addListener( ClientListener.Show, getDropDownShowListener() );
   }
 
   private void linkClientObjects() {

@@ -96,7 +96,7 @@ public class DropDownDemo extends AbstractEntryPoint {
     text.addListener( SWT.Modify, new Listener() {
       public void handleEvent( Event event ) {
         if( text.getData( "selecting" ) != Boolean.TRUE ) {
-          if( text.getText().length() >= 3 ) {
+          if( text.getText().length() >= 2 ) {
             dropdown.show();
             dropdown.setItems( filter( Movies.VALUES, text.getText().toLowerCase(), 10 ) );
           } else {
@@ -227,23 +227,23 @@ public class DropDownDemo extends AbstractEntryPoint {
   private void addDropDownClientListener( DropDown dropdown ) {
     String script = ResourceLoaderUtil.readTextContent( PATH_PREFIX + "DropDownEventHandler.js" );
     ClientListener listener = new ClientListener( script );
-    listener.addTo( dropdown, SWT.Selection );
-    listener.addTo( dropdown, SWT.DefaultSelection );
+    dropdown.addListener( SWT.Selection, listener );
+    dropdown.addListener( SWT.DefaultSelection, listener );
   }
 
   private void addButtonClientListener( Button button ) {
     String script = ResourceLoaderUtil.readTextContent( PATH_PREFIX + "ButtonEventHandler.js" );
     ClientListener listener = new ClientListener( script );
-    listener.addTo( button, SWT.MouseDown );
+    button.addListener( SWT.MouseDown, listener );
   }
 
   private void addTextClientListener( Text text ) {
     String script = ResourceLoaderUtil.readTextContent( PATH_PREFIX + "TextEventHandler.js" );
      // TODO: should take inputStream or loader + path
     ClientListener listener = new ClientListener( script );
-    listener.addTo( text, SWT.Modify );
-    listener.addTo( text, SWT.Verify );
-    listener.addTo( text, SWT.KeyDown );
+    text.addListener( SWT.Modify, listener );
+    text.addListener( SWT.Verify, listener );
+    text.addListener( SWT.KeyDown, listener );
   }
 
   // Experimental: Uses internal API, but allows to use cacheable data without polluting the
