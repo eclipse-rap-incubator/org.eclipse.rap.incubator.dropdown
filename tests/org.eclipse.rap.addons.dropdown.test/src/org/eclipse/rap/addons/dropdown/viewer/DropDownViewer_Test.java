@@ -10,19 +10,24 @@
  ******************************************************************************/
 package org.eclipse.rap.addons.dropdown.viewer;
 
+import static org.eclipse.rap.rwt.internal.protocol.JsonUtil.createJsonArray;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.same;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.stub;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.*;
 import java.util.List;
@@ -35,13 +40,16 @@ import org.eclipse.rap.json.JsonObject;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteList;
 import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteListImpl;
-import org.eclipse.rap.rwt.internal.protocol.JsonUtil;
+import org.eclipse.rap.rwt.internal.remote.RemoteObjectImpl;
 import org.eclipse.rap.rwt.lifecycle.PhaseId;
 import org.eclipse.rap.rwt.lifecycle.WidgetUtil;
+import org.eclipse.rap.rwt.remote.*;
 import org.eclipse.rap.rwt.testfixture.Fixture;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.*;
 import org.junit.*;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 
 @SuppressWarnings("restriction")
@@ -54,6 +62,7 @@ public class DropDownViewer_Test {
     Integer.valueOf( 14 ),
     Integer.valueOf( 21 )
   );
+  private static final String REMOTE_TYPE = "rwt.remote.UniversalRemoteObject";
   private static final String VIEWER_LINK =
       "org.eclipse.rap.addons.dropdown.viewer.DropDownViewer#viewer";
   private static String DROPDOWN_KEY = "dropDown";
@@ -65,6 +74,8 @@ public class DropDownViewer_Test {
   private DropDownViewer viewer;
   private Shell shell;
   private DropDown dropDown;
+  private RemoteObject remoteObject;
+  private OperationHandler handler;
 
   @Before
   public void setUp() {
@@ -73,6 +84,18 @@ public class DropDownViewer_Test {
     shell = new Shell( display );
     text = new Text( shell, SWT.NONE );
     Fixture.fakeNewRequest();
+    remoteObject = mock( RemoteObjectImpl.class );
+    when( remoteObject.getId() ).thenReturn( "foo" );
+    Connection connection = spy( RWT.getUISession().getConnection() );
+    when( connection.createRemoteObject( REMOTE_TYPE ) ).thenReturn( remoteObject );
+    Fixture.fakeConnection( connection );
+    doAnswer( new Answer<Object>(){
+      public Object answer( InvocationOnMock invocation ) throws Throwable {
+        handler = ( OperationHandler )invocation.getArguments()[ 0 ];
+        return null;
+      }
+    } ).when( remoteObject ).setHandler( any( OperationHandler.class ) );
+
   }
 
   @After
@@ -99,7 +122,8 @@ public class DropDownViewer_Test {
   public void testConstructor_SetEmptyElements() {
     createViewer();
 
-    assertEquals( 0, getElements().size() );
+    JsonArray expected = new JsonArray();
+    verify( remoteObject ).set( eq( ELEMENTS_KEY ), eq( expected ) );
   }
 
   @Test
@@ -191,25 +215,25 @@ public class DropDownViewer_Test {
   }
 
   @Test
-  public void testLinkTextToRemoteObject() {
+  public void testConstructor_LinksTextToRemoteObject() {
     createViewer();
 
     assertEquals( viewer.getRemoteObject().getId(), text.getData( VIEWER_LINK ) );
   }
 
   @Test
-  public void testLinkDropDownToRemoteObject() {
+  public void testConstructor_LinksDropDownToRemoteObject() {
     createViewer();
 
     assertEquals( viewer.getRemoteObject().getId(), dropDown.getData( VIEWER_LINK ) );
   }
 
   @Test
-  public void testLinkRemoteObjectToDropDown() {
+  public void testConstructor_LinksRemoteObjectToDropDown() {
     createViewer();
 
     String expected = WidgetUtil.getId( dropDown );
-    assertEquals( expected, viewer.getRemoteObject().getString( DROPDOWN_KEY ) );
+    verify( remoteObject ).set( eq( DROPDOWN_KEY ), eq( expected ) );
   }
 
   @Test
@@ -217,7 +241,7 @@ public class DropDownViewer_Test {
     createViewer();
 
     String expected = WidgetUtil.getId( text );
-    assertEquals( expected, viewer.getRemoteObject().getString( TEXT_KEY ) );
+    verify( remoteObject ).set( eq( TEXT_KEY ), eq( expected ) );
   }
 
   @Test
@@ -225,7 +249,7 @@ public class DropDownViewer_Test {
     createViewer();
 
     String expected = WidgetUtil.getId( viewer.getDecorator() );
-    assertEquals( expected, viewer.getRemoteObject().getString( DECORATOR_KEY ) );
+    verify( remoteObject ).set( eq( DECORATOR_KEY ), eq( expected ) );
   }
 
   @Test
@@ -270,8 +294,8 @@ public class DropDownViewer_Test {
 
     viewer.setInput( INTEGER_LIST );
 
-    JsonArray expected = JsonUtil.createJsonArray( new String[]{ "7", "14", "21" } );
-    assertEquals( expected, getElements() );
+    JsonArray expected = createJsonArray( "7", "14", "21" );
+    verify( remoteObject ).set( eq( ELEMENTS_KEY ), eq( expected ) );
   }
 
   @Test
@@ -286,8 +310,8 @@ public class DropDownViewer_Test {
       }
     } );
 
-    JsonArray expected = JsonUtil.createJsonArray( new String[]{ "Item 7", "Item 14", "Item 21" } );
-    assertEquals( expected, getElements() );
+    JsonArray expected = createJsonArray( "Item 7", "Item 14", "Item 21" );
+    verify( remoteObject ).set( eq( ELEMENTS_KEY ), eq( expected ) );
   }
 
   @Test
@@ -302,7 +326,7 @@ public class DropDownViewer_Test {
     } );
 
     JsonObject event = new JsonObject().add( "index", 2 );
-    viewer.getRemoteObject().notify( "SelectionChanged", event );
+    handler.handleNotify( "SelectionChanged", event );
 
     assertEquals( 1, log.size() );
   }
@@ -321,7 +345,7 @@ public class DropDownViewer_Test {
     viewer.addSelectionChangedListener( listener );
     viewer.addSelectionChangedListener( listener );
     JsonObject event = new JsonObject().add( "index", 2 );
-    viewer.getRemoteObject().notify( "SelectionChanged", event );
+    handler.handleNotify( "SelectionChanged", event );
 
     assertEquals( 1, log.size() );
   }
@@ -338,7 +362,7 @@ public class DropDownViewer_Test {
     } );
 
     JsonObject event = new JsonObject().add( "index", 2 );
-    viewer.getRemoteObject().notify( "SelectionChanged", event );
+    handler.handleNotify( "SelectionChanged", event );
 
     IStructuredSelection selection = ( IStructuredSelection )log.get( 0 ).getSelection();
     assertEquals( new Integer( 21 ), selection.getFirstElement() );
@@ -351,7 +375,7 @@ public class DropDownViewer_Test {
 
     viewer.getControl().dispose();
 
-    assertTrue( viewer.getRemoteObject().isDestroyed() );
+    verify( remoteObject ).destroy();
   }
 
   @Test
@@ -436,10 +460,6 @@ public class DropDownViewer_Test {
     dropDown = viewer.getDropDown();
     viewer.setContentProvider( new MyContentProvider() );
     viewer.setLabelProvider( new LabelProvider() );
-  }
-
-  private JsonArray getElements() {
-    return ( JsonArray )viewer.getRemoteObject().get( ELEMENTS_KEY );
   }
 
   private static class MyContentProvider implements IStructuredContentProvider {

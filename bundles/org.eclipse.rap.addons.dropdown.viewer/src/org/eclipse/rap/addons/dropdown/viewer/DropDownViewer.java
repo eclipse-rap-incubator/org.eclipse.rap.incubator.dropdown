@@ -14,15 +14,17 @@ import org.eclipse.jface.fieldassist.FieldDecoration;
 import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.rap.addons.dropdown.DropDown;
-import org.eclipse.rap.addons.dropdown.viewer.internal.remote.UniversalRemoteObject;
 import org.eclipse.rap.addons.dropdown.viewer.internal.resources.ResourceLoaderUtil;
 import org.eclipse.rap.clientscripting.ClientListener;
 import org.eclipse.rap.clientscripting.WidgetDataWhiteList;
 import org.eclipse.rap.json.JsonObject;
 import org.eclipse.rap.rwt.RWT;
+import org.eclipse.rap.rwt.client.service.JavaScriptLoader;
 import org.eclipse.rap.rwt.internal.protocol.JsonUtil;
 import org.eclipse.rap.rwt.lifecycle.WidgetUtil;
 import org.eclipse.rap.rwt.remote.AbstractOperationHandler;
+import org.eclipse.rap.rwt.remote.RemoteObject;
+import org.eclipse.rap.rwt.service.ResourceManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.graphics.Image;
@@ -34,6 +36,9 @@ import org.eclipse.swt.widgets.Text;
 @SuppressWarnings( "restriction" )
 public class DropDownViewer extends ContentViewer {
 
+  private static final String REMOTE_TYPE = "rwt.remote.UniversalRemoteObject";
+  private static final String UNIVERSAL_REMOTE_OBJECT_JS
+  = "rwt/remote/UniversalRemoteObject.js";
   private static final String ATTR_CLIENT_LISTNER_HOLDER
     = ClientListenerHolder.class.getName() + "#instance";
   private static final String SELECTION_CHANGED = "SelectionChanged";
@@ -46,16 +51,17 @@ public class DropDownViewer extends ContentViewer {
   private final DropDown dropDown;
   private final Text text;
   private final ClientListenerHolder clientListeners;
-  private final UniversalRemoteObject remoteObject;
+  private final RemoteObject remoteObject;
   private Object[] elements;
   private ControlDecorator decorator;
 
   public DropDownViewer( Text text ) {
     this.text = text;
     checkParent();
+    ensureTypeHandler();
     dropDown = new DropDown( text );
     clientListeners = getClientListenerHolder();
-    remoteObject = new UniversalRemoteObject();
+    remoteObject = RWT.getUISession().getConnection().createRemoteObject( REMOTE_TYPE );
     remoteObject.setHandler( new InternalOperationHandler() );
     setClientElements( new String[ 0 ] );
     createControlDecorator();
@@ -170,7 +176,7 @@ public class DropDownViewer extends ContentViewer {
     remoteObject.set( DECORATOR_KEY, WidgetUtil.getId( decorator ) );
   }
 
-  UniversalRemoteObject getRemoteObject() {
+  RemoteObject getRemoteObject() {
     return remoteObject;
   }
 
@@ -224,6 +230,18 @@ public class DropDownViewer extends ContentViewer {
     Object element = elements[ index ];
     ISelection selection = new StructuredSelection( element );
     fireSelectionChanged( new SelectionChangedEvent( this, selection ) );
+  }
+
+  private void ensureTypeHandler() {
+    ResourceManager manager = RWT.getResourceManager();
+    if( !manager.isRegistered( UNIVERSAL_REMOTE_OBJECT_JS ) ) {
+      manager.register(
+        UNIVERSAL_REMOTE_OBJECT_JS,
+        getClass().getClassLoader().getResourceAsStream( UNIVERSAL_REMOTE_OBJECT_JS )
+      );
+    }
+    JavaScriptLoader jsl = RWT.getClient().getService( JavaScriptLoader.class );
+    jsl.require( manager.getLocation( UNIVERSAL_REMOTE_OBJECT_JS ) );
   }
 
   private class InternalOperationHandler extends AbstractOperationHandler {

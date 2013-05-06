@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.eclipse.rap.addons.dropdown.internal.resources.DropDownResources;
-import org.eclipse.rap.addons.dropdown.viewer.internal.remote.UniversalRemoteObject;
+import org.eclipse.rap.addons.dropdown.viewer.DropDownViewer;
 import org.eclipse.rap.rwt.jstest.TestContribution;
 
 
@@ -35,7 +35,7 @@ public class DropDownResourcesContribution implements TestContribution {
 
   public InputStream getResourceAsStream( String resourceName ) throws IOException {
     if( resourceName.equals( ADDITIONAL_RESOURCES[0] ) ) {
-      return UniversalRemoteObject.class.getClassLoader().getResourceAsStream( resourceName );
+      return DropDownViewer.class.getClassLoader().getResourceAsStream( resourceName );
     }
     return DropDownResources.getResourceAsStream( resourceName );
   }

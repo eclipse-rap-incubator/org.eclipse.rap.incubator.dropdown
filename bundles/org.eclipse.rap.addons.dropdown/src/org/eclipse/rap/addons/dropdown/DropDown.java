@@ -18,7 +18,6 @@ import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteList;
 import org.eclipse.rap.rwt.internal.protocol.IClientObjectAdapter;
 import org.eclipse.rap.rwt.internal.protocol.JsonUtil;
-import org.eclipse.rap.rwt.internal.remote.RemoteObjectImpl;
 import org.eclipse.rap.rwt.lifecycle.WidgetAdapter;
 import org.eclipse.rap.rwt.lifecycle.WidgetUtil;
 import org.eclipse.rap.rwt.remote.AbstractOperationHandler;
@@ -188,7 +187,7 @@ public class DropDown extends Widget {
   }
 
   private String getProtocolId() {
-    return ( ( RemoteObjectImpl )getRemoteObject() ).getId();
+    return getRemoteObject().getId();
   }
 
   private RemoteObject getRemoteObject() {
