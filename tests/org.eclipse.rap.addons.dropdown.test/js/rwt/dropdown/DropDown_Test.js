@@ -88,13 +88,13 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
     },
 
     testShow_MakesPopUpVisible : function() {
-      prepare();
+      showDropDown();
 
       assertTrue( popup.isSeeable() );
     },
 
     testShow_FocusesViewer : function() {
-      prepare();
+      showDropDown();
 
       assertTrue( viewer.getFocused() );
     },
@@ -102,7 +102,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
     testShow_LeavesParentFocused : function() {
       widget.setTabIndex( 1 );
       widget.focus();
-      prepare();
+      showDropDown();
 
       assertFalse( viewer.getFocused() );
       assertTrue( widget.getFocused() );
@@ -113,7 +113,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       focusable.setParent( widget );
       TestUtil.flush();
       focusable.focus();
-      prepare();
+      showDropDown();
 
       assertFalse( viewer.getFocused() );
       assertTrue( focusable.getFocused() );
@@ -122,7 +122,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
     testDoNotHideOnParentClick : function() {
       var focusable = new rwt.widgets.Button( "push" );
       focusable.setParent( widget );
-      prepare();
+      showDropDown();
 
       TestUtil.click( focusable );
       forceTimer();
@@ -133,7 +133,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
     testDoNotHideOnFocusableParentClick : function() {
       widget.setTabIndex( 1 );
       widget.contains = rwt.util.Functions.returnFalse;
-      prepare();
+      showDropDown();
 
       TestUtil.click( widget );
       forceTimer();
@@ -142,7 +142,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
     },
 
     testDoNotHideOnChildClick : function() {
-      prepare();
+      showDropDown();
 
       TestUtil.click( viewer );
       forceTimer();
@@ -151,7 +151,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
     },
 
     testHideOnShellClick : function() {
-      prepare();
+      showDropDown();
 
       TestUtil.click( shell );
       forceTimer();
@@ -160,7 +160,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
     },
 
     testHideOnEscape : function() {
-      prepare();
+      showDropDown();
 
       TestUtil.press( viewer, "Escape" );
 
@@ -168,7 +168,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
     },
 
     testShellClickAfterDisposeDoesNotCrash : function() {
-      prepare();
+      showDropDown();
       dropdown.destroy();
       TestUtil.flush();
 
@@ -182,13 +182,13 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       dropdown.destroy();
       this.createExample();
 
-      prepare();
+      showDropDown();
 
       assertTrue( popup.isSeeable() );
     },
 
     testHide_MakesPopUpInvisible : function() {
-      prepare();
+      showDropDown();
 
       dropdown.hide();
       TestUtil.flush();
@@ -197,7 +197,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
     },
 
     testHide_SendsVisibility : function() {
-      prepare();
+      showDropDown();
 
       dropdown.hide();
       rwt.remote.Server.getInstance().send();
@@ -207,7 +207,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
     },
 
     testHide_DoesNotSendVisibilityInResponse : function() {
-      prepare();
+      showDropDown();
       TestUtil.clearRequestLog();
 
       TestUtil.fakeResponse( true );
@@ -228,14 +228,14 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
     },
 
     testShow_PositionsPopUp : function() {
-      prepare();
+      showDropDown();
 
       assertEquals( 20, popup.getLeft() );
       assertEquals( 70, popup.getTop() );
     },
 
     testShow_SendsVisibility : function() {
-      prepare();
+      showDropDown();
       rwt.remote.Server.getInstance().send();
 
       var message = TestUtil.getMessageObject();
@@ -244,7 +244,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
 
     testShow_DoesNotSendVisibilityInResponse : function() {
       TestUtil.fakeResponse( true );
-      prepare();
+      showDropDown();
       TestUtil.fakeResponse( false );
       rwt.remote.Server.getInstance().send();
 
@@ -253,7 +253,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
     },
 
     testShow_DoesNotSendVisibilityIfAlreadyVisible : function() {
-      prepare();
+      showDropDown();
       TestUtil.clearRequestLog();
 
       dropdown.show();
@@ -264,16 +264,27 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
     },
 
     testShow_SetsPopUpWidth : function() {
-      prepare();
+      showDropDown();
 
       assertEquals( 100, popup.getWidth() );
     },
 
-    testShow_SetVisibleItemCount : function() {
+    testShow_PopUpInnerHeightOverVisibleItemCount : function() {
+      var items = [ "a", "b", "c", "d", "a", "b", "c", "d", "a", "b", "c", "d", "a", "b", "c" ];
+      dropdown.setItems( items );
       dropdown.setVisibleItemCount( 7 );
-      prepare();
+      showDropDown();
 
       assertEquals( 7 * 23, popup.getInnerHeight() );
+    },
+
+    testShow_PopUpInnerHeightUnderVisibleItemCount : function() {
+      var items = [ "a", "b" ];
+      dropdown.setItems( items );
+      dropdown.setVisibleItemCount( 7 );
+      showDropDown();
+
+      assertEquals( 2 * 23, popup.getInnerHeight() );
     },
 
     testSetVisibleItemCount_UpdatesScrollbar : function() {
@@ -284,6 +295,18 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       assertTrue( viewer.getVerticalBar().getDisplay() );
     },
 
+    testSetVisibleItemCount_RendersLayout : function() {
+      dropdown.setItems( [ "a", "b", "c" ] );
+      dropdown.setVisibleItemCount( 3 );
+      showDropDown();
+
+      dropdown.setVisibleItemCount( 2 );
+      TestUtil.flush();
+
+      assertEquals( 2 * 23, popup.getInnerHeight() );
+      assertEquals( 2 * 23, viewer.getHeight() );
+    },
+
     testSetItems_UpdatesScrollbar : function() {
       dropdown.setVisibleItemCount( 2 );
 
@@ -292,8 +315,20 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       assertTrue( viewer.getVerticalBar().getDisplay() );
     },
 
+    testSetItems_RendersLayout : function() {
+      dropdown.setItems( [ "a", "b", "c" ] );
+      dropdown.setVisibleItemCount( 3 );
+      showDropDown();
+
+      dropdown.setItems( [ "a", "b" ] );
+      TestUtil.flush();
+
+      assertEquals( 2 * 23, popup.getInnerHeight() );
+      assertEquals( 2 * 23, viewer.getHeight() );
+    },
+
     testShow_LayoutsViewer : function() {
-      prepare();
+      showDropDown();
 
       assertEquals( popup.getInnerWidth(), viewer.getWidth() );
       assertEquals( popup.getInnerHeight(), viewer.getHeight() );
@@ -303,7 +338,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       var font = rwt.html.Font.fromString( "Arial 12px" );
       shell.setFont( font );
       widget.setFont( "inherit" );
-      prepare();
+      showDropDown();
 
       assertIdentical( font, viewer.getFont() );
     },
@@ -311,7 +346,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
     testShow_SetsItemHeightFor10pxFont : function() {
       var font = rwt.html.Font.fromString( "Arial 10px" );
       widget.setFont( font );
-      prepare();
+      showDropDown();
 
       assertEquals( 5 + 5 + 13, viewer._itemHeight );
     },
@@ -319,13 +354,13 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
     testShow_SetsItemHeightFor12pxFont : function() {
       var font = rwt.html.Font.fromString( "Arial 12px" );
       widget.setFont( font );
-      prepare();
+      showDropDown();
 
       assertEquals( 5 + 5 + 15, viewer._itemHeight );
     },
 
     testSetItems_SetsItemsOnViewer : function() {
-      prepare();
+      showDropDown();
 
       dropdown.setItems( [ "a", "b", "c" ] );
 
@@ -333,7 +368,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
     },
 
     testGetItemCount : function() {
-      prepare();
+      showDropDown();
 
       dropdown.setItems( [ "a", "b", "c" ] );
 
@@ -345,13 +380,13 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
     },
 
     testGetVisibility_returnsTrue : function() {
-      prepare();
+      showDropDown();
       assertTrue( dropdown.getVisibility() );
     },
 
     testAddSelectionListener : function() {
       dropdown.setItems( [ "a", "b", "c" ] );
-      prepare();
+      showDropDown();
       var logger = TestUtil.getLogger();
 
       dropdown.addListener( "Selection", logger.log );
@@ -364,7 +399,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       var logger = TestUtil.getLogger();
       dropdown.addListener( "Show", logger.log );
 
-      prepare();
+      showDropDown();
 
       assertEquals( 1, logger.getLog().length );
     },
@@ -374,13 +409,13 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       dropdown.addListener( "Show", logger.log );
       dropdown.removeListener( "Show", logger.log );
 
-      prepare();
+      showDropDown();
 
       assertEquals( 0, logger.getLog().length );
     },
 
     testAddHideListener : function() {
-      prepare();
+      showDropDown();
       var logger = TestUtil.getLogger();
       dropdown.addListener( "Hide", logger.log );
 
@@ -390,7 +425,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
     },
 
     testRemoveHideListener : function() {
-      prepare();
+      showDropDown();
       var logger = TestUtil.getLogger();
       dropdown.addListener( "Hide", logger.log );
       dropdown.removeListener( "Hide", logger.log );
@@ -402,7 +437,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
 
     testRemoveSelectionListener : function() {
       dropdown.setItems( [ "a", "b", "c" ] );
-      prepare();
+      showDropDown();
       var logger = TestUtil.getLogger();
 
       dropdown.addListener( "Selection", logger.log );
@@ -414,7 +449,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
 
     testSelectionEventFields : function() {
       dropdown.setItems( [ "a", "b", "c" ] );
-      prepare();
+      showDropDown();
       var logger = TestUtil.getLogger();
 
       dropdown.addListener( "Selection", logger.log );
@@ -429,7 +464,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
 
     testSelectionEventFields_Unescaped : function() {
       dropdown.setItems( [ "a", "&bb ", "c" ] ); // the *trailing* space is important
-      prepare();
+      showDropDown();
       var logger = TestUtil.getLogger();
 
       dropdown.addListener( "Selection", logger.log );
@@ -441,7 +476,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
 
     testSelectionEventFields_NoItemSelected : function() {
       dropdown.setItems( [ "a", "b", "c" ] );
-      prepare();
+      showDropDown();
       dropdown.setSelectionIndex( 1 );
       var logger = TestUtil.getLogger();
 
@@ -455,7 +490,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
 
     testSelectionEventNotify_NoItemSelected : function() {
       dropdown.setItems( [ "a", "b", "c" ] );
-      prepare();
+      showDropDown();
       dropdown.setSelectionIndex( 1 );
 
       TestUtil.protocolListen( "w3", { "Selection" : true } );
@@ -468,7 +503,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
 
     testSelectionEventNotify : function() {
       dropdown.setItems( [ "a", "b", "c" ] );
-      prepare();
+      showDropDown();
 
       TestUtil.protocolListen( "w3", { "Selection" : true } );
       dropdown.setSelectionIndex( 1 );
@@ -480,7 +515,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
 
     testAddDefaultSelectionListener_FiresOnEnter : function() {
       dropdown.setItems( [ "a", "b", "c" ] );
-      prepare();
+      showDropDown();
       var logger = TestUtil.getLogger();
 
       dropdown.addListener( "DefaultSelection", logger.log );
@@ -493,7 +528,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
 
     testAddDefaultSelectionListener_FiresOnTextEnter : function() {
       dropdown.setItems( [ "a", "b", "c" ] );
-      prepare();
+      showDropDown();
       var logger = TestUtil.getLogger();
 
       dropdown.addListener( "DefaultSelection", logger.log );
@@ -507,7 +542,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
 
     testAddDefaultSelectionListener_FiresNotOnTextEnterWithoutSelection : function() {
       dropdown.setItems( [ "a", "b", "c" ] );
-      prepare();
+      showDropDown();
       var logger = TestUtil.getLogger();
 
       dropdown.addListener( "DefaultSelection", logger.log );
@@ -520,7 +555,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
 
     testAddDefaultSelectionListener_FiresOnDoubleClick : function() {
       dropdown.setItems( [ "a", "b", "c" ] );
-      prepare();
+      showDropDown();
       var logger = TestUtil.getLogger();
 
       dropdown.addListener( "DefaultSelection", logger.log );
@@ -531,7 +566,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
 
     testDefaultSelectionEventFields : function() {
       dropdown.setItems( [ "a", "b", "c" ] );
-      prepare();
+      showDropDown();
       var logger = TestUtil.getLogger();
 
       dropdown.addListener( "DefaultSelection", logger.log );
@@ -566,7 +601,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
 
     testGetSelectionIndex_ValueAfterSelection : function() {
       dropdown.setItems( [ "a", "b", "c" ] );
-      prepare();
+      showDropDown();
 
       clickItem( 1 );
 
@@ -625,7 +660,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
     },
 
     testKeyEventForawarding_Escape : function() {
-      prepare();
+      showDropDown();
       var logger = TestUtil.getLogger();
 
       viewer.addEventListener( "keydown", logger.log );
@@ -637,7 +672,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
     },
 
     testKeyEventForawarding_Up : function() {
-      prepare();
+      showDropDown();
       var logger = TestUtil.getLogger();
 
       viewer.addEventListener( "keydown", logger.log );
@@ -662,7 +697,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
     },
 
     testKeyEventForawarding_Down : function() {
-      prepare();
+      showDropDown();
       var logger = TestUtil.getLogger();
 
       viewer.addEventListener( "keydown", logger.log );
@@ -676,7 +711,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
     },
 
     testKeyEventForawarding_PageUp : function() {
-      prepare();
+      showDropDown();
       var logger = TestUtil.getLogger();
 
       viewer.addEventListener( "keydown", logger.log );
@@ -690,7 +725,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
     },
 
     testKeyEventForawarding_PageDown : function() {
-      prepare();
+      showDropDown();
       var logger = TestUtil.getLogger();
 
       viewer.addEventListener( "keydown", logger.log );
@@ -706,7 +741,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
     testPressDownAfterSelectionResetSelectsFirstItem : function() {
       dropdown.setItems( [ "a", "b", "c" ] );
       dropdown.setSelectionIndex( 1 );
-      prepare();
+      showDropDown();
 
       dropdown.setSelectionIndex( -1 );
       TestUtil.flush();
@@ -719,7 +754,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
 
     testSelectionResetResetsLeadItem : function() {
       dropdown.setItems( [ "a", "b", "c" ] );
-      prepare();
+      showDropDown();
       widget.focus();
       TestUtil.pressOnce( widget, "Down" );// calling setSelectionIndex would not change lead item
 
@@ -731,7 +766,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
 
     testPressDownAfterItemResetSelectsFirstItem : function() {
       dropdown.setItems( [ "a", "b", "c" ] );
-      prepare();
+      showDropDown();
       dropdown.setSelectionIndex( 2 );
 
       dropdown.setItems( [ "x", "y" ] );
@@ -784,7 +819,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
     },
 
     testDestroy_DocumentClick : function() {
-      prepare();
+      showDropDown();
       dropdown.destroy();
       TestUtil.click( TestUtil.getDocument() );
 
@@ -888,7 +923,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
 
 } );
 
-var prepare = function() {
+var showDropDown = function() {
   dropdown.show();
   TestUtil.flush();
   TestUtil.flush();

@@ -11,9 +11,6 @@
 
 (function(){
 
-  // TODO [tb] : take values from theming or parent, or introduce setter
-  var ITEM_HEIGHT = 20;
-  var ITEM_FONT = rwt.html.Font.fromArray( [ [ "Arial" ], 12, false, false ] );
   var POPUP_BORDER = new rwt.html.Border( 1, "solid", "#000000" );
   var FRAMEWIDTH = 2;
   var PADDING = ( function() {
@@ -83,11 +80,17 @@
       this.setSelectionIndex( -1 );
       this._.items = rwt.util.Arrays.copy( items );
       this._.viewer.setItems( items );
+      if( this._.visibility ) {
+        renderLayout.call( this );
+      }
       updateScrollBars.call( this );
     },
 
     setVisibleItemCount : function( itemCount ) {
       this._.visibleItemCount = itemCount;
+      if( this._.visibility ) {
+        renderLayout.call( this );
+      }
       updateScrollBars.call( this );
     },
 
@@ -116,19 +119,10 @@
       }
       this._.visibility = true;
       if( this._.parent.isCreated() && !this._.popup.isSeeable() ) {
-        var yOffset = this._.parent.getHeight();
-        var control = this._.parent;
-        var font = control.getFont();
-        // NOTE: Guessing the lineheight to be 1.3
-        var itemHeight = Math.floor( font.getSize() * 1.3 ) + PADDING[ 0 ] + PADDING[ 2 ];
-        this._.popup.positionRelativeTo( control, 0, yOffset );
-        this._.popup.setWidth( control.getWidth() );
-        this._.popup.setHeight( this._.visibleItemCount * itemHeight + FRAMEWIDTH );
-        this._.viewer.setFont( font );
-        this._.viewer.setDimension( this._.popup.getInnerWidth(), this._.popup.getInnerHeight() );
-        this._.viewer.setItemDimensions( "100%", itemHeight );
+        this._.viewer.setFont( this._.parent.getFont() );
+        renderLayout.call( this );
         this._.popup.show();
-        if( !hasFocus( control ) ) {
+        if( !hasFocus( this._.parent ) ) {
           this._.viewer.getFocusRoot().setFocusedChild( this._.viewer );
         }
       }
@@ -258,6 +252,19 @@
   ////////////
   // Internals
 
+  var renderLayout = function() {
+    var yOffset = this._.parent.getHeight();
+    var font = this._.viewer.getFont();
+    // NOTE: Guessing the lineheight to be 1.3
+    var itemHeight = Math.floor( font.getSize() * 1.3 ) + PADDING[ 0 ] + PADDING[ 2 ];
+    var visibleItems = Math.min( this._.visibleItemCount, this._.viewer.getItemsCount() );
+    this._.popup.positionRelativeTo( this._.parent, 0, yOffset );
+    this._.popup.setWidth( this._.parent.getWidth() );
+    this._.popup.setHeight( visibleItems * itemHeight + FRAMEWIDTH );
+    this._.viewer.setDimension( this._.parent.getWidth() - FRAMEWIDTH, visibleItems * itemHeight );
+    this._.viewer.setItemDimensions( "100%", itemHeight );
+  };
+
   var onTextAppear = function() {
     if( this._.visibility ) {
       this.show();
@@ -374,7 +381,6 @@
     var result = new rwt.widgets.base.BasicList( false );
     result.setLocation( 0, 0 );
     result.setParent( parent );
-    result.setFont( ITEM_FONT );
     result.setScrollBarsVisible( false, false );
     return result;
   };
