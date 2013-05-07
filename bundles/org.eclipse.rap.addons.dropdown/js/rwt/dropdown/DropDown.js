@@ -65,7 +65,7 @@
     this._.parent.addEventListener( "keypress", onTextKeyEvent, this );
     this._.viewer.getManager().addEventListener( "changeSelection", onSelection, this );
     this._.viewer.addEventListener( "keydown", onKeyEvent, this );
-    this._.viewer.addEventListener( "dblclick", onDoubleClick, this );
+    this._.viewer.addEventListener( "mouseup", onMouseUp, this );
     this._.popup.addEventListener( "appear", onAppear, this );
     this._.popup.addEventListener( "disappear", onDisappear, this );
     this._.popup.getFocusRoot().addEventListener( "changeFocusedChild", onFocusChange, this );
@@ -300,8 +300,10 @@
     fireEvent.call( this, "Selection" );
   };
 
-  var onDoubleClick = function( event ) {
-    fireEvent.call( this, "DefaultSelection" );
+  var onMouseUp = function( event ) {
+    if( event.getOriginalTarget() instanceof rwt.widgets.ListItem ) {
+      this.hide();
+    }
   };
 
   var onAppear = function( event ) {

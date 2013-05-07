@@ -141,15 +141,6 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       assertTrue( popup.isSeeable() );
     },
 
-    testDoNotHideOnChildClick : function() {
-      showDropDown();
-
-      TestUtil.click( viewer );
-      forceTimer();
-
-      assertTrue( popup.isSeeable() );
-    },
-
     testHideOnShellClick : function() {
       showDropDown();
 
@@ -165,6 +156,25 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       TestUtil.press( viewer, "Escape" );
 
       assertFalse( popup.isSeeable() );
+    },
+
+    testHideOnItemClick : function() {
+      dropdown.setItems( [ "a", "b" ] );
+      showDropDown();
+
+      clickItem( 1 );
+
+      assertFalse( popup.isSeeable() );
+    },
+
+    testDoNotHideOnScrollbarClick : function() {
+      dropdown.setItems( [ "a", "b", "c" ] );
+      dropdown.setVisibleItemCount( 2 );
+      showDropDown();
+
+      TestUtil.click( viewer.getVerticalBar() );
+
+      assertTrue( popup.isSeeable() );
     },
 
     testShellClickAfterDisposeDoesNotCrash : function() {
@@ -532,7 +542,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       var logger = TestUtil.getLogger();
 
       dropdown.addListener( "DefaultSelection", logger.log );
-      clickItem( 1 );
+      dropdown.setSelectionIndex( 1 );
       widget.focus();
       TestUtil.pressOnce( widget, "Enter" );
       TestUtil.forceTimerOnce();
@@ -551,17 +561,6 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       TestUtil.forceTimerOnce();
 
       assertEquals( 0, logger.getLog().length );
-    },
-
-    testAddDefaultSelectionListener_FiresOnDoubleClick : function() {
-      dropdown.setItems( [ "a", "b", "c" ] );
-      showDropDown();
-      var logger = TestUtil.getLogger();
-
-      dropdown.addListener( "DefaultSelection", logger.log );
-      doubleClickItem( 1 );
-
-      assertEquals( 1, logger.getLog().length );
     },
 
     testDefaultSelectionEventFields : function() {
