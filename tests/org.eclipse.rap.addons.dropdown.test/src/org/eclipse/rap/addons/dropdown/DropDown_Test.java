@@ -259,6 +259,30 @@ public class DropDown_Test {
   }
 
   @Test
+  public void testGetVisibleItemCount_ThrowsExceptionIfDisposed() {
+    dropdown.dispose();
+
+    try {
+      dropdown.getVisibleItemCount();
+      fail();
+    } catch( SWTException ex ) {
+      // expected
+    }
+  }
+
+  @Test
+  public void testGetVisibleItemCount_ReturnInitialValue() {
+    assertEquals( 5, dropdown.getVisibleItemCount() );
+  }
+
+  @Test
+  public void testGetVisibleItemCount_ReturnUserValue() {
+    dropdown.setVisibleItemCount( 23 );
+
+    assertEquals( 23, dropdown.getVisibleItemCount() );
+  }
+
+  @Test
   public void testSetData_ThrowsExceptionIfDiposed() {
     dropdown.dispose();
 

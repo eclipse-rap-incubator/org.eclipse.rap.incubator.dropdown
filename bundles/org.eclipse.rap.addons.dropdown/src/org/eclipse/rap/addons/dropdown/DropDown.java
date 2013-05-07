@@ -41,6 +41,7 @@ public class DropDown extends Widget {
   private final Listener disposeListener;
   private boolean visibility = false;
   private int selectionIndex = -1;
+  private int itemCount = 5;
 
   public DropDown( Control parent ) {
     super( parent, 0 );
@@ -56,28 +57,6 @@ public class DropDown extends Widget {
     parent.addListener( SWT.Dispose, disposeListener );
   }
 
-  @Override
-  @SuppressWarnings("unchecked")
-  public <T> T getAdapter( Class<T> adapter ) {
-    T result;
-    if( adapter == IClientObjectAdapter.class || adapter == WidgetAdapter.class ) {
-      // TODO [tb] : This way of getting the right id into the WidgetAdapter is obviously
-      //             not ideal. Revise once Bug 397602 (Render operations in the order of their
-      //             occurrence) is fixed.
-      if( widgetAdapter == null ) {
-        widgetAdapter = new WidgetAdapterImpl( getProtocolId() );
-      }
-      result = ( T )widgetAdapter;
-    } else {
-      result = super.getAdapter( adapter );
-    }
-    return result;
-  }
-
-  public Control getParent() {
-    return parent;
-  }
-
   public void setItems( String[] strings ) {
     checkWidget();
     remoteObject.set( "items", JsonUtil.createJsonArray( strings ) );
@@ -87,6 +66,17 @@ public class DropDown extends Widget {
   public int getSelectionIndex() {
     checkWidget();
     return selectionIndex;
+  }
+
+  public void setVisibleItemCount( int itemCount ) {
+    checkWidget();
+    this.itemCount = itemCount;
+    remoteObject.set( "visibleItemCount", itemCount );
+  }
+
+  public int getVisibleItemCount() {
+    checkWidget();
+    return itemCount;
   }
 
   public void show() {
@@ -109,6 +99,10 @@ public class DropDown extends Widget {
     return visibility;
   }
 
+  public Control getParent() {
+    return parent;
+  }
+
   @Override
   public void dispose() {
     if( !isDisposed() ) {
@@ -122,11 +116,6 @@ public class DropDown extends Widget {
   public void setData( String key, Object value ) {
     super.setData( key, value );
     renderData( key, value );
-  }
-
-  public void setVisibleItemCount( int itemCount ) {
-    checkWidget();
-    remoteObject.set( "visibleItemCount", itemCount );
   }
 
   @Override
@@ -151,8 +140,30 @@ public class DropDown extends Widget {
     }
   }
 
-  ////////////
-  // Internals
+  //////////////
+  // overwritten
+
+  @Override
+  @SuppressWarnings("unchecked")
+  public <T> T getAdapter( Class<T> adapter ) {
+    T result;
+    if( adapter == IClientObjectAdapter.class || adapter == WidgetAdapter.class ) {
+      // TODO [tb] : This way of getting the right id into the WidgetAdapter is obviously
+      //             not ideal. Revise once Bug 397602 (Render operations in the order of their
+      //             occurrence) is fixed.
+      if( widgetAdapter == null ) {
+        widgetAdapter = new WidgetAdapterImpl( getProtocolId() );
+      }
+      result = ( T )widgetAdapter;
+    } else {
+      result = super.getAdapter( adapter );
+    }
+    return result;
+  }
+
+  //////////
+  // private
+
 
   private class InternalOperationHandler extends AbstractOperationHandler {
 
@@ -184,12 +195,6 @@ public class DropDown extends Widget {
 
   private void setSelectionIndexImpl( int value ) {
     selectionIndex = value;
-  }
-
-  private void checkDisposed() {
-    if( isDisposed() ) {
-      throw new IllegalStateException( "DropDown is disposed" );
-    }
   }
 
   private String getProtocolId() {
