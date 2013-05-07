@@ -23,6 +23,7 @@ import org.eclipse.rap.rwt.lifecycle.WidgetUtil;
 import org.eclipse.rap.rwt.remote.AbstractOperationHandler;
 import org.eclipse.rap.rwt.remote.RemoteObject;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
 import org.eclipse.swt.internal.events.EventLCAUtil;
 import org.eclipse.swt.internal.widgets.WidgetAdapterImpl;
 import org.eclipse.swt.widgets.*;
@@ -43,6 +44,31 @@ public class DropDown extends Widget {
   private int selectionIndex = -1;
   private int itemCount = 5;
 
+  /**
+   * Instances of this class represent a list of items that are attached to a control (parent).
+   * If made visible (using <code>show</code> or <code>setVisibility</code>), the list
+   * appears attached to the control. The user can select an item from the list
+   * using the arrows keys and Enter, or the mouse.
+   *
+   * The list disappears automatically if the control looses focus, if an item is clicked,
+   * or if the escape key is pressed.
+   *
+   * <p>
+   * <dl>
+   * <dt><b>Events:</b></dt>
+   * <dd>DefaultSelection, Selection</dd>
+   * </dl>
+   * <p>
+   * <p>
+   * NOTE: This widget is optimized for use with ClientScripting. The client representation
+   * implements nearly all API defined in this class, which can be safely used unless documented
+   * otherwise in the JsDoc.
+   * </p>
+   * <p>
+   * IMPORTANT: This class is <em>not</em> intended to be subclassed.
+   * </p>
+   *
+   */
   public DropDown( Control parent ) {
     super( parent, 0 );
     this.parent = parent;
@@ -57,23 +83,78 @@ public class DropDown extends Widget {
     parent.addListener( SWT.Dispose, disposeListener );
   }
 
+  /**
+   * Sets the receiver's items to be the given array of items.
+   *
+   * @param items the array of items
+   *
+   * @exception SWTException <ul>
+   *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+   *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+   * </ul>
+   *
+   * <p>
+   * NOTE: Due to optimized ClientScripting support there is currently no matching
+   * <code>getItems</code> method.
+   * </p>
+   */
   public void setItems( String[] strings ) {
+    // TODO: Implement:
+//    * @exception IllegalArgumentException <ul>
+//    *    <li>ERROR_NULL_ARGUMENT - if the items array is null</li>
+//    *    <li>ERROR_INVALID_ARGUMENT - if an item in the items array is null</li>
+//    * </ul>
     checkWidget();
     remoteObject.set( "items", JsonUtil.createJsonArray( strings ) );
     setSelectionIndexImpl( -1 );
   }
-
+  /**
+   * Returns the zero-relative index of the item which is currently
+   * selected in the receiver, or -1 if no item is selected.
+   *
+   * @return the index of the selected item or -1
+   *
+   * @exception SWTException <ul>
+   *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+   *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+   * </ul>
+   *
+   * <p>
+   * NOTE: Due to optimized ClientScripting support there is currently no matching
+   * <code>setSelectionIndex</code> method.
+   * </p>
+   */
   public int getSelectionIndex() {
     checkWidget();
     return selectionIndex;
   }
 
+  /**
+   * Sets the maximum number of items that are visible in the receiver's list.
+   *
+   * @param count the new number of items to be visible
+   *
+   * @exception SWTException <ul>
+   *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+   *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+   * </ul>
+   */
   public void setVisibleItemCount( int itemCount ) {
     checkWidget();
     this.itemCount = itemCount;
     remoteObject.set( "visibleItemCount", itemCount );
   }
 
+  /**
+   * Gets the number of items that are visible in the receiver's list.
+   *
+   * @return the number of items that are visible
+   *
+   * @exception SWTException <ul>
+   *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+   *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+   * </ul>
+   */
   public int getVisibleItemCount() {
     checkWidget();
     return itemCount;
@@ -87,6 +168,17 @@ public class DropDown extends Widget {
     setVisibility( false );
   }
 
+  /**
+   * Marks the receiver as visible if the argument is <code>true</code>,
+   * and marks it invisible otherwise.
+   *
+   * @param visible the new visibility state
+   *
+   * @exception SWTException <ul>
+   *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+   *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+   * </ul>
+   */
   public void setVisibility( boolean value ) {
     checkWidget();
     if( visibility != value ) {
@@ -95,11 +187,37 @@ public class DropDown extends Widget {
     }
   }
 
+  /**
+   * Returns <code>true</code> if the receiver is visible, and
+   * <code>false</code> otherwise.
+   * <p>
+   * The initial value is false.
+   * </p>
+   *
+   * @return the receiver's visibility state
+   *
+   */
   public boolean getVisibility() {
+    // TODO : implement
+//    * @exception SWTException <ul>
+//    *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+//    *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+//    * </ul>
     return visibility;
   }
 
+  /**
+   * Returns the receiver's parent, which must be a <code>Control</code>.
+   *
+   * @return the receiver's parent
+   *
+   */
   public Control getParent() {
+    // TODO : implement
+//    * @exception SWTException <ul>
+//    *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+//    *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+//    * </ul>
     return parent;
   }
 

@@ -86,6 +86,9 @@
       updateScrollBars.call( this );
     },
 
+    /**
+     * Not intended to be called by ClientScripting
+     */
     setVisibleItemCount : function( itemCount ) {
       this._.visibleItemCount = itemCount;
       if( this._.visibility ) {
@@ -173,6 +176,9 @@
       }
     },
 
+    /**
+     * Not intended to be called by ClientScripting
+     */
     destroy : function() {
       if( !this.isDisposed() ) {
         var focusRoot = this._.parent.getFocusRoot();
