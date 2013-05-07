@@ -132,6 +132,24 @@ public class DropDown_Test {
   }
 
   @Test
+  public void testShow_ThrowsExceptionIfDisposed() {
+    dropdown.dispose();
+    try {
+      dropdown.show();
+      fail();
+    } catch( IllegalStateException ex ) {
+      // expected
+    }
+  }
+
+  @Test
+  public void testShow_SetsVisibility() {
+    dropdown.show();
+
+    assertTrue( dropdown.getVisibility() );
+  }
+
+  @Test
   public void testShow_RendersVisibilityTrue() {
     dropdown.show();
     verify( remoteObject ).set( "visibility", true );
@@ -146,53 +164,14 @@ public class DropDown_Test {
   }
 
   @Test
-  public void testGetVisibility_InitialValueIsFalse() {
-    assertFalse( dropdown.getVisibility() );
-  }
-
-  @Test
-  public void testShow_SetsVisibility() {
-    dropdown.show();
-
-    assertTrue( dropdown.getVisibility() );
-  }
-
-  @Test
-  public void testProcessSetVisibility_ValueIsTrue() {
-    handler.handleSet( new JsonObject().add( "visibility", true ) );
-
-    assertTrue( dropdown.getVisibility() );
-  }
-
-  @Test
-  public void testProcessSetVisibility_ValueIsFalse() {
-    dropdown.setVisibility( true );
-
-    handler.handleSet( new JsonObject().add( "visibility", false ) );
-
-    assertFalse( dropdown.getVisibility() );
-  }
-
-  @Test
-  public void testProcessSetSelectionIndex() {
-    handler.handleSet( new JsonObject().add( "selectionIndex", 7) );
-
-    assertEquals( 7, dropdown.getSelectionIndex() );
-  }
-
-  @Test
-  public void testSetItems_ResetsSelectionIndex() {
-    handler.handleSet( new JsonObject().add( "selectionIndex", 7) );
-    dropdown.setItems( new String[]{ "a" } );
-
-    assertEquals( -1, dropdown.getSelectionIndex() );
-  }
-
-  @Test
-  public void testProcessSetVisibility_DoNotRenderToRemoteObject() {
-    handler.handleSet( new JsonObject().add( "visibility", true ) );
-
-    verify( remoteObject, never() ).set( eq( "visibility" ), anyBoolean() );
+  public void testHide_ThrowsExceptionIfDisposed() {
+    dropdown.dispose();
+    try {
+      dropdown.hide();
+      fail();
+    } catch( IllegalStateException ex ) {
+      // expected
+    }
   }
 
   @Test
@@ -201,6 +180,39 @@ public class DropDown_Test {
     dropdown.hide();
 
     assertFalse( dropdown.getVisibility() );
+  }
+
+  @Test
+  public void testHide_RendersVisibilityFalse() {
+    dropdown.show();
+    dropdown.hide();
+    verify( remoteObject ).set( "visibility", false );
+  }
+
+  @Test
+  public void testGetVisibility_InitialValueIsFalse() {
+    assertFalse( dropdown.getVisibility() );
+  }
+
+  @Test
+  public void testGetSelectionIndex_InitialValue() {
+    assertEquals( -1, dropdown.getSelectionIndex() );
+  }
+
+  @Test
+  public void testSetItem_RenderItems() {
+    dropdown.setItems( new String[]{ "a", "b", "c" } );
+
+    JsonArray expected = JsonUtil.createJsonArray( new String[]{ "a", "b", "c" } );
+    verify( remoteObject ).set( eq( "items" ), eq( expected ) );
+  }
+
+  @Test
+  public void testSetItems_ResetsSelectionIndex() {
+    handler.handleSet( new JsonObject().add( "selectionIndex", 7) );
+    dropdown.setItems( new String[]{ "a" } );
+
+    assertEquals( -1, dropdown.getSelectionIndex() );
   }
 
   @Test
@@ -234,52 +246,38 @@ public class DropDown_Test {
   }
 
   @Test
-  public void testShow_ThrowsExceptionIfDisposed() {
-    dropdown.dispose();
-    try {
-      dropdown.show();
-      fail();
-    } catch( IllegalStateException ex ) {
-      // expected
-    }
-  }
-
-  @Test
-  public void testHide_RendersVisibilityFalse() {
-    dropdown.show();
-    dropdown.hide();
-    verify( remoteObject ).set( "visibility", false );
-  }
-
-  @Test
-  public void testHide_ThrowsExceptionIfDisposed() {
-    dropdown.dispose();
-    try {
-      dropdown.hide();
-      fail();
-    } catch( IllegalStateException ex ) {
-      // expected
-    }
-  }
-
-  @Test
-  public void testGetSelectionIndex_InitialValue() {
-    assertEquals( -1, dropdown.getSelectionIndex() );
-  }
-
-  @Test
-  public void testSetItem_RenderItems() {
-    dropdown.setItems( new String[]{ "a", "b", "c" } );
-
-    JsonArray expected = JsonUtil.createJsonArray( new String[]{ "a", "b", "c" } );
-    verify( remoteObject ).set( eq( "items" ), eq( expected ) );
-  }
-
-  @Test
-  public void testAddListener_Selection_sendsListen() {
-    dropdown.addListener( SWT.Selection, mock( Listener.class ) );
+  public void testAddListener_SelectionRenderListenTrue() {
+    Listener listener = mock( Listener.class );
+    dropdown.addListener( SWT.Selection, listener );
 
     verify( remoteObject ).listen( eq( "Selection" ), eq( true ) );
+  }
+
+  @Test
+  public void testAddListener_DefaultSelectionRenderListenTrue() {
+    Listener listener = mock( Listener.class );
+    dropdown.addListener( SWT.DefaultSelection, listener );
+
+    verify( remoteObject ).listen( eq( "DefaultSelection" ), eq( true ) );
+  }
+
+  @Test
+  public void testRemoveListener_SelectionRenderListenFalse() {
+    Listener listener = mock( Listener.class );
+    dropdown.addListener( SWT.Selection, listener );
+    //Mockito.reset( remoteObject );
+    dropdown.removeListener( SWT.Selection, listener );
+
+    verify( remoteObject ).listen( eq( "Selection" ), eq( false ) );
+  }
+
+  @Test
+  public void testRemoveListener_DefaultSelectionRenderListenFalse() {
+    Listener listener = mock( Listener.class );
+    dropdown.addListener( SWT.DefaultSelection, listener );
+    dropdown.removeListener( SWT.DefaultSelection, listener );
+
+    verify( remoteObject ).listen( eq( "DefaultSelection" ), eq( false ) );
   }
 
   @Test
@@ -298,42 +296,33 @@ public class DropDown_Test {
   }
 
   @Test
-  public void testRemoveListener_Selection_sendsListen() {
-    Listener listener = mock( Listener.class );
-    dropdown.addListener( SWT.Selection, listener );
+  public void testProcessSetVisibility_ValueIsTrue() {
+    handler.handleSet( new JsonObject().add( "visibility", true ) );
 
-    dropdown.removeListener( SWT.Selection, listener );
-
-    verify( remoteObject ).listen( eq( "Selection" ), eq( false ) );
+    assertTrue( dropdown.getVisibility() );
   }
 
   @Test
-  public void testRemoveListener_Selection_doesNotSendListenIfStillListening() {
-    dropdown.addListener( SWT.Selection, mock( Listener.class ) );
-    Listener listener = mock( Listener.class );
-    dropdown.addListener( SWT.Selection, listener );
+  public void testProcessSetVisibility_ValueIsFalse() {
+    dropdown.setVisibility( true );
 
-    dropdown.removeListener( SWT.Selection, listener );
+    handler.handleSet( new JsonObject().add( "visibility", false ) );
 
-    verify( remoteObject, times( 0 ) ).listen( eq( "Selection" ), eq( false ) );
+    assertFalse( dropdown.getVisibility() );
   }
 
   @Test
-  public void testAddListener_DefaultSelectionRenderListenTrue() {
-    Listener listener = mock( Listener.class );
-    dropdown.addListener( SWT.DefaultSelection, listener );
+  public void testProcessSetVisibility_DoNotRenderToRemoteObject() {
+    handler.handleSet( new JsonObject().add( "visibility", true ) );
 
-    verify( remoteObject ).listen( eq( "DefaultSelection" ), eq( true ) );
+    verify( remoteObject, never() ).set( eq( "visibility" ), anyBoolean() );
   }
 
   @Test
-  public void testRemoveListener_DefaultSelectionRenderListenFalse() {
-    Listener listener = mock( Listener.class );
-    dropdown.addListener( SWT.DefaultSelection, listener );
-    //Mockito.reset( remoteObject );
-    dropdown.removeListener( SWT.DefaultSelection, listener );
+  public void testProcessSetSelectionIndex() {
+    handler.handleSet( new JsonObject().add( "selectionIndex", 7) );
 
-    verify( remoteObject ).listen( eq( "DefaultSelection" ), eq( false ) );
+    assertEquals( 7, dropdown.getSelectionIndex() );
   }
 
   @Test
