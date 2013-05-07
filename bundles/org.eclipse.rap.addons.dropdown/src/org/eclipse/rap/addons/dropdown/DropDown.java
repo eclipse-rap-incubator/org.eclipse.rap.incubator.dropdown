@@ -79,11 +79,13 @@ public class DropDown extends Widget {
   }
 
   public void setItems( String[] strings ) {
+    checkWidget();
     remoteObject.set( "items", JsonUtil.createJsonArray( strings ) );
     setSelectionIndexImpl( -1 );
   }
 
   public int getSelectionIndex() {
+    checkWidget();
     return selectionIndex;
   }
 
@@ -96,7 +98,7 @@ public class DropDown extends Widget {
   }
 
   public void setVisibility( boolean value ) {
-    checkDisposed();
+    checkWidget();
     if( visibility != value ) {
       setVisibilityImpl( value );
       remoteObject.set( "visibility", value );
@@ -123,6 +125,7 @@ public class DropDown extends Widget {
   }
 
   public void setVisibleItemCount( int itemCount ) {
+    checkWidget();
     remoteObject.set( "visibleItemCount", itemCount );
   }
 

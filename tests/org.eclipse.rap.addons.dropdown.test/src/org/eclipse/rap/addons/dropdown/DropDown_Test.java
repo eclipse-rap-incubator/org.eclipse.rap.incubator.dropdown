@@ -41,6 +41,7 @@ import org.eclipse.rap.rwt.lifecycle.WidgetUtil;
 import org.eclipse.rap.rwt.remote.*;
 import org.eclipse.rap.rwt.testfixture.Fixture;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
 import org.eclipse.swt.widgets.*;
 import org.junit.*;
 import org.mockito.ArgumentCaptor;
@@ -137,7 +138,7 @@ public class DropDown_Test {
     try {
       dropdown.show();
       fail();
-    } catch( IllegalStateException ex ) {
+    } catch( SWTException ex ) {
       // expected
     }
   }
@@ -169,7 +170,7 @@ public class DropDown_Test {
     try {
       dropdown.hide();
       fail();
-    } catch( IllegalStateException ex ) {
+    } catch( SWTException ex ) {
       // expected
     }
   }
@@ -195,12 +196,36 @@ public class DropDown_Test {
   }
 
   @Test
+  public void testGetSelectionIndex_ThrowsExceptionIfDisposed() {
+    dropdown.dispose();
+
+    try {
+      dropdown.getSelectionIndex();
+      fail();
+    } catch( SWTException ex ) {
+      // expected
+    }
+  }
+
+  @Test
   public void testGetSelectionIndex_InitialValue() {
     assertEquals( -1, dropdown.getSelectionIndex() );
   }
 
   @Test
-  public void testSetItem_RenderItems() {
+  public void testSetItems_ThrowsExceptionIfDisposed() {
+    dropdown.dispose();
+
+    try {
+      dropdown.setItems( new String[]{ "a", "b", "c" } );
+      fail();
+    } catch( SWTException ex ) {
+      // expected
+    }
+  }
+
+  @Test
+  public void testSetItems_RenderItems() {
     dropdown.setItems( new String[]{ "a", "b", "c" } );
 
     JsonArray expected = JsonUtil.createJsonArray( new String[]{ "a", "b", "c" } );
@@ -216,9 +241,33 @@ public class DropDown_Test {
   }
 
   @Test
+  public void testSetVisibleItemCount_ThrowsExceptionIfDisposed() {
+    dropdown.dispose();
+
+    try {
+      dropdown.setVisibleItemCount( 7 );
+      fail();
+    } catch( SWTException ex ) {
+      // expected
+    }
+  }
+
+  @Test
   public void testSetVisibleItemCount_RendersVisibleItemCount() {
     dropdown.setVisibleItemCount( 7 );
     verify( remoteObject ).set( "visibleItemCount", 7 );
+  }
+
+  @Test
+  public void testSetData_ThrowsExceptionIfDiposed() {
+    dropdown.dispose();
+
+    try {
+      dropdown.setData( "foo", "bar" );
+      fail();
+    } catch( SWTException ex ) {
+      // expected
+    }
   }
 
   @Test
