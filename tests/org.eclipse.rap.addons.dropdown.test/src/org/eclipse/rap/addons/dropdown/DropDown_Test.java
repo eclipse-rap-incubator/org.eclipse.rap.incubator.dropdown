@@ -95,7 +95,19 @@ public class DropDown_Test {
   }
 
   @Test
-  public void testGetParent() {
+  public void testGetParent_ThrowsExceptionIfDisposed() {
+    dropdown.dispose();
+
+    try {
+      dropdown.getParent();
+      fail();
+    } catch( SWTException ex ) {
+      // expected
+    }
+  }
+
+  @Test
+  public void testGetParent_ReturnsParent() {
     assertSame( text, dropdown.getParent() );
   }
 
@@ -191,9 +203,21 @@ public class DropDown_Test {
   }
 
   @Test
-    public void testGetVisible_InitialValueIsFalse() {
-      assertFalse( dropdown.getVisible() );
+  public void testGetVisible_ThrowsExceptionIfDisposed() {
+    dropdown.dispose();
+
+    try {
+      dropdown.getVisible();
+      fail();
+    } catch( SWTException ex ) {
+      // expected
     }
+  }
+
+  @Test
+  public void testGetVisible_InitialValueIsFalse() {
+    assertFalse( dropdown.getVisible() );
+  }
 
   @Test
   public void testGetSelectionIndex_ThrowsExceptionIfDisposed() {
@@ -220,6 +244,26 @@ public class DropDown_Test {
       dropdown.setItems( new String[]{ "a", "b", "c" } );
       fail();
     } catch( SWTException ex ) {
+      // expected
+    }
+  }
+
+  @Test
+  public void testSetItems_ThrowsExceptionForNullArgument() {
+    try {
+      dropdown.setItems( null );
+      fail();
+    } catch( IllegalArgumentException ex ) {
+      // expected
+    }
+  }
+
+  @Test
+  public void testSetItems_ThrowsExceptionForNullItem() {
+    try {
+      dropdown.setItems( new String[]{ "a", null, "b" } );
+      fail();
+    } catch( IllegalArgumentException ex ) {
       // expected
     }
   }

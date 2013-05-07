@@ -92,20 +92,27 @@ public class DropDown extends Widget {
    *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
    *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
    * </ul>
+   * @exception IllegalArgumentException <ul>
+   *    <li>ERROR_NULL_ARGUMENT - if the items array is null</li>
+   *    <li>ERROR_INVALID_ARGUMENT - if an item in the items array is null</li>
+   * </ul>
    *
    * <p>
    * NOTE: Due to optimized ClientScripting support there is currently no matching
    * <code>getItems</code> method.
    * </p>
    */
-  public void setItems( String[] strings ) {
-    // TODO: Implement:
-//    * @exception IllegalArgumentException <ul>
-//    *    <li>ERROR_NULL_ARGUMENT - if the items array is null</li>
-//    *    <li>ERROR_INVALID_ARGUMENT - if an item in the items array is null</li>
-//    * </ul>
+  public void setItems( String[] items ) {
     checkWidget();
-    remoteObject.set( "items", JsonUtil.createJsonArray( strings ) );
+    if( items == null ) {
+      SWT.error( SWT.ERROR_NULL_ARGUMENT );
+    }
+    for( int i = 0; i < items.length; i++ ) {
+      if( items[ i ] == null ) {
+        SWT.error( SWT.ERROR_INVALID_ARGUMENT );
+      }
+    }
+    remoteObject.set( "items", JsonUtil.createJsonArray( items ) );
     setSelectionIndexImpl( -1 );
   }
   /**
@@ -193,16 +200,16 @@ public class DropDown extends Widget {
    * <p>
    * The initial value is false.
    * </p>
+   * @exception SWTException <ul>
+   *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+   *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+   * </ul>
    *
    * @return the receiver's visibility state
    *
    */
   public boolean getVisible() {
-    // TODO : implement
-//    * @exception SWTException <ul>
-//    *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
-//    *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
-//    * </ul>
+    checkWidget();
     return visibility;
   }
 
@@ -211,13 +218,13 @@ public class DropDown extends Widget {
    *
    * @return the receiver's parent
    *
+   * @exception SWTException <ul>
+   *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+   *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+   * </ul>
    */
   public Control getParent() {
-    // TODO : implement
-//    * @exception SWTException <ul>
-//    *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
-//    *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
-//    * </ul>
+    checkWidget();
     return parent;
   }
 
