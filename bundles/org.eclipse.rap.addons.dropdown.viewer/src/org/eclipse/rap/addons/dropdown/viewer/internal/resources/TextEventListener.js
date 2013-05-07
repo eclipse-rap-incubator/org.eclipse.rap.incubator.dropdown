@@ -86,7 +86,7 @@ function handleKeyDown( event ) {
   var widget = event.widget;
   var viewer = rap.getObject( widget.getData( VIEWER_KEY ) );
   var dropdown = rap.getObject( viewer.get( "dropDown" ) );
-  if( dropdown.getVisibility() ) {
+  if( dropdown.getVisible() ) {
     switch( event.keyCode ) {
       case SWT.CR:
         var sel = widget.getSelection();
@@ -100,7 +100,7 @@ function handleMouseDown( event ) {
   var widget = event.widget;
   var viewer = rap.getObject( widget.getData( VIEWER_KEY ) );
   var dropdown = rap.getObject( viewer.get( "dropDown" ) );
-  dropdown.setVisibility( !dropdown.getVisibility() );
+  dropdown.setVisible( !dropdown.getVisible() );
 }
 
 function commonText( items ) {

@@ -44,7 +44,7 @@ function handleModify( event ) {
   widget.setData( "typing", false );
   widget.setData( "selecting", false );
   if( !selecting ) {
-    if( ( text.length >= 2 || ( dropdown.getVisibility() && typing ) ) && items.length > 0 ) {
+    if( ( text.length >= 2 || ( dropdown.getVisible() && typing ) ) && items.length > 0 ) {
       dropdown.setItems( items );
       dropdown.show();
       var common = commonText( items );
@@ -63,7 +63,7 @@ function handleModify( event ) {
 function handleKeyDown( event ) {
   var widget = event.widget;
   var dropdown = rap.getObject( widget.getData( "dropdown" ) );
-  if( dropdown.getVisibility() ) {
+  if( dropdown.getVisible() ) {
     switch( event.keyCode ) {
       case SWT.CR:
         var sel = widget.getSelection();

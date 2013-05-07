@@ -161,11 +161,11 @@ public class DropDown extends Widget {
   }
 
   public void show() {
-    setVisibility( true );
+    setVisible( true );
   }
 
   public void hide() {
-    setVisibility( false );
+    setVisible( false );
   }
 
   /**
@@ -179,11 +179,11 @@ public class DropDown extends Widget {
    *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
    * </ul>
    */
-  public void setVisibility( boolean value ) {
+  public void setVisible( boolean value ) {
     checkWidget();
     if( visibility != value ) {
-      setVisibilityImpl( value );
-      remoteObject.set( "visibility", value );
+      setVisibleImpl( value );
+      remoteObject.set( "visible", value );
     }
   }
 
@@ -197,7 +197,7 @@ public class DropDown extends Widget {
    * @return the receiver's visibility state
    *
    */
-  public boolean getVisibility() {
+  public boolean getVisible() {
     // TODO : implement
 //    * @exception SWTException <ul>
 //    *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -287,8 +287,8 @@ public class DropDown extends Widget {
 
     @Override
     public void handleSet( JsonObject properties ) {
-      if( properties.get( "visibility" ) != null ) {
-        setVisibilityImpl( properties.get( "visibility" ).asBoolean() );
+      if( properties.get( "visible" ) != null ) {
+        setVisibleImpl( properties.get( "visible" ).asBoolean() );
       }
       if( properties.get( "selectionIndex" ) != null ) {
         setSelectionIndexImpl( properties.get( "selectionIndex" ).asInt() );
@@ -307,7 +307,7 @@ public class DropDown extends Widget {
 
   }
 
-  private void setVisibilityImpl( boolean value ) {
+  private void setVisibleImpl( boolean value ) {
     visibility = value;
   }
 

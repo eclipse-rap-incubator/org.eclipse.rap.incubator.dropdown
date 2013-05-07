@@ -144,24 +144,24 @@ public class DropDown_Test {
   }
 
   @Test
-  public void testShow_SetsVisibility() {
+  public void testShow_Setsvisible() {
     dropdown.show();
 
-    assertTrue( dropdown.getVisibility() );
+    assertTrue( dropdown.getVisible() );
   }
 
   @Test
-  public void testShow_RendersVisibilityTrue() {
+  public void testShow_RendersvisibleTrue() {
     dropdown.show();
-    verify( remoteObject ).set( "visibility", true );
+    verify( remoteObject ).set( "visible", true );
   }
 
   @Test
-  public void testShow_CallTwiceRenderVisibilityOnce() {
+  public void testShow_CallTwiceRendervisibleOnce() {
     dropdown.show();
     dropdown.show();
 
-    verify( remoteObject, times( 1 ) ).set( "visibility", true );
+    verify( remoteObject, times( 1 ) ).set( "visible", true );
   }
 
   @Test
@@ -176,24 +176,24 @@ public class DropDown_Test {
   }
 
   @Test
-  public void testHide_SetsVisibility() {
-    dropdown.setVisibility( true );
+  public void testHide_Setsvisible() {
+    dropdown.setVisible( true );
     dropdown.hide();
 
-    assertFalse( dropdown.getVisibility() );
+    assertFalse( dropdown.getVisible() );
   }
 
   @Test
-  public void testHide_RendersVisibilityFalse() {
+  public void testHide_RendersvisibleFalse() {
     dropdown.show();
     dropdown.hide();
-    verify( remoteObject ).set( "visibility", false );
+    verify( remoteObject ).set( "visible", false );
   }
 
   @Test
-  public void testGetVisibility_InitialValueIsFalse() {
-    assertFalse( dropdown.getVisibility() );
-  }
+    public void testGetVisible_InitialValueIsFalse() {
+      assertFalse( dropdown.getVisible() );
+    }
 
   @Test
   public void testGetSelectionIndex_ThrowsExceptionIfDisposed() {
@@ -369,26 +369,26 @@ public class DropDown_Test {
   }
 
   @Test
-  public void testProcessSetVisibility_ValueIsTrue() {
-    handler.handleSet( new JsonObject().add( "visibility", true ) );
+  public void testProcessSetVisible_ValueIsTrue() {
+    handler.handleSet( new JsonObject().add( "visible", true ) );
 
-    assertTrue( dropdown.getVisibility() );
+    assertTrue( dropdown.getVisible() );
   }
 
   @Test
-  public void testProcessSetVisibility_ValueIsFalse() {
-    dropdown.setVisibility( true );
+  public void testProcessSetVisible_ValueIsFalse() {
+    dropdown.setVisible( true );
 
-    handler.handleSet( new JsonObject().add( "visibility", false ) );
+    handler.handleSet( new JsonObject().add( "visible", false ) );
 
-    assertFalse( dropdown.getVisibility() );
+    assertFalse( dropdown.getVisible() );
   }
 
   @Test
-  public void testProcessSetVisibility_DoNotRenderToRemoteObject() {
-    handler.handleSet( new JsonObject().add( "visibility", true ) );
+  public void testProcessSetVisible_DoNotRenderToRemoteObject() {
+    handler.handleSet( new JsonObject().add( "visible", true ) );
 
-    verify( remoteObject, never() ).set( eq( "visibility" ), anyBoolean() );
+    verify( remoteObject, never() ).set( eq( "visible" ), anyBoolean() );
   }
 
   @Test

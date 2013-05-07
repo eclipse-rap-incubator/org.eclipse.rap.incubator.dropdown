@@ -86,6 +86,10 @@
       updateScrollBars.call( this );
     },
 
+    getItemCount : function() {
+      return this._.viewer.getItemsCount();
+    },
+
     /**
      * Not intended to be called by ClientScripting
      */
@@ -107,7 +111,11 @@
       }
     },
 
-    setVisibility : function( value ) {
+    getSelectionIndex : function() {
+      return this._.viewer.getItems().indexOf( this._.viewer.getSelectedItem() );
+    },
+
+    setVisible : function( value ) {
       if( value ) {
         this.show();
       } else {
@@ -115,10 +123,14 @@
       }
     },
 
+    getVisible : function() {
+      return this._.popup.getVisibility();
+    },
+
     show : function() {
       checkDisposed( this );
       if( !this._.visibility && !rwt.remote.EventUtil.getSuspended() ) {
-        rap.getRemoteObject( this ).set( "visibility", true );
+        rap.getRemoteObject( this ).set( "visible", true );
       }
       this._.visibility = true;
       if( this._.parent.isCreated() && !this._.popup.isSeeable() ) {
@@ -134,7 +146,7 @@
     hide : function() {
       checkDisposed( this );
       if( this._.visibility && !rwt.remote.EventUtil.getSuspended() ) {
-        rap.getRemoteObject( this ).set( "visibility", false );
+        rap.getRemoteObject( this ).set( "visible", false );
       }
       this._.visibility = false;
       this._.popup.hide();
@@ -199,18 +211,6 @@
         }
         this._ = null;
       }
-    },
-
-    getSelectionIndex : function() {
-      return this._.viewer.getItems().indexOf( this._.viewer.getSelectedItem() );
-    },
-
-    getItemCount : function() {
-      return this._.viewer.getItemsCount();
-    },
-
-    getVisibility : function() {
-      return this._.popup.getVisibility();
     },
 
     isDisposed : function() {
