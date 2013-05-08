@@ -303,6 +303,14 @@ public class DropDown_Test {
   }
 
   @Test
+  public void testSetVisibleItemCount_DoesNotRenderVisibleItemCountIfUnchanged() {
+    dropdown.setVisibleItemCount( 7 );
+    dropdown.setVisibleItemCount( 7 );
+
+    verify( remoteObject, times( 1 ) ).set( "visibleItemCount", 7 );
+  }
+
+  @Test
   public void testGetVisibleItemCount_ThrowsExceptionIfDisposed() {
     dropdown.dispose();
 

@@ -66,7 +66,7 @@ public class DropDown extends Widget {
   private final Listener disposeListener;
   private boolean visibility = false;
   private int selectionIndex = -1;
-  private int itemCount = 5;
+  private int visibleItemCount = 5;
 
   /**
    * Constructs a new instance of this class given its parent.
@@ -164,8 +164,10 @@ public class DropDown extends Widget {
    */
   public void setVisibleItemCount( int itemCount ) {
     checkWidget();
-    this.itemCount = itemCount;
-    remoteObject.set( "visibleItemCount", itemCount );
+    if( this.visibleItemCount != itemCount ) {
+      this.visibleItemCount = itemCount;
+      remoteObject.set( "visibleItemCount", itemCount );
+    }
   }
 
   /**
@@ -180,7 +182,7 @@ public class DropDown extends Widget {
    */
   public int getVisibleItemCount() {
     checkWidget();
-    return itemCount;
+    return visibleItemCount;
   }
 
   public void show() {
