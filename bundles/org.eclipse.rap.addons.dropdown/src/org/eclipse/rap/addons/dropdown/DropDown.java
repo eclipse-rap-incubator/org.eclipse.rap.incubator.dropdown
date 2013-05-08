@@ -28,7 +28,31 @@ import org.eclipse.swt.internal.events.EventLCAUtil;
 import org.eclipse.swt.internal.widgets.WidgetAdapterImpl;
 import org.eclipse.swt.widgets.*;
 
-
+/**
+ * Instances of this class represent a list of items that are attached to a control (parent).
+ * If made visible (using <code>show</code> or <code>setVisibility</code>), the list
+ * appears attached to the control. The user can select an item from the list
+ * using the arrows keys and Enter, or the mouse.
+ *
+ * The list disappears automatically if the control looses focus, if an item is clicked,
+ * or if the escape key is pressed.
+ *
+ * <p>
+ * <dl>
+ * <dt><b>Events:</b></dt>
+ * <dd>DefaultSelection, Selection</dd>
+ * </dl>
+ * <p>
+ * <p>
+ * NOTE: This widget is optimized for use with ClientScripting. The client representation
+ * implements nearly all API defined in this class, which can be safely used unless documented
+ * otherwise in the JsDoc.
+ * </p>
+ * <p>
+ * IMPORTANT: This class is <em>not</em> intended to be subclassed.
+ * </p>
+ *
+ */
 @SuppressWarnings("restriction")
 public class DropDown extends Widget {
 
@@ -45,29 +69,21 @@ public class DropDown extends Widget {
   private int itemCount = 5;
 
   /**
-   * Instances of this class represent a list of items that are attached to a control (parent).
-   * If made visible (using <code>show</code> or <code>setVisibility</code>), the list
-   * appears attached to the control. The user can select an item from the list
-   * using the arrows keys and Enter, or the mouse.
+   * Constructs a new instance of this class given its parent.
    *
-   * The list disappears automatically if the control looses focus, if an item is clicked,
-   * or if the escape key is pressed.
+   * @param parent a control, usually <code>Text</code>,
+   *        which will be the parent of the new instance (cannot be null)
    *
-   * <p>
-   * <dl>
-   * <dt><b>Events:</b></dt>
-   * <dd>DefaultSelection, Selection</dd>
-   * </dl>
-   * <p>
-   * <p>
-   * NOTE: This widget is optimized for use with ClientScripting. The client representation
-   * implements nearly all API defined in this class, which can be safely used unless documented
-   * otherwise in the JsDoc.
-   * </p>
-   * <p>
-   * IMPORTANT: This class is <em>not</em> intended to be subclassed.
-   * </p>
+   * @exception IllegalArgumentException <ul>
+   *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+   * </ul>
+   * @exception SWTException <ul>
+   *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+   *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+   * </ul>
    *
+   * @see Text
+   * @see Widget#checkSubclass
    */
   public DropDown( Control parent ) {
     super( parent, 0 );
