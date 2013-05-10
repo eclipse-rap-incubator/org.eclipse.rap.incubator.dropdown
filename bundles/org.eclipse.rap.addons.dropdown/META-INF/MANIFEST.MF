@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: DropDown
 Bundle-SymbolicName: org.eclipse.rap.addons.dropdown
-Bundle-Version: 0.0.1.qualifier
+Bundle-Version: 0.1.0.qualifier
 Bundle-Vendor: Eclipse.org - RAP Incubator
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Import-Package: org.eclipse.rap.clientscripting;version="0.1.100",
