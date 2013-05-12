@@ -28,9 +28,7 @@
   <modules>
     <module>../../bundles/org.eclipse.rap.addons.dropdown</module>
     <module>../../bundles/org.eclipse.rap.addons.dropdown.viewer</module>
-    <!-- 
     <module>../../tests/org.eclipse.rap.addons.dropdown.test</module>
-     -->
     <module>../../features/org.eclipse.rap.dropdown.feature</module>
     <module>repository</module>
   </modules>
