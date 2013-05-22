@@ -783,6 +783,13 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       assertTrue( dropdown.isDisposed() );
     },
 
+    testDestroy_AfterControlDispose : function() {
+      widget.destroy();
+      dropdown.destroy();
+
+      assertTrue( dropdown.isDisposed() );
+    },
+
     testDestroy_DisposesPopup : function() {
       dropdown.destroy();
       TestUtil.flush();

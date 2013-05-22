@@ -193,13 +193,20 @@
      */
     destroy : function() {
       if( !this.isDisposed() ) {
-        var focusRoot = this._.parent.getFocusRoot();
-        focusRoot.removeEventListener( "changeFocusedChild", onFocusChange, this );
-        this._.popup.getFocusRoot().removeEventListener( "changeFocusedChild", onFocusChange, this );
-        this._.parent.removeEventListener( "appear", onTextAppear, this );
-        this._.parent.removeEventListener( "keydown", onTextKeyEvent, this );
-        this._.parent.removeEventListener( "keypress", onTextKeyEvent, this );
-        this._.popup.destroy();
+        var parentFocusRoot = this._.parent.getFocusRoot();
+        if( parentFocusRoot && !parentFocusRoot.isDisposed() ) {
+          parentFocusRoot.removeEventListener( "changeFocusedChild", onFocusChange, this );
+        }
+        var popupFocusRoot = this._.popup.getFocusRoot();
+        if( popupFocusRoot && !popupFocusRoot.isDisposed() ) {
+          popupFocusRoot.removeEventListener( "changeFocusedChild", onFocusChange, this );
+        }
+        if( !this._.parent.isDisposed() ) {
+          this._.parent.removeEventListener( "appear", onTextAppear, this );
+          this._.parent.removeEventListener( "keydown", onTextKeyEvent, this );
+          this._.parent.removeEventListener( "keypress", onTextKeyEvent, this );
+          this._.popup.destroy();
+        }
         this._.hideTimer.dispose();
         if( this._.widgetData ) {
           for( var key in this._.widgetData ) {
