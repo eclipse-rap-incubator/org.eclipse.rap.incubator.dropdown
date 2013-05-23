@@ -13,8 +13,8 @@ function handleEvent( event ) {
   var widget = event.widget;
   var dropdown = rap.getObject( widget.getData( "dropdown" ) );
   // TODO : should not autoamtically hide if programmatically shown
-  dropdown.setVisibility( !dropdown.getVisibility() );
-  if( dropdown.getVisibility() ) {
+  dropdown.setVisible( !dropdown.getVisible() );
+  if( dropdown.getVisible() ) {
     // TODO : set focus to text or list, currently neither is possible
     dropdown.setItems( rap.getObject( dropdown.getData( "data" ) ) );
   }
