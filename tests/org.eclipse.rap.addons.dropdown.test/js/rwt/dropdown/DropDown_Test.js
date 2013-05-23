@@ -400,7 +400,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       var logger = TestUtil.getLogger();
 
       dropdown.addListener( "Selection", logger.log );
-      clickItem( 1 );
+      dropdown.setSelectionIndex( 1 );
 
       assertEquals( 1, logger.getLog().length );
     },
@@ -463,7 +463,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       var logger = TestUtil.getLogger();
 
       dropdown.addListener( "Selection", logger.log );
-      clickItem( 1 );
+      dropdown.setSelectionIndex( 1 );
 
       var event = logger.getLog()[ 0 ];
       assertIdentical( dropdown, event.widget );
@@ -529,8 +529,20 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       var logger = TestUtil.getLogger();
 
       dropdown.addListener( "DefaultSelection", logger.log );
-      clickItem( 1 );
+      dropdown.setSelectionIndex( 1 );
       TestUtil.pressOnce( viewer, "Enter" );
+      TestUtil.forceTimerOnce();
+
+      assertEquals( 1, logger.getLog().length );
+    },
+
+    testAddDefaultSelectionListener_FiresOnClick : function() {
+      dropdown.setItems( [ "a", "b", "c" ] );
+      showDropDown();
+      var logger = TestUtil.getLogger();
+
+      dropdown.addListener( "DefaultSelection", logger.log );
+      clickItem( 1 );
       TestUtil.forceTimerOnce();
 
       assertEquals( 1, logger.getLog().length );

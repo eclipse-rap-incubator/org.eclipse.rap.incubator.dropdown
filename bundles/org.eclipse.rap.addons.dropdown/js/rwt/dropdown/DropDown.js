@@ -60,11 +60,13 @@
     this._.visibleItemCount = 5;
     this._.parent = parent;
     this._.items = [];
+    this._.inMouseSelection = false;
     this._.events = createEventsMap();
     this._.parent.addEventListener( "keydown", onTextKeyEvent, this );
     this._.parent.addEventListener( "keypress", onTextKeyEvent, this );
     this._.viewer.getManager().addEventListener( "changeSelection", onSelection, this );
     this._.viewer.addEventListener( "keydown", onKeyEvent, this );
+    this._.viewer.addEventListener( "mousedown", onMouseDown, this );
     this._.viewer.addEventListener( "mouseup", onMouseUp, this );
     this._.popup.addEventListener( "appear", onAppear, this );
     this._.popup.addEventListener( "disappear", onDisappear, this );
@@ -313,8 +315,16 @@
     fireEvent.call( this, "Selection" );
   };
 
-  var onMouseUp = function( event ) {
+  var onMouseDown = function( event ) {
     if( event.getOriginalTarget() instanceof rwt.widgets.ListItem ) {
+      this._.inMouseSelection = true;
+    }
+  };
+
+  var onMouseUp = function( event ) {
+    if( this._.inMouseSelection && event.getOriginalTarget() instanceof rwt.widgets.ListItem ) {
+      this._.inMouseSelection = false;
+      fireEvent.call( this, "DefaultSelection" );
       this.hide();
     }
   };
