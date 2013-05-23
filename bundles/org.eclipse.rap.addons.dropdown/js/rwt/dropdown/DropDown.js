@@ -302,6 +302,7 @@
         //        key events, but this would be complicated since the event is disposed by the
         //        time dispatch would be called on the viewer.
         fireEvent.call( this, "DefaultSelection" );
+        this.hide();
       }, this, 0 );
     } else if( event.getKeyIdentifier() === "Escape" ) {
       this.hide();

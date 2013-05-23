@@ -43,7 +43,6 @@ function handleSelection( event ) {
 
 function handleDefaultSelection( event ) {
   var dropdown = event.widget;
-  dropdown.hide();
   var selectionIndex = dropdown.getSelectionIndex();
   var mapping = dropdown.getData( "indexMapping" );
   var elementIndex = mapping[ selectionIndex ];

@@ -158,6 +158,15 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       assertFalse( popup.isSeeable() );
     },
 
+    testHideOnEnter : function() {
+      showDropDown();
+
+      TestUtil.press( viewer, "Enter" );
+      TestUtil.forceTimerOnce();
+
+      assertFalse( popup.isSeeable() );
+    },
+
     testHideOnItemClick : function() {
       dropdown.setItems( [ "a", "b" ] );
       showDropDown();

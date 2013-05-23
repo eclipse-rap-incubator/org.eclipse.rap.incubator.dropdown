@@ -35,7 +35,6 @@ function handleSelection( event ) {
 
 function handleDefaultSelection( event ) {
   var dropdown = event.widget;
-  dropdown.hide();
   dropdown.setSelectionIndex( -1 ); // should this happen automatically?
 //  var text = rap.getObject( dropdown.getData( "text" ) );
 //  text.forceFocus(); // TODO : currently not possible
