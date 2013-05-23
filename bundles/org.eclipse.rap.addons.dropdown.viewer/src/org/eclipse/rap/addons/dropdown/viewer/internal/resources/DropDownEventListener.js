@@ -62,7 +62,7 @@ function handleShow( event ) {
     var text = rap.getObject( viewer.get( "text" ) );
     var str = text.getText();
     var result = searchItems( data, createQuery( str ), 20 );
-    if( result.items.length === 0 ) {
+    if( result.items.length === 0 || ( result.items.length === 1 && str === result.items[ 0 ] ) ) {
       result = searchItems( data, /.*/, 20 );
     }
     dropdown.setItems( result.items );
