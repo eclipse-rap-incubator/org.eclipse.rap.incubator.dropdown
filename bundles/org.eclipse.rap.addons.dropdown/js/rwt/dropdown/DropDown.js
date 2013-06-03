@@ -302,7 +302,6 @@
         //        key events, but this would be complicated since the event is disposed by the
         //        time dispatch would be called on the viewer.
         fireEvent.call( this, "DefaultSelection" );
-        this.hide();
       }, this, 0 );
     } else if( event.getKeyIdentifier() === "Escape" ) {
       this.hide();
@@ -326,7 +325,6 @@
     if( this._.inMouseSelection && event.getOriginalTarget() instanceof rwt.widgets.ListItem ) {
       this._.inMouseSelection = false;
       fireEvent.call( this, "DefaultSelection" );
-      this.hide();
     }
   };
 
@@ -361,6 +359,9 @@
         if( !rwt.remote.EventUtil.getSuspended() ) { // TODO [tb] : ClientScripting must reset flag
           // TODO : merge multiple changes? How long?
           rap.getRemoteObject( this ).notify( type, event );
+          if( type === "DefaultSelection" ) {
+            this.hide();
+          }
         }
       }
     } else {
