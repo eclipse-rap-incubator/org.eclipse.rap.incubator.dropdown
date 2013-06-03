@@ -26,8 +26,6 @@ import org.eclipse.rap.rwt.internal.remote.RemoteObjectImpl;
 import org.eclipse.rap.rwt.lifecycle.WidgetUtil;
 import org.eclipse.rap.rwt.remote.RemoteObject;
 import org.eclipse.rap.rwt.service.ResourceManager;
-import org.eclipse.rap.rwt.widgets.DialogCallback;
-import org.eclipse.rap.rwt.widgets.DialogUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -38,7 +36,6 @@ import org.eclipse.swt.widgets.*;
 public class DropDownDemo extends AbstractEntryPoint {
 
   private final String PATH_PREFIX = "/org/eclipse/rap/addons/dropdown/demo/";
-  DropDownViewer viewer = null;
 
   @Override
   protected void createContents( Composite parent ) {
@@ -128,14 +125,41 @@ public class DropDownDemo extends AbstractEntryPoint {
     Group group = new Group( parent, SWT.NONE );
     group.setText( "DropDownViewer + server-side expand button, dynamic input (586 entries max)" );
     group.setLayout( new GridLayout( 2, false) );
-    final Text text = new Text( group, SWT.BORDER );
-    text.setData( RWT.CUSTOM_VARIANT, "dropdown" );
-    text.setCursor( text.getDisplay().getSystemCursor( SWT.CURSOR_ARROW ) );
-    GridData gridData = new GridData( 200, 23 );
-    gridData.verticalAlignment = SWT.TOP;
-    text.setLayoutData( gridData );
-    text.setMessage( "City" );
-    viewer = new DropDownViewer( text );
+    final Text text = createKFZExample_Text( group );
+    final DropDownViewer viewer = createKFZExample_Viewer( text );
+    createKFZExample_Location( group, viewer );
+    createKFZExample_Log( group, viewer );
+  }
+
+  private void createKFZExample_Location( Group group, final DropDownViewer viewer ) {
+    Group location = new Group( group, SWT.NONE );
+    location.setText( "Location" );
+    GridData layoutData = new GridData( SWT.TOP, SWT.CENTER, false, true );
+    location.setLayoutData( layoutData );
+    layoutData.verticalSpan = 2;
+    location.setLayout( new GridLayout( 1, true ) );
+    final Button germany = new Button( location, SWT.RADIO );
+    germany.setText( "Germany" );
+    germany.addListener( SWT.Selection, new Listener() {
+      public void handleEvent( Event event ) {
+        if( germany.getSelection() ) {
+          viewer.setInput( KFZ.DE );
+        }
+      }
+    } );
+    final Button austria = new Button( location, SWT.RADIO );
+    austria.setText( "Austria" );
+    austria.addListener( SWT.Selection, new Listener() {
+      public void handleEvent( Event event ) {
+        if( austria.getSelection() ) {
+          viewer.setInput( KFZ.AT );
+        }
+      }
+    } );
+  }
+
+  private DropDownViewer createKFZExample_Viewer( final Text text ) {
+    DropDownViewer viewer = new DropDownViewer( text );
     viewer.setLabelProvider( new LabelProvider() {
       @Override
       public String getText( Object object ) {
@@ -157,54 +181,37 @@ public class DropDownDemo extends AbstractEntryPoint {
         return ( Object[] )inputElement;
       }
     } );
+    return viewer;
+  }
+
+  private Text createKFZExample_Text( Group group ) {
+    final Text text = new Text( group, SWT.BORDER );
+    text.setData( RWT.CUSTOM_VARIANT, "dropdown" );
+    text.setCursor( text.getDisplay().getSystemCursor( SWT.CURSOR_ARROW ) );
+    GridData gridData = new GridData( 200, 23 );
+    gridData.verticalAlignment = SWT.TOP;
+    text.setLayoutData( gridData );
+    text.setMessage( "City" );
+    return text;
+  }
+
+  private void createKFZExample_Log( Group group, DropDownViewer viewer ) {
+    final Table table = new Table( group, SWT.BORDER | SWT.HIDE_SELECTION );
+    ( new TableColumn( table, SWT.NONE ) ).setText( "KFZ" );
+    ( new TableColumn( table, SWT.NONE ) ).setText( "Area" );
+    table.getColumn( 0 ).setWidth( 40 );
+    table.getColumn( 1 ).setWidth( 200 );
+    GridData gridData = new GridData( 250, 60 );
+    table.setLayoutData( gridData );
     viewer.addSelectionChangedListener( new ISelectionChangedListener() {
       public void selectionChanged( SelectionChangedEvent event ) {
         IStructuredSelection selection = ( IStructuredSelection )event.getSelection();
         String[] city = ( String[] )selection.getFirstElement();
-        MessageBox box = new MessageBox( getShell() );
-        box.setMessage(
-           "Your area identifier is "
-          + city[ 0 ]
-          + ", which is "
-          + city[ 1 ]
-        );
-        DialogUtil.open( box, new DialogCallback() {
-          public void dialogClosed( int returnCode ) {
-            text.forceFocus();
-          }
-        } );
+        TableItem item = new TableItem( table, SWT.NONE );
+        item.setText( city );
+        table.setTopIndex( table.indexOf( item ) );
       }
     } );
-    Group location = new Group( group, SWT.NONE );
-    location.setText( "Location" );
-    location.setLayoutData( new GridData( SWT.TOP, SWT.CENTER, false, true ) );
-    location.setLayout( new GridLayout( 1, true ) );
-    final Button germany = new Button( location, SWT.RADIO );
-    germany.setText( "Germany" );
-    germany.addListener( SWT.Selection, new Listener() {
-      public void handleEvent( Event event ) {
-        if( germany.getSelection() ) {
-          loadGermany();
-        }
-      }
-    } );
-    final Button austria = new Button( location, SWT.RADIO );
-    austria.setText( "Austria" );
-    austria.addListener( SWT.Selection, new Listener() {
-      public void handleEvent( Event event ) {
-        if( austria.getSelection() ) {
-          loadAustria();
-        }
-      }
-    } );
-  }
-
-  void loadGermany() {
-    viewer.setInput( KFZ.DE );
-  }
-
-  void loadAustria() {
-    viewer.setInput( KFZ.AT );
   }
 
   private Text createText( Composite parent, int style ) {
