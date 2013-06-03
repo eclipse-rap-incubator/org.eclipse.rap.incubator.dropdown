@@ -67,11 +67,12 @@ function handleModify( event ) {
       dropdown.setData( "internalShow", true );
       dropdown.show();
       dropdown.setData( "internalShow", false );
+      var sel = widget.getSelection();
       var common = commonText( result.items );
       if( typing && result.items.length === 1 ) {
         dropdown.setSelectionIndex( 0 );
-      } else if( typing && common && common.length > text.length ) {
-        var sel = widget.getSelection();
+      }
+      if( typing && common && common.length > text.length ) {
         var newSel = [ sel[ 0 ], common.length ];
         widget.setText( common );
         widget.setSelection( newSel );
