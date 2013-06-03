@@ -37,6 +37,7 @@ function handleSelection( event ) {
     text.setSelection( [ 0, event.text.length ] );
     if( event.widget.getItemCount() === 1 ) {
       handleDefaultSelection( event );
+      dropdown.hide();
     }
   }
 }
