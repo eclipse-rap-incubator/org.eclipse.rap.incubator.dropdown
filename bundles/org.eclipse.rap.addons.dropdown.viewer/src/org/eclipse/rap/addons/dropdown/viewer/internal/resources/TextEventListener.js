@@ -87,13 +87,11 @@ function handleKeyDown( event ) {
   var widget = event.widget;
   var viewer = rap.getObject( widget.getData( VIEWER_KEY ) );
   var dropdown = rap.getObject( viewer.get( "dropDown" ) );
-  if( dropdown.getVisible() ) {
-    switch( event.keyCode ) {
-      case SWT.CR:
-        var sel = widget.getSelection();
-        widget.setSelection( [ sel[ 1 ], sel[ 1 ] ] );
-      break;
-    }
+  switch( event.keyCode ) {
+    case SWT.CR:
+      var sel = widget.getSelection();
+      widget.setSelection( [ sel[ 1 ], sel[ 1 ] ] );
+    break;
   }
 }
 
