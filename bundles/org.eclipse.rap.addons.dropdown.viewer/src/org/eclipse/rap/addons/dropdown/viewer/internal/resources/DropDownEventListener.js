@@ -48,7 +48,10 @@ function handleDefaultSelection( event ) {
   var mapping = dropdown.getData( "indexMapping" );
   var elementIndex = mapping[ selectionIndex ];
   var viewer = rap.getObject( dropdown.getData( VIEWER_KEY ) );
-  viewer.notify( "SelectionChanged", { "index" : elementIndex } );
+  if( viewer.get( "selection" ) !== elementIndex ) {
+    viewer.notify( "SelectionChanged", { "index" : elementIndex } );
+    viewer.set( "selection", elementIndex );
+  }
   dropdown.setSelectionIndex( -1 ); // should this happen automatically?
 //  var text = rap.getObject( dropdown.getData( "text" ) );
 //  text.forceFocus(); // TODO : currently not possible

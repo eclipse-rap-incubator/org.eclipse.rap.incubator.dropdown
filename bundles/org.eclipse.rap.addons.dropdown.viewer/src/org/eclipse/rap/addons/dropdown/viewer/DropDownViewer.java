@@ -47,6 +47,7 @@ public class DropDownViewer extends ContentViewer {
   private static final String TEXT_KEY = "text";
   private static final String DECORATOR_KEY = "decorator";
   private static final String ELEMENTS_KEY = "elements";
+  private static final String SELECTION_KEY = "selection";
 
   private final DropDown dropDown;
   private final Text text;
@@ -141,6 +142,7 @@ public class DropDownViewer extends ContentViewer {
     // TODO : Using a separate client object (e.g. "RemoteList") for the elements might allow
     //        sharing and incremental updates
     remoteObject.set( ELEMENTS_KEY, JsonUtil.createJsonArray( elements ) );
+    remoteObject.set( SELECTION_KEY, -1 );
   }
 
   private void createControlDecorator() {
