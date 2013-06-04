@@ -166,6 +166,7 @@ public class DropDownViewer extends ContentViewer {
     dropDown.addListener( ClientListener.Selection, getDropDownSelectionListener() );
     dropDown.addListener( ClientListener.DefaultSelection, getDropDownDefaultSelectionListener() );
     dropDown.addListener( ClientListener.Show, getDropDownShowListener() );
+    dropDown.addListener( ClientListener.Hide, getDropDownHideListener() );
   }
 
   private void linkClientObjects() {
@@ -216,6 +217,10 @@ public class DropDownViewer extends ContentViewer {
 
   ClientListener getDropDownShowListener() {
     return clientListeners.getDropDownShowListener();
+  }
+
+  ClientListener getDropDownHideListener() {
+    return clientListeners.getDropDownHideListener();
   }
 
   // TODO : make exchangeable by accepting a class that extends the holder in the constructor
@@ -270,6 +275,10 @@ public class DropDownViewer extends ContentViewer {
     }
 
     public ClientListener getDropDownShowListener() {
+      return dropDownListener;
+    }
+
+    public ClientListener getDropDownHideListener() {
       return dropDownListener;
     }
 

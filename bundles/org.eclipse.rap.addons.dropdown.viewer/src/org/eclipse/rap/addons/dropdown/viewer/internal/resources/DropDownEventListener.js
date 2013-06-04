@@ -24,6 +24,31 @@ function handleEvent( event ) {
     case SWT.Show:
       handleShow( event );
     break;
+    case SWT.Hide:
+      handleHide( event );
+    break;
+  }
+}
+
+function handleShow( event ) {
+  var dropdown = event.widget;
+  if( dropdown.getData( "internalShow" ) !== true ) {
+    var viewer = rap.getObject( dropdown.getData( VIEWER_KEY ) );
+    var data = viewer.get( "elements" );
+    var text = rap.getObject( viewer.get( "text" ) );
+    var str = text.getText();
+    var result = searchItems( data, createQuery( str ), 20 );
+    if( result.items.length === 0 || ( result.items.length === 1 && str === result.items[ 0 ] ) ) {
+      result = searchItems( data, /.*/, 20 );
+    }
+    dropdown.setItems( result.items );
+    dropdown.setData( "indexMapping", result.indicies );
+  }
+}
+
+function handleHide( event ) {
+  if( event.widget.getSelectionIndex() !== -1 ) {
+    handleDefaultSelection( event );
   }
 }
 
@@ -53,22 +78,4 @@ function handleDefaultSelection( event ) {
     viewer.set( "selection", elementIndex );
   }
   dropdown.setSelectionIndex( -1 ); // should this happen automatically?
-//  var text = rap.getObject( dropdown.getData( "text" ) );
-//  text.forceFocus(); // TODO : currently not possible
-}
-
-function handleShow( event ) {
-  var dropdown = event.widget;
-  if( dropdown.getData( "internalShow" ) !== true ) {
-    var viewer = rap.getObject( dropdown.getData( VIEWER_KEY ) );
-    var data = viewer.get( "elements" );
-    var text = rap.getObject( viewer.get( "text" ) );
-    var str = text.getText();
-    var result = searchItems( data, createQuery( str ), 20 );
-    if( result.items.length === 0 || ( result.items.length === 1 && str === result.items[ 0 ] ) ) {
-      result = searchItems( data, /.*/, 20 );
-    }
-    dropdown.setItems( result.items );
-    dropdown.setData( "indexMapping", result.indicies );
-  }
 }

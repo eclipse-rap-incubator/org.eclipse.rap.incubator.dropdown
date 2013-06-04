@@ -224,6 +224,17 @@ public class DropDownViewer_Test {
   }
 
   @Test
+  public void testGetDefaultDropDownHideListenerTwice_DifferentViewerReturnSameInstance() {
+    createViewer();
+    ClientListener listener1 = viewer.getDropDownHideListener();
+    DropDownViewer viewer2 = new DropDownViewer( new Text( shell, SWT.NONE ) );
+    ClientListener listener2 = viewer2.getDropDownHideListener();
+
+    assertNotNull( listener1 );
+    assertSame( listener1, listener2 );
+  }
+
+  @Test
   public void testConstructor_LinksTextToRemoteObject() {
     createViewer();
 
