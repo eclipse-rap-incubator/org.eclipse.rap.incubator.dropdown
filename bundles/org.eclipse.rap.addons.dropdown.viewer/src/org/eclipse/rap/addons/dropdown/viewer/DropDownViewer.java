@@ -14,6 +14,8 @@ import org.eclipse.jface.fieldassist.FieldDecoration;
 import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.rap.addons.dropdown.DropDown;
+import org.eclipse.rap.addons.dropdown.internal.Model;
+import org.eclipse.rap.addons.dropdown.internal.ModelListener;
 import org.eclipse.rap.addons.dropdown.viewer.internal.resources.ResourceLoaderUtil;
 import org.eclipse.rap.clientscripting.ClientListener;
 import org.eclipse.rap.clientscripting.WidgetDataWhiteList;
@@ -22,8 +24,6 @@ import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.client.service.JavaScriptLoader;
 import org.eclipse.rap.rwt.internal.protocol.JsonUtil;
 import org.eclipse.rap.rwt.lifecycle.WidgetUtil;
-import org.eclipse.rap.rwt.remote.AbstractOperationHandler;
-import org.eclipse.rap.rwt.remote.RemoteObject;
 import org.eclipse.rap.rwt.service.ResourceManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
@@ -52,7 +52,10 @@ public class DropDownViewer extends ContentViewer {
   private final DropDown dropDown;
   private final Text text;
   private final ClientListenerHolder clientListeners;
-  private final RemoteObject remoteObject;
+  private final Model model = new Model();
+  private final ModelListener modelSelectionListener = new ModelSelectionListener();
+
+
   private Object[] elements;
   private ControlDecorator decorator;
 
@@ -62,8 +65,6 @@ public class DropDownViewer extends ContentViewer {
     ensureTypeHandler();
     dropDown = new DropDown( text );
     clientListeners = getClientListenerHolder();
-    remoteObject = RWT.getUISession().getConnection().createRemoteObject( REMOTE_TYPE );
-    remoteObject.setHandler( new InternalOperationHandler() );
     setClientElements( new String[ 0 ] );
     createControlDecorator();
     attachClientListener();
@@ -94,8 +95,7 @@ public class DropDownViewer extends ContentViewer {
   @Override
   public void addSelectionChangedListener( ISelectionChangedListener listener ) {
     super.addSelectionChangedListener( listener );
-    // can't remove selection listener, listener list is private in viewer
-    remoteObject.listen( SELECTION_CHANGED, true );
+    model.addListener( SELECTION_CHANGED, modelSelectionListener );
   }
 
   @Override
@@ -106,7 +106,7 @@ public class DropDownViewer extends ContentViewer {
   @Override
   protected void handleDispose( DisposeEvent event ) {
     super.handleDispose( event );
-    remoteObject.destroy();
+    model.destroy();
   }
 
   ////////////
@@ -141,8 +141,8 @@ public class DropDownViewer extends ContentViewer {
   private void setClientElements( String[] elements ) {
     // TODO : Using a separate client object (e.g. "RemoteList") for the elements might allow
     //        sharing and incremental updates
-    remoteObject.set( ELEMENTS_KEY, JsonUtil.createJsonArray( elements ) );
-    remoteObject.set( SELECTION_KEY, -1 );
+    model.set( ELEMENTS_KEY, JsonUtil.createJsonArray( elements ) );
+    model.set( SELECTION_KEY, -1 );
   }
 
   private void createControlDecorator() {
@@ -172,15 +172,15 @@ public class DropDownViewer extends ContentViewer {
   private void linkClientObjects() {
     // NOTE : Order is relevant, DropDown renders immediately!
     WidgetDataWhiteList.addKey( VIEWER_LINK );
-    text.setData( VIEWER_LINK, remoteObject.getId() );
-    dropDown.setData( VIEWER_LINK, remoteObject.getId() );
-    remoteObject.set( DROPDOWN_KEY, WidgetUtil.getId( dropDown ) );
-    remoteObject.set( TEXT_KEY, WidgetUtil.getId( text ) );
-    remoteObject.set( DECORATOR_KEY, WidgetUtil.getId( decorator ) );
+    text.setData( VIEWER_LINK, model.getId() );
+    dropDown.setData( VIEWER_LINK, model.getId() );
+    model.set( DROPDOWN_KEY, WidgetUtil.getId( dropDown ) );
+    model.set( TEXT_KEY, WidgetUtil.getId( text ) );
+    model.set( DECORATOR_KEY, WidgetUtil.getId( decorator ) );
   }
 
-  RemoteObject getRemoteObject() {
-    return remoteObject;
+  Model getModel() {
+    return model;
   }
 
   ClientListener getTextModifyListener() {
@@ -251,16 +251,11 @@ public class DropDownViewer extends ContentViewer {
     jsl.require( manager.getLocation( MODEL_REMOTE_OBJECT_JS ) );
   }
 
-  private class InternalOperationHandler extends AbstractOperationHandler {
-
-    @Override
-    public void handleNotify( String event, JsonObject properties ) {
-      if( SELECTION_CHANGED.equals( event ) ) {
-        int index = properties.get( "index" ).asInt();
-        fireSelectionChanged( index );
-      }
+  private class ModelSelectionListener implements ModelListener {
+    public void handleEvent( JsonObject properties ) {
+      int index = properties.get( "index" ).asInt();
+      fireSelectionChanged( index );
     }
-
   }
 
   private static class ClientListenerHolder {

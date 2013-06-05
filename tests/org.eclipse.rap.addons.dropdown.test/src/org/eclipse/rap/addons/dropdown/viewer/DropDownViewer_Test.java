@@ -238,14 +238,14 @@ public class DropDownViewer_Test {
   public void testConstructor_LinksTextToRemoteObject() {
     createViewer();
 
-    assertEquals( viewer.getRemoteObject().getId(), text.getData( VIEWER_LINK ) );
+    assertEquals( viewer.getModel().getId(), text.getData( VIEWER_LINK ) );
   }
 
   @Test
   public void testConstructor_LinksDropDownToRemoteObject() {
     createViewer();
 
-    assertEquals( viewer.getRemoteObject().getId(), dropDown.getData( VIEWER_LINK ) );
+    assertEquals( viewer.getModel().getId(), dropDown.getData( VIEWER_LINK ) );
   }
 
   @Test
