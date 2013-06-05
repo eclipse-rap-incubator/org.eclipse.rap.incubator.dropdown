@@ -36,9 +36,9 @@ import org.eclipse.swt.widgets.Text;
 @SuppressWarnings( "restriction" )
 public class DropDownViewer extends ContentViewer {
 
-  private static final String REMOTE_TYPE = "rwt.remote.UniversalRemoteObject";
-  private static final String UNIVERSAL_REMOTE_OBJECT_JS
-    = "rwt/remote/UniversalRemoteObject.js";
+  private static final String REMOTE_TYPE = "rwt.remote.Model";
+  private static final String MODEL_REMOTE_OBJECT_JS
+    = "rwt/remote/Model.js";
   private static final String ATTR_CLIENT_LISTNER_HOLDER
     = ClientListenerHolder.class.getName() + "#instance";
   private static final String SELECTION_CHANGED = "SelectionChanged";
@@ -241,14 +241,14 @@ public class DropDownViewer extends ContentViewer {
 
   private void ensureTypeHandler() {
     ResourceManager manager = RWT.getResourceManager();
-    if( !manager.isRegistered( UNIVERSAL_REMOTE_OBJECT_JS ) ) {
+    if( !manager.isRegistered( MODEL_REMOTE_OBJECT_JS ) ) {
       manager.register(
-        UNIVERSAL_REMOTE_OBJECT_JS,
-        getClass().getClassLoader().getResourceAsStream( UNIVERSAL_REMOTE_OBJECT_JS )
+        MODEL_REMOTE_OBJECT_JS,
+        getClass().getClassLoader().getResourceAsStream( MODEL_REMOTE_OBJECT_JS )
       );
     }
     JavaScriptLoader jsl = RWT.getClient().getService( JavaScriptLoader.class );
-    jsl.require( manager.getLocation( UNIVERSAL_REMOTE_OBJECT_JS ) );
+    jsl.require( manager.getLocation( MODEL_REMOTE_OBJECT_JS ) );
   }
 
   private class InternalOperationHandler extends AbstractOperationHandler {

@@ -22,7 +22,7 @@ import org.eclipse.rap.rwt.jstest.TestContribution;
 public class DropDownResourcesContribution implements TestContribution {
 
   public static String[] ADDITIONAL_RESOURCES = new String[] {
-    "rwt/remote/UniversalRemoteObject.js"
+    "rwt/remote/Model.js"
   };
 
   public String getName() {

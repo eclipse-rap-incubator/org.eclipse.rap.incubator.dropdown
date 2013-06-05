@@ -23,7 +23,7 @@ public class DropDownTestContribution implements TestContribution {
 
   private static final String[] ALL_TEST_RESOURCES = new String[] {
     "/rwt/dropdown/DropDown_Test.js",
-    "/rwt/remote/UniversalRemoteObject_Test.js",
+    "/rwt/remote/Model_Test.js",
   };
 
   public String getName() {

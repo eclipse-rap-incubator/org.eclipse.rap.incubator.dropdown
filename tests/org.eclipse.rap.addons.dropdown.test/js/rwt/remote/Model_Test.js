@@ -14,16 +14,16 @@
 var CREATE_OPERATION = [
   "create",
   "r11",
-  "rwt.remote.UniversalRemoteObject",
+  "rwt.remote.Model",
   {}
 ];
 
 var TestUtil = org.eclipse.rwt.test.fixture.TestUtil;
 var MessageProcessor = rwt.remote.MessageProcessor;
 
-var uro = null;
+var model = null;
 
-rwt.qx.Class.define( "rwt.remote.UniversalRemoteObject_Test", {
+rwt.qx.Class.define( "rwt.remote.Model_Test", {
 
   extend : rwt.qx.Object,
 
@@ -31,27 +31,27 @@ rwt.qx.Class.define( "rwt.remote.UniversalRemoteObject_Test", {
 
     setUp : function() {
       MessageProcessor.processOperationArray( CREATE_OPERATION );
-      uro = rwt.remote.ObjectRegistry.getObject( "r11" );
+      model = rwt.remote.ObjectRegistry.getObject( "r11" );
     },
 
     tearDown : function() {
-      uro = null;
+      model = null;
     },
 
     testCreateByProtocol : function() {
-      assertNotNull( uro );
+      assertNotNull( model );
     },
 
     testSetByProtocol : function() {
       TestUtil.protocolSet( "r11", { "foo" : "bar" } );
 
-      assertEquals( "bar", uro.get( "foo" ) );
+      assertEquals( "bar", model.get( "foo" ) );
     },
 
     testNotify : function() {
       TestUtil.protocolListen( "r11", { "Selection" : true } );
 
-      uro.notify( "Selection", { "foo" : "bar" } );
+      model.notify( "Selection", { "foo" : "bar" } );
 
       var message = TestUtil.getMessageObject();
       assertEquals( "bar", message.findNotifyProperty( "r11", "Selection", "foo" ) );
@@ -59,9 +59,9 @@ rwt.qx.Class.define( "rwt.remote.UniversalRemoteObject_Test", {
 
     testDestroy : function() {
       TestUtil.protocolSet( "r11", { "foo" : {} } );
-      var propertiesMap = uro._.properties;
+      var propertiesMap = model._.properties;
 
-      uro.destroy();
+      model.destroy();
 
       assertTrue( TestUtil.hasNoObjects( propertiesMap ) );
     }

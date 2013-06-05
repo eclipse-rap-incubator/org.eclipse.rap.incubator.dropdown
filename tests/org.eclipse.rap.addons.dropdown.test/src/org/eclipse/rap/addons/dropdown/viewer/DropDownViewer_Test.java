@@ -63,7 +63,7 @@ public class DropDownViewer_Test {
     Integer.valueOf( 14 ),
     Integer.valueOf( 21 )
   );
-  private static final String REMOTE_TYPE = "rwt.remote.UniversalRemoteObject";
+  private static final String REMOTE_TYPE = "rwt.remote.Model";
   private static final String VIEWER_LINK =
       "org.eclipse.rap.addons.dropdown.viewer.DropDownViewer#viewer";
   private static String DROPDOWN_KEY = "dropDown";

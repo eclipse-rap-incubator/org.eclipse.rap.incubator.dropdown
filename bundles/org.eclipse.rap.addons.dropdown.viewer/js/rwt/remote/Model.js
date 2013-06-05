@@ -11,10 +11,10 @@
 
  (function() {
 
-  rap.registerTypeHandler( "rwt.remote.UniversalRemoteObject", {
+  rap.registerTypeHandler( "rwt.remote.Model", {
 
     factory : function() {
-      return new UniversalRemoteObject();
+      return new Model();
     },
 
     isGeneric : true,
@@ -23,13 +23,13 @@
 
   } );
 
-  var UniversalRemoteObject = function() {
+  var Model = function() {
     this._ = {
       properties : {}
     };
   };
 
-  UniversalRemoteObject.prototype = {
+  Model.prototype = {
 
     set : function() {
       if( arguments[ 0 ] instanceof Object ) {
