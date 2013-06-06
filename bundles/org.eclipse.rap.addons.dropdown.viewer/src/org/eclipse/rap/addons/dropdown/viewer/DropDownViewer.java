@@ -14,8 +14,7 @@ import org.eclipse.jface.fieldassist.FieldDecoration;
 import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.rap.addons.dropdown.DropDown;
-import org.eclipse.rap.addons.dropdown.internal.Model;
-import org.eclipse.rap.addons.dropdown.internal.ModelListener;
+import org.eclipse.rap.addons.dropdown.internal.*;
 import org.eclipse.rap.addons.dropdown.viewer.internal.resources.ResourceLoaderUtil;
 import org.eclipse.rap.clientscripting.ClientListener;
 import org.eclipse.rap.clientscripting.WidgetDataWhiteList;
@@ -36,7 +35,6 @@ import org.eclipse.swt.widgets.Text;
 @SuppressWarnings( "restriction" )
 public class DropDownViewer extends ContentViewer {
 
-  private static final String REMOTE_TYPE = "rwt.remote.Model";
   private static final String MODEL_REMOTE_OBJECT_JS
     = "rwt/remote/Model.js";
   private static final String ATTR_CLIENT_LISTNER_HOLDER
@@ -143,6 +141,7 @@ public class DropDownViewer extends ContentViewer {
     //        sharing and incremental updates
     model.set( ELEMENTS_KEY, JsonUtil.createJsonArray( elements ) );
     model.set( SELECTION_KEY, -1 );
+    model.notify( "refresh" );
   }
 
   private void createControlDecorator() {
@@ -167,6 +166,7 @@ public class DropDownViewer extends ContentViewer {
     dropDown.addListener( ClientListener.DefaultSelection, getDropDownDefaultSelectionListener() );
     dropDown.addListener( ClientListener.Show, getDropDownShowListener() );
     dropDown.addListener( ClientListener.Hide, getDropDownHideListener() );
+    model.addListener( "refresh", getRefreshListener() );
   }
 
   private void linkClientObjects() {
@@ -197,6 +197,10 @@ public class DropDownViewer extends ContentViewer {
 
   ClientListener getTextMouseDownListener() {
     return clientListeners.getTextMouseDownListener();
+  }
+
+  ClientModelListener getRefreshListener() {
+    return clientListeners.getRefreshListener();
   }
 
   DropDown getDropDown() {
@@ -264,9 +268,19 @@ public class DropDownViewer extends ContentViewer {
 
     private final ClientListener textListener = createListener( "TextEventListener.js" );
     private final ClientListener dropDownListener = createListener( "DropDownEventListener.js" );
+    private final ClientModelListener refreshListener
+      = createModelListener( "RefreshListener.js" );
 
     private ClientListener createListener( String name ) {
       return new ClientListener( ResourceLoaderUtil.readTextContent( PREFIX + name ) );
+    }
+
+    private ClientModelListener createModelListener( String name ) {
+      return new ClientModelListener( ResourceLoaderUtil.readTextContent( PREFIX + name ) );
+    }
+
+    public ClientModelListener getRefreshListener() {
+      return refreshListener;
     }
 
     public ClientListener getDropDownShowListener() {

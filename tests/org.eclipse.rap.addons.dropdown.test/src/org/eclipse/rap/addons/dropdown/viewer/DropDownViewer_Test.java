@@ -35,6 +35,7 @@ import java.util.List;
 
 import org.eclipse.jface.viewers.*;
 import org.eclipse.rap.addons.dropdown.DropDown;
+import org.eclipse.rap.addons.dropdown.internal.ClientModelListener;
 import org.eclipse.rap.clientscripting.ClientListener;
 import org.eclipse.rap.json.JsonArray;
 import org.eclipse.rap.json.JsonObject;
@@ -49,6 +50,7 @@ import org.eclipse.rap.rwt.testfixture.Fixture;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.*;
 import org.junit.*;
+import org.mockito.ArgumentCaptor;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -234,6 +236,17 @@ public class DropDownViewer_Test {
   }
 
   @Test
+  public void testGetDefaultRefreshListener_DifferentViewerReturnSameInstance() {
+    createViewer();
+    ClientModelListener listener1 = viewer.getRefreshListener();
+    DropDownViewer viewer2 = new DropDownViewer( new Text( shell, SWT.NONE ) );
+    ClientModelListener listener2 = viewer2.getRefreshListener();
+
+    assertNotNull( listener1 );
+    assertSame( listener1, listener2 );
+  }
+
+  @Test
   public void testConstructor_LinksTextToRemoteObject() {
     createViewer();
 
@@ -325,6 +338,18 @@ public class DropDownViewer_Test {
     viewer.setInput( INTEGER_LIST );
 
     verify( remoteObject ).set( eq( SELECTION_KEY ), eq( -1 ) );
+  }
+
+  @Test
+  public void testSetInput_RendersNotifyRefresh() {
+    createViewer();
+    reset( remoteObject );
+
+    viewer.setInput( INTEGER_LIST );
+
+    ArgumentCaptor<JsonObject> capture = ArgumentCaptor.forClass( JsonObject.class );
+    verify( remoteObject ).call( eq( "notify" ), capture.capture() );
+    assertEquals( "refresh", capture.getValue().get( "event" ).asString() );
   }
 
   @Test

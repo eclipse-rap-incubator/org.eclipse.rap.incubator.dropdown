@@ -156,6 +156,14 @@ public class DropDownDemo extends AbstractEntryPoint {
         }
       }
     } );
+    viewer.getControl().addListener( SWT.FocusIn, new Listener() {
+      public void handleEvent( Event event ) {
+        if( viewer.getInput() == null ) {
+          germany.setSelection( true );
+          germany.notifyListeners( SWT.Selection, new Event() );
+        }
+      }
+    } );
   }
 
   private DropDownViewer createKFZExample_Viewer( final Text text ) {
