@@ -28,7 +28,12 @@ public class Model {
 
   public Model() {
     remoteObject = RWT.getUISession().getConnection().createRemoteObject( REMOTE_TYPE );
-    remoteObject.setHandler( new InternalOperationHandler() );
+    remoteObject.setHandler( new AbstractOperationHandler() {
+      @Override
+      public void handleNotify( String event, JsonObject properties ) {
+        notifyInternal( event, properties );
+      }
+    } );
   }
 
   public void set( String name, String value ) {
@@ -62,6 +67,15 @@ public class Model {
         remoteObject.listen( eventType, false );
       }
     }
+  }
+
+  public void notify( String string, JsonObject argument ) {
+    notifyInternal( string, argument );
+    JsonObject callProperties = new JsonObject();
+    callProperties.add( "event", "foo" );
+    callProperties.add( "properties", argument );
+    callProperties.add( "nosync", true );
+    remoteObject.call( "notify", callProperties );
   }
 
   public void destroy() {
@@ -103,16 +117,11 @@ public class Model {
     return listeners.containsKey( eventType ) && !listeners.get( eventType ).isEmpty();
   }
 
-  private class InternalOperationHandler extends AbstractOperationHandler {
-
-    @Override
-    public void handleNotify( String event, JsonObject properties ) {
-      List<ModelListener> eventListeners = getListeners( event );
-      for( ModelListener eventListener : eventListeners ) {
-        eventListener.handleEvent( properties );
-      }
+  private void notifyInternal( String event, JsonObject properties ) {
+    List<ModelListener> eventListeners = getListeners( event );
+    for( ModelListener eventListener : eventListeners ) {
+      eventListener.handleEvent( properties );
     }
-
   }
 
 }

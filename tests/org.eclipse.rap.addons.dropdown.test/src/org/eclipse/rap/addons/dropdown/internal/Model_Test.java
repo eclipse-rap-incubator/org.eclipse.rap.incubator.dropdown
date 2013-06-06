@@ -257,7 +257,7 @@ public class Model_Test {
   }
 
   @Test
-  public void testProcessNotify_CallHandleEvent() {
+  public void testProcessClientNotify_CallHandleEvent() {
     ModelListener listener = mock( ModelListener.class );
     model.addListener( "foo", listener );
     JsonObject argument = mock( JsonObject.class );
@@ -268,13 +268,38 @@ public class Model_Test {
   }
 
   @Test
-  public void testProcessNotify_DoNotCallHandleEventTwice() {
+  public void testProcessClientNotify_DoNotCallHandleEventTwice() {
     ModelListener listener = mock( ModelListener.class );
     model.addListener( "foo", listener );
     model.addListener( "foo", listener );
     handler.handleNotify( "foo", mock( JsonObject.class ) );
 
     verify( listener, times( 1 ) ).handleEvent( any( JsonObject.class ) );
+  }
+
+  @Test
+  public void testNotify_CallServerListenerHandleEvent() {
+    ModelListener listener = mock( ModelListener.class );
+    model.addListener( "foo", listener );
+    JsonObject argument = mock( JsonObject.class );
+
+    model.notify( "foo", argument );
+
+    verify( listener ).handleEvent( eq( argument ) );
+  }
+
+  @Test
+  public void testNotify_RenderCallNotify() {
+    JsonObject argument = new JsonObject();
+    argument.add( "arg", "value" );
+
+    model.notify( "foo", argument );
+
+    JsonObject expected = new JsonObject();
+    expected.add( "event", "foo" );
+    expected.add( "properties", argument );
+    expected.add( "nosync", true );
+    verify( remoteObject ).call( eq( "notify" ), eq( expected ) );
   }
 
 
