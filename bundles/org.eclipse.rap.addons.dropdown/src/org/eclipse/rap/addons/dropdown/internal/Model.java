@@ -69,11 +69,17 @@ public class Model {
     }
   }
 
-  public void notify( String string, JsonObject argument ) {
-    notifyInternal( string, argument );
+  public void notify( String event ) {
+    notify( event, null );
+  }
+
+  public void notify( String event, JsonObject properties ) {
+    notifyInternal( event, properties );
     JsonObject callProperties = new JsonObject();
-    callProperties.add( "event", "foo" );
-    callProperties.add( "properties", argument );
+    callProperties.add( "event", event );
+    if( properties != null ) {
+      callProperties.add( "properties", properties );
+    }
     callProperties.add( "nosync", true );
     remoteObject.call( "notify", callProperties );
   }

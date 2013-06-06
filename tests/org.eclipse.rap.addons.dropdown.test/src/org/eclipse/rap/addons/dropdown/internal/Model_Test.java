@@ -18,6 +18,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -289,6 +290,16 @@ public class Model_Test {
   }
 
   @Test
+  public void testNotify_CallServerWithourProperties() {
+    ModelListener listener = mock( ModelListener.class );
+    model.addListener( "foo", listener );
+
+    model.notify( "foo" );
+
+    verify( listener ).handleEvent( isNull( JsonObject.class ) );
+  }
+
+  @Test
   public void testNotify_RenderCallNotify() {
     JsonObject argument = new JsonObject();
     argument.add( "arg", "value" );
@@ -298,6 +309,16 @@ public class Model_Test {
     JsonObject expected = new JsonObject();
     expected.add( "event", "foo" );
     expected.add( "properties", argument );
+    expected.add( "nosync", true );
+    verify( remoteObject ).call( eq( "notify" ), eq( expected ) );
+  }
+
+  @Test
+  public void testNotify_RenderCallNotifyWithoutProperties() {
+    model.notify( "foo" );
+
+    JsonObject expected = new JsonObject();
+    expected.add( "event", "foo" );
     expected.add( "nosync", true );
     verify( remoteObject ).call( eq( "notify" ), eq( expected ) );
   }

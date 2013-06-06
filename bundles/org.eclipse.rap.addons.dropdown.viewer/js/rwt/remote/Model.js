@@ -90,9 +90,13 @@
 
   var notifyInternal = function( model, type, properties ) {
     var listeners = model._.listeners[ type ];
+    var args = [ model ];
+    if( properties ) {
+      args.push( properties )
+    }
     if( listeners instanceof Array ) {
       for( var i = 0; listeners && i < listeners.length; i++ ) {
-        listeners[ i ]( model, properties );
+        listeners[ i ].apply( listeners[ i ], args );
       }
     }
   };

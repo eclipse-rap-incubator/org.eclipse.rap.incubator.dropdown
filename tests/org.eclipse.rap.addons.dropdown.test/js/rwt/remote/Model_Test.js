@@ -88,6 +88,19 @@ rwt.qx.Class.define( "rwt.remote.Model_Test", {
       assertEquals( { "foo" : "bar" }, log[ 0 ][ 1 ] );
     },
 
+    testAddListener_NoPropertiesInListenerArguments : function() {
+      var log = [];
+      var logger = function() {
+        log.push( arguments );
+      };
+      model.addListener( "Selection", logger );
+
+      model.notify( { "event" : "Selection", "nosync" : true } );
+
+      assertEquals( 1, log[ 0 ].length );
+      assertIdentical( model, log[ 0 ][ 0 ] );
+    },
+
     testAddListener_IgnoreAddTwice : function() {
       var logger = TestUtil.getLogger();
       model.addListener( "Selection", logger.log );
