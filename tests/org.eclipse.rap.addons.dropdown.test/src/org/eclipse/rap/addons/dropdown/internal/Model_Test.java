@@ -11,6 +11,8 @@
 package org.eclipse.rap.addons.dropdown.internal;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
@@ -25,6 +27,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import org.eclipse.rap.clientscripting.internal.ClientListenerBinding;
 import org.eclipse.rap.json.JsonObject;
 import org.eclipse.rap.json.JsonValue;
 import org.eclipse.rap.rwt.RWT;
@@ -50,6 +53,7 @@ public class Model_Test {
     Fixture.setUp();
     Fixture.fakeNewRequest();
     remoteObject = mock( RemoteObjectImpl.class );
+    when( remoteObject.getId() ).thenReturn( "modelId" );
     connection = spy( RWT.getUISession().getConnection() );
     when( connection.createRemoteObject( REMOTE_TYPE ) ).thenReturn( remoteObject );
     Fixture.fakeConnection( connection );
@@ -158,6 +162,22 @@ public class Model_Test {
   }
 
   @Test
+  public void testAddListener_DoesNotSetListenTrueIfClientListener() {
+    model.addListener( "foo", new ClientModelListener( "" ) );
+
+    verify( remoteObject, never() ).listen( eq( "foo" ), eq( true ) );
+  }
+
+  @Test
+  public void testAddListener_CreatesListenerBinding() {
+    ClientModelListener listener = new ClientModelListener( "" );
+
+    model.addListener( "foo", listener );
+
+    assertNotNull( listener.findBinding( model, "foo" ) );
+  }
+
+  @Test
   public void testRemoveListener_SetsListenFalse() {
     ModelListener listener = mock( ModelListener.class );
     model.addListener( "foo", listener );
@@ -223,6 +243,17 @@ public class Model_Test {
     }
 
     verify( remoteObject, never() ).listen( anyString(), anyBoolean() );
+  }
+
+  @Test
+  public void testRemoveListener_DisposesListenerBinding() {
+    ClientModelListener listener = new ClientModelListener( "" );
+    model.addListener( "foo", listener );
+    ClientListenerBinding binding = listener.findBinding( model, "foo" );
+
+    model.removeListener( "foo", listener );
+
+    assertTrue( binding.isDisposed() );
   }
 
   @Test

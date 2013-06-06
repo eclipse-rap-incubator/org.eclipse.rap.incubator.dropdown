@@ -97,7 +97,6 @@ public class DropDownViewer_Test {
         return null;
       }
     } ).when( remoteObject ).setHandler( any( OperationHandler.class ) );
-
   }
 
   @After

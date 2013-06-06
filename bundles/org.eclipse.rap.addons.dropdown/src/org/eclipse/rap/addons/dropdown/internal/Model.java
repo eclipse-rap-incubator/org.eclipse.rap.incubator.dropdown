@@ -45,20 +45,22 @@ public class Model {
 
   public void addListener( String eventType, ModelListener listener ) {
     checkArguments( eventType, listener );
-    if( !hasListeners( eventType ) ) {
-      remoteObject.listen( eventType, true );
-    }
-    List<ModelListener> eventListeners = getListeners( eventType );
-    if( !eventListeners.contains( listener ) ) {
-      eventListeners.add( listener );
+    if( listener instanceof ClientModelListener ) {
+      ( ( ClientModelListener )listener ).addTo( this, eventType );
+    } else {
+      addServerListener( eventType, listener );
     }
   }
 
   public void removeListener( String eventType, ModelListener listener ) {
     checkArguments( eventType, listener );
-    boolean removed = getListeners( eventType ).remove( listener );
-    if( removed && !hasListeners( eventType ) ) {
-      remoteObject.listen( eventType, false );
+    if( listener instanceof ClientModelListener ) {
+      ( ( ClientModelListener )listener ).removeFrom( this, eventType );
+    } else {
+      boolean removed = getListeners( eventType ).remove( listener );
+      if( removed && !hasListeners( eventType ) ) {
+        remoteObject.listen( eventType, false );
+      }
     }
   }
 
@@ -75,6 +77,16 @@ public class Model {
       if( argument == null ) {
         throw new IllegalArgumentException( "Argument may not be null" );
       }
+    }
+  }
+
+  private void addServerListener( String eventType, ModelListener listener ) {
+    if( !hasListeners( eventType ) ) {
+      remoteObject.listen( eventType, true );
+    }
+    List<ModelListener> eventListeners = getListeners( eventType );
+    if( !eventListeners.contains( listener ) ) {
+      eventListeners.add( listener );
     }
   }
 
