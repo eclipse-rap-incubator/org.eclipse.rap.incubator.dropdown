@@ -25,7 +25,8 @@
 
   var Model = function() {
     this._ = {
-      properties : {}
+      properties : {},
+      listeners : {}
     };
   };
 
@@ -59,11 +60,41 @@
       return this._.properties[ property ];
     },
 
-    notify : function( event, properties ) {
-      rap.getRemoteObject( this ).notify( event, properties );
+    notify : function() {
+      var event = arguments.length === 1 ? arguments[ 0 ].event : arguments[ 0 ];
+      var properties = arguments.length === 1 ? arguments[ 0 ].properties : arguments[ 1 ];
+      var nosync = arguments.length === 1 ? arguments[ 0 ].nosync : false;
+      if( !nosync ) {
+        rap.getRemoteObject( this ).notify( event, properties );
+      }
+      notifyInternal( this, event, properties );
+    },
+
+    addListener : function( event, listener ) {
+      if( !this._.listeners[ event ] ) {
+        this._.listeners[ event ] = [];
+      }
+      if( this._.listeners[ event ].indexOf( listener ) === -1 ) {
+        this._.listeners[ event ].push( listener );
+      }
+    },
+
+    removeListener : function( event, listener ) {
+      if( this._.listeners[ event ] ) {
+        var index = this._.listeners[ event ].indexOf( listener );
+        rwt.util.Arrays.removeAt( this._.listeners[ event ], index );
+      }
     }
 
+  };
 
+  var notifyInternal = function( model, type, properties ) {
+    var listeners = model._.listeners[ type ];
+    if( listeners instanceof Array ) {
+      for( var i = 0; listeners && i < listeners.length; i++ ) {
+        listeners[ i ]( model, properties );
+      }
+    }
   };
 
 }());

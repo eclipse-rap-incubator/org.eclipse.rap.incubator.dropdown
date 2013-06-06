@@ -57,6 +57,57 @@ rwt.qx.Class.define( "rwt.remote.Model_Test", {
       assertEquals( "bar", message.findNotifyProperty( "r11", "Selection", "foo" ) );
     },
 
+    testNotify_CallWithParameterMap : function() {
+      TestUtil.protocolListen( "r11", { "Selection" : true } );
+
+      model.notify( { "event" : "Selection", "properties" : { "foo" : "bar" } } );
+
+      var message = TestUtil.getMessageObject();
+      assertEquals( "bar", message.findNotifyProperty( "r11", "Selection", "foo" ) );
+    },
+
+    testNotify_DoNotSendWithNoSync : function() {
+      TestUtil.protocolListen( "r11", { "Selection" : true } );
+
+      model.notify( { "event" : "Selection", "properties" : { "foo" : "bar" }, "nosync" : true } );
+
+      assertEquals( 0, TestUtil.getRequestsSend() );
+    },
+
+    testAddListener : function() {
+      var log = [];
+      var logger = function() {
+        log.push( arguments );
+      };
+      model.addListener( "Selection", logger );
+
+      model.notify( "Selection", { "foo" : "bar" } );
+
+      assertEquals( 1, log.length );
+      assertIdentical( model, log[ 0 ][ 0 ] );
+      assertEquals( { "foo" : "bar" }, log[ 0 ][ 1 ] );
+    },
+
+    testAddListener_IgnoreAddTwice : function() {
+      var logger = TestUtil.getLogger();
+      model.addListener( "Selection", logger.log );
+      model.addListener( "Selection", logger.log );
+
+      model.notify( "Selection", { "foo" : "bar" } );
+
+      assertEquals( 1, logger.getLog().length );
+    },
+
+    testRemoveListener : function() {
+      var logger = TestUtil.getLogger();
+      model.addListener( "Selection", logger.log );
+
+      model.removeListener( "Selection", logger.log );
+      model.notify( "Selection", { "foo" : "bar" } );
+
+      assertEquals( 0, logger.getLog().length );
+    },
+
     testDestroy : function() {
       TestUtil.protocolSet( "r11", { "foo" : {} } );
       var propertiesMap = model._.properties;
