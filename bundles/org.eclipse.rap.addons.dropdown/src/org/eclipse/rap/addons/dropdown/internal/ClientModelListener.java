@@ -25,7 +25,14 @@ public final class ClientModelListener extends ClientFunction implements ModelLi
   public void handleEvent( JsonObject argument ) { }
 
   void addTo( Model model, String eventType ) {
-    addTo( model.getId(), eventType );
+    final ClientListenerBinding binding = addTo( model.getId(), eventType );
+    if( binding != null ) {
+      model.addListener( "destroy", new ModelListener() {
+        public void handleEvent( JsonObject argument ) {
+          binding.dispose();
+        }
+      } );
+    }
   }
 
   void removeFrom( Model model, String eventType ) {

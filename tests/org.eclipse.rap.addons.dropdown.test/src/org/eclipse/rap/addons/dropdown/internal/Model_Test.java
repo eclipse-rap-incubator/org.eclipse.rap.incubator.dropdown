@@ -92,6 +92,17 @@ public class Model_Test {
   }
 
   @Test
+  public void testDestroy_DisposesListenerBinding() {
+    ClientModelListener listener = new ClientModelListener( "" );
+    model.addListener( "foo", listener );
+    ClientListenerBinding binding = listener.findBinding( model, "foo" );
+
+    model.destroy();
+
+    assertTrue( binding.isDisposed() );
+  }
+
+  @Test
   public void testSet_CallsRemoteObjectSetString() {
     model.set( "foo", "bar" );
 

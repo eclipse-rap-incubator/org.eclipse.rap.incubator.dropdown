@@ -86,6 +86,7 @@ public class Model {
 
   public void destroy() {
     remoteObject.destroy();
+    notifyInternal( "destroy", null ); // TODO : find other solution or also fire on client
   }
 
   public String getId() {
