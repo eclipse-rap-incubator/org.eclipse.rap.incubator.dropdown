@@ -49,8 +49,8 @@
     },
 
     destroy : function() {
-      for( var key in this._.properties ) {
-        this._.properties[ key ] = null;
+      for( var key in this._ ) {
+        this._[ key ] = null;
       }
       this._.properties = null;
       this._ = null;
@@ -80,7 +80,7 @@
     },
 
     removeListener : function( event, listener ) {
-      if( this._.listeners[ event ] ) {
+      if( this._ && this._.listeners[ event ] ) {
         var index = this._.listeners[ event ].indexOf( listener );
         rwt.util.Arrays.removeAt( this._.listeners[ event ], index );
       }
@@ -89,14 +89,16 @@
   };
 
   var notifyInternal = function( model, type, properties ) {
-    var listeners = model._.listeners[ type ];
-    var args = [ model ];
-    if( properties ) {
-      args.push( properties )
-    }
-    if( listeners instanceof Array ) {
-      for( var i = 0; listeners && i < listeners.length; i++ ) {
-        listeners[ i ].apply( listeners[ i ], args );
+    if( model._ ) {
+      var listeners = model._.listeners[ type ];
+      var args = [ model ];
+      if( properties ) {
+        args.push( properties )
+      }
+      if( listeners instanceof Array ) {
+        for( var i = 0; listeners && i < listeners.length; i++ ) {
+          listeners[ i ].apply( listeners[ i ], args );
+        }
       }
     }
   };

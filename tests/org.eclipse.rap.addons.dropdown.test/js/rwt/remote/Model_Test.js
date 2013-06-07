@@ -123,13 +123,23 @@ rwt.qx.Class.define( "rwt.remote.Model_Test", {
 
     testDestroy : function() {
       TestUtil.protocolSet( "r11", { "foo" : {} } );
-      var propertiesMap = model._.properties;
+      var internals = model._;
 
       model.destroy();
 
-      assertTrue( TestUtil.hasNoObjects( propertiesMap ) );
-    }
+      assertTrue( TestUtil.hasNoObjects( internals ) );
+    },
 
+    testRemove_AfterDestroy : function() {
+      var logger = TestUtil.getLogger();
+      model.addListener( "Selection", logger.log );
+      model.destroy();
+
+      model.removeListener( "Selection", logger.log );
+      model.notify( "Selection", { "foo" : "bar" } );
+
+      assertEquals( 0, logger.getLog().length );
+    }
 
 
   }

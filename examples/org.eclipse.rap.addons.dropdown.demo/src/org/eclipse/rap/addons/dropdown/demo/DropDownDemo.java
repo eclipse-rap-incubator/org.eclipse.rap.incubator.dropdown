@@ -129,6 +129,17 @@ public class DropDownDemo extends AbstractEntryPoint {
     final DropDownViewer viewer = createKFZExample_Viewer( text );
     createKFZExample_Location( group, viewer );
     createKFZExample_Log( group, viewer );
+    createDisposeButton( group, text );
+  }
+
+  private void createDisposeButton( Group group, final Text text ) {
+    Button button = new Button( group, SWT.PUSH );
+    button.setText( "Dispose!" );
+    button.addListener( SWT.Selection, new Listener() {
+      public void handleEvent( Event event ) {
+        text.dispose();
+      }
+    } );
   }
 
   private void createKFZExample_Location( Group group, final DropDownViewer viewer ) {
