@@ -71,7 +71,8 @@
     this._.popup.addEventListener( "appear", onAppear, this );
     this._.popup.addEventListener( "disappear", onDisappear, this );
     this._.popup.getFocusRoot().addEventListener( "changeFocusedChild", onFocusChange, this );
-    parent.getFocusRoot().addEventListener( "changeFocusedChild", onFocusChange, this );
+    this._.parentFocusRoot = parent.getFocusRoot();
+    this._.parentFocusRoot.addEventListener( "changeFocusedChild", onFocusChange, this );
     parent.addEventListener( "appear", onTextAppear, this );
     this._.visibility = false;
   };
@@ -195,7 +196,7 @@
      */
     destroy : function() {
       if( !this.isDisposed() ) {
-        var parentFocusRoot = this._.parent.getFocusRoot();
+        var parentFocusRoot = this._.parentFocusRoot;
         if( parentFocusRoot && !parentFocusRoot.isDisposed() ) {
           parentFocusRoot.removeEventListener( "changeFocusedChild", onFocusChange, this );
         }
