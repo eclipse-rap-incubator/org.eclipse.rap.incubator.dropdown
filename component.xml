@@ -7,5 +7,9 @@
     Tim Buschtöns
   </maintainer>
   <description>
+    The dropdown widget can display a list below a Text field in order to
+    display dynamic proposals while typing. A JFace viewer allows to connect
+    a content provider and a label provider to extract the proposals from a
+    data model.
   </description>
 </component>
