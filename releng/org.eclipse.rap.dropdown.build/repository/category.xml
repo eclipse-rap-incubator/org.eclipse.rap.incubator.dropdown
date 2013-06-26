@@ -13,7 +13,7 @@
 
   <category-def
       name="org.eclipse.rap.incubator.category"
-      label="Rich Ajax Platform (RAP) Incubator" />
+      label="Remote Application Platform (RAP) Incubator" />
 
   <feature url="http://eclipse.org/rap"
       id="org.eclipse.rap.dropdown.feature"
