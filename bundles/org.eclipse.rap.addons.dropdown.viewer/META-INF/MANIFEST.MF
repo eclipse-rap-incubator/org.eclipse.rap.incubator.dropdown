@@ -9,4 +9,4 @@ Require-Bundle: org.eclipse.rap.rwt;bundle-version="2.1.0",
  org.eclipse.rap.jface;bundle-version="2.1.0",
  org.eclipse.rap.addons.dropdown;bundle-version="0.1.0",
  org.eclipse.rap.clientscripting;bundle-version="0.1.100"
-Export-Package: org.eclipse.rap.addons.dropdown.viewer;x-internal:=true
+Export-Package: org.eclipse.rap.addons.dropdown.viewer
