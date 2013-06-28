@@ -59,7 +59,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
     },
 
     testConstructor_CreatesViewerInPopup : function() {
-      assertTrue( viewer instanceof rwt.widgets.base.BasicList );
+      assertTrue( viewer instanceof rwt.widgets.Grid );
       assertIdentical( popup, viewer.getParent() );
     },
 
@@ -69,8 +69,8 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
     },
 
     testConstructor_HideScrollbars : function() {
-      assertFalse( viewer.getVerticalBar().getDisplay() );
-      assertFalse( viewer.getHorizontalBar().getDisplay() );
+      assertFalse( viewer.getVerticalBar().getVisibility() );
+      assertFalse( viewer.getHorizontalBar().getVisibility() );
     },
 
     testSetData_SetDataWithTwoParameters : function() {
@@ -475,7 +475,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
 
       dropdown.addListener( "Selection", logger.log );
       dropdown.removeListener( "Selection", logger.log );
-      TestUtil.click( viewer.getItems()[ 1 ] );
+      TestUtil.click( getItem( 0 ) );
 
       assertEquals( 0, logger.getLog().length );
     },
@@ -802,7 +802,6 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       dropdown.setItems( [ "a", "b", "c" ] );
       dropdown.setSelectionIndex( 1 );
       showDropDown();
-
       dropdown.setSelectionIndex( -1 );
       TestUtil.flush();
 
@@ -998,19 +997,23 @@ var showDropDown = function() {
 
 var getViewerItems = function() {
   var result = [];
-  var items = viewer.getItems();
+  var items = viewer.getRootItem()._children;
   for( var i = 0; i < items.length; i++ ) {
-    result[ i ] = items[ i ].getLabel();
+    result[ i ] = items[ i ].getText( 0 );
   }
   return result;
 };
 
 var clickItem = function( index ) {
-  TestUtil.click( viewer.getItems()[ 1 ] );
+  TestUtil.click( getItem( index ) );
 };
 
 var doubleClickItem = function( index ) {
-  TestUtil.doubleClick( viewer.getItems()[ 1 ] );
+  TestUtil.doubleClick( getItem( index ) );
+};
+
+var getItem = function( index ) {
+  return viewer.getRowContainer()._findRowByItem( viewer.getRootItem().getChild( index ) );
 };
 
 var forceTimer = function() {

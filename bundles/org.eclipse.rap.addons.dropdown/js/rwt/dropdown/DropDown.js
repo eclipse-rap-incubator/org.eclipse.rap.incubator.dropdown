@@ -64,7 +64,7 @@
     this._.events = createEventsMap();
     this._.parent.addEventListener( "keydown", onTextKeyEvent, this );
     this._.parent.addEventListener( "keypress", onTextKeyEvent, this );
-    this._.viewer.getManager().addEventListener( "changeSelection", onSelection, this );
+    this._.viewer._sendSelectionChange = bind( this, onSelection );
     this._.viewer.addEventListener( "keydown", onKeyEvent, this );
     this._.viewer.addEventListener( "mousedown", onMouseDown, this );
     this._.viewer.addEventListener( "mouseup", onMouseUp, this );
@@ -82,7 +82,7 @@
     setItems : function( items ) {
       this.setSelectionIndex( -1 );
       this._.items = rwt.util.Arrays.copy( items );
-      this._.viewer.setItems( items );
+      renderGridItems.call( this );
       if( this._.visibility ) {
         renderLayout.call( this );
       }
@@ -90,7 +90,7 @@
     },
 
     getItemCount : function() {
-      return this._.viewer.getItemsCount();
+      return this._.viewer.getRootItem().getChildrenLength();
     },
 
     /**
@@ -108,14 +108,20 @@
       if( index < -1 || index >= this.getItemCount() || isNaN( index ) ) {
         throw new Error( "Can not select item: Index " + index + " not valid" );
       }
-      this._.viewer.selectItem( index );
-      if( index === -1 ) {
-        this._.viewer.getManager().setLeadItem( null );
+      this._.viewer.deselectAll();
+      if( index > -1 ) {
+        this._.viewer.selectItem( this._.viewer.getRootItem().getChild( index ) );
       }
+      this._.viewer._sendSelectionChange(); // Not called for selection changes by API/Server
     },
 
     getSelectionIndex : function() {
-      return this._.viewer.getItems().indexOf( this._.viewer.getSelectedItem() );
+      var selection = this._.viewer._selection;
+      var result = -1;
+      if( selection[ 0 ] ) {
+        result = this._.viewer.getRootItem().indexOf( selection[ 0 ] );
+      }
+      return result;
     },
 
     setVisible : function( value ) {
@@ -273,12 +279,35 @@
     var font = this._.viewer.getFont();
     // NOTE: Guessing the lineheight to be 1.3
     var itemHeight = Math.floor( font.getSize() * 1.3 ) + PADDING[ 0 ] + PADDING[ 2 ];
-    var visibleItems = Math.min( this._.visibleItemCount, this._.viewer.getItemsCount() );
+    var visibleItems = Math.min( this._.visibleItemCount, this.getItemCount() );
+    var viewerWidth = this._.parent.getWidth() - FRAMEWIDTH;
+    var viewerHeight = visibleItems * itemHeight;
     this._.popup.positionRelativeTo( this._.parent, 0, yOffset );
     this._.popup.setWidth( this._.parent.getWidth() );
-    this._.popup.setHeight( visibleItems * itemHeight + FRAMEWIDTH );
-    this._.viewer.setDimension( this._.parent.getWidth() - FRAMEWIDTH, visibleItems * itemHeight );
-    this._.viewer.setItemDimensions( "100%", itemHeight );
+    this._.popup.setHeight( viewerHeight + FRAMEWIDTH );
+    this._.viewer.setDimension( viewerWidth, viewerHeight );
+    this._.viewer.setItemHeight( itemHeight );
+    this._.viewer.setItemMetrics(
+      0,  // column
+      0, // left
+      viewerWidth, // width
+      0, // imageLeft
+      0, // imageWidth
+      PADDING[ 3 ], // textLeft
+      viewerWidth - PADDING[ 1 ] - PADDING[ 3 ], // textWidth
+      0, // checkLeft
+      0 // checkWith
+    );
+  };
+
+  var renderGridItems = function() {
+    var rootItem = this._.viewer.getRootItem();
+    var items = this._.items;
+    rootItem.setItemCount( items.length );
+    for( var i = 0; i < items.length; i++ ) {
+      var gridItem = new rwt.widgets.GridItem( rootItem, i, false );
+      gridItem.setTexts( [ items[ i ] ] );
+    }
   };
 
   var onTextAppear = function() {
@@ -296,16 +325,24 @@
   };
 
   var onKeyEvent = function( event ) {
-    if( event.getKeyIdentifier() === "Enter" ) {
-      rwt.client.Timer.once( function() {
-        // NOTE : This async call ensures that the key events is processed before the
-        //        DefaultSelection event. A better solution would be to do this for all forwarded
-        //        key events, but this would be complicated since the event is disposed by the
-        //        time dispatch would be called on the viewer.
-        fireEvent.call( this, "DefaultSelection" );
-      }, this, 0 );
-    } else if( event.getKeyIdentifier() === "Escape" ) {
-      this.hide();
+    switch( event.getKeyIdentifier() ) {
+      case "Enter":
+        rwt.client.Timer.once( function() {
+          // NOTE : This async call ensures that the key events is processed before the
+          //        DefaultSelection event. A better solution would be to do this for all forwarded
+          //        key events, but this would be complicated since the event is disposed by the
+          //        time dispatch would be called on the viewer.
+          fireEvent.call( this, "DefaultSelection" );
+        }, this, 0 );
+      break;
+      case "Escape":
+        this.hide();
+      break;
+      case "Down":
+        if( this.getSelectionIndex() === -1 && this.getItemCount() > 0 ) {
+          this.setSelectionIndex( 0 );
+        }
+      break;
     }
   };
 
@@ -317,13 +354,13 @@
   };
 
   var onMouseDown = function( event ) {
-    if( event.getOriginalTarget() instanceof rwt.widgets.ListItem ) {
+    if( event.getOriginalTarget() instanceof rwt.widgets.base.GridRow ) {
       this._.inMouseSelection = true;
     }
   };
 
   var onMouseUp = function( event ) {
-    if( this._.inMouseSelection && event.getOriginalTarget() instanceof rwt.widgets.ListItem ) {
+    if( this._.inMouseSelection && event.getOriginalTarget() instanceof rwt.widgets.base.GridRow ) {
       this._.inMouseSelection = false;
       fireEvent.call( this, "DefaultSelection" );
     }
@@ -350,7 +387,7 @@
       "index" : -1
     };
     if( type === "Selection" || type === "DefaultSelection" ) {
-      var selection = this._.viewer.getSelectedItems();
+      var selection = this._.viewer._selection;
       if( selection.length > 0 ) {
         event.index = this.getSelectionIndex();
         event.text = this._.items[ event.index ];
@@ -406,10 +443,15 @@
   };
 
   var createViewer = function( parent ) {
-    var result = new rwt.widgets.base.BasicList( false );
+    var result = new rwt.widgets.Grid( {
+      fullSelection : true,
+      appearance : "table"
+    } );
     result.setLocation( 0, 0 );
     result.setParent( parent );
+    result.setTreeColumn( -1 ); // TODO [tb] : should be default?
     result.setScrollBarsVisible( false, false );
+    result._sendItemFocusChange = rwt.util.Functions.returnTrue;
     return result;
   };
 
