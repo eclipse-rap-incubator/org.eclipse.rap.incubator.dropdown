@@ -107,12 +107,19 @@
       if( index < -1 || index >= this.getItemCount() || isNaN( index ) ) {
         throw new Error( "Can not select item: Index " + index + " not valid" );
       }
+      // This is more than optimization, it prevents too early rendering that can crash the client:
+      this._.viewer._inServerResponse = rwt.util.Functions.returnTrue;
       this._.viewer.deselectAll();
       if( index > -1 ) {
         var item = this._.viewer.getRootItem().getChild( index );
         this._.viewer.selectItem( item );
         this._.viewer.setFocusItem( item );
+        this._.viewer._scrollIntoView( index, item );
+      } else {
+        this._.viewer.setFocusItem( null );
+        this._.viewer.setTopItemIndex( 0 );
       }
+      delete this._.viewer._inServerResponse;
       this._.viewer._sendSelectionChange(); // Not called for selection changes by API/Server
     },
 
@@ -305,12 +312,14 @@
   var renderGridItems = function() {
     var rootItem = this._.viewer.getRootItem();
     var items = this._.items;
+    this._.viewer._inServerResponse = rwt.util.Functions.returnTrue;
     rootItem.setItemCount( 0 );
     rootItem.setItemCount( items.length );
     for( var i = 0; i < items.length; i++ ) {
       var gridItem = new rwt.widgets.GridItem( rootItem, i, false );
       gridItem.setTexts( [ items[ i ] ] );
     }
+    delete this._.viewer._inServerResponse;
   };
 
   var onTextAppear = function() {
@@ -325,6 +334,12 @@
       event.preventDefault();
       if( key === "Down" && this.getSelectionIndex() === -1 && this.getItemCount() > 0 ) {
         this.setSelectionIndex( 0 );
+      } else if( key === "Up" && this.getSelectionIndex() === 0 ) {
+        this.setSelectionIndex( -1 );
+      } else if( key === "Down" && this.getSelectionIndex() === this.getItemCount() - 1 ) {
+        this.setSelectionIndex( -1 );
+      } else if( key === "Up" && this.getSelectionIndex() === -1 && this.getItemCount() > 0 ) {
+        this.setSelectionIndex( this.getItemCount() - 1 );
       } else {
         this._.viewer.dispatchEvent( event );
       }

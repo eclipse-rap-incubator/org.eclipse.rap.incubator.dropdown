@@ -676,6 +676,27 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       assertEquals( 1, dropdown.getSelectionIndex() );
     },
 
+    testSetSelectionIndex_ScrollToSelection : function() {
+      dropdown.setVisibleItemCount( 3 );
+      showDropDown();
+      dropdown.setItems( [ "a", "b", "c", "d", "e", "f" ] );
+
+      dropdown.setSelectionIndex( 5 );
+
+      assertEquals( 3, viewer.getTopItemIndex() );
+    },
+
+    testResetSelectionIndex_ResetScrollPosition : function() {
+      dropdown.setVisibleItemCount( 3 );
+      showDropDown();
+      dropdown.setItems( [ "a", "b", "c", "d", "e", "f" ] );
+      dropdown.setSelectionIndex( 5 );
+
+      dropdown.setSelectionIndex( -1 );
+
+      assertEquals( 0, viewer.getTopItemIndex() );
+    },
+
     testSetSelectionIndex_RemoteSet : function() {
       dropdown.setItems( [ "a", "b", "c" ] );
 
@@ -754,6 +775,8 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
     },
 
     testKeyEventForwarding_Down : function() {
+      dropdown.setItems( [ "a", "b", "c" ] );
+      dropdown.setSelectionIndex( 1 );
       showDropDown();
       var logger = TestUtil.getLogger();
 
@@ -766,6 +789,8 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
     },
 
     testKeyEventForwarding_PageUp : function() {
+      dropdown.setItems( [ "a", "b", "c" ] );
+      dropdown.setSelectionIndex( 1 );
       showDropDown();
       var logger = TestUtil.getLogger();
 
@@ -778,6 +803,8 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
     },
 
     testKeyEventForwarding_PageDown : function() {
+      dropdown.setItems( [ "a", "b", "c" ] );
+      dropdown.setSelectionIndex( 1 );
       showDropDown();
       var logger = TestUtil.getLogger();
 
@@ -813,6 +840,54 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       TestUtil.pressOnce( widget, "Down" );
 
       assertTrue( viewer.isFocusItem( viewer.getRootItem().getChild( 0 ) ) );
+    },
+
+    testPressUpAfterSelectionResetsSelectsLastItem : function() {
+      dropdown.setItems( [ "a", "b", "c" ] );
+      showDropDown();
+      dropdown.setSelectionIndex( -1 );
+      TestUtil.flush();
+
+      widget.focus();
+      TestUtil.pressOnce( widget, "Up" );
+
+      assertEquals( 2, dropdown.getSelectionIndex() );
+    },
+
+    testPressUpAfterSelectionFirstItemResetsFocus : function() {
+      dropdown.setItems( [ "a", "b", "c" ] );
+      showDropDown();
+      TestUtil.flush();
+
+      widget.focus();
+      TestUtil.pressOnce( widget, "Down" );
+      TestUtil.pressOnce( widget, "Up" );
+
+      assertFalse( viewer.isFocusItem( viewer.getRootItem().getChild( 0 ) ) );
+    },
+
+    testPressUpOnFirstItemResetsSelection : function() {
+      dropdown.setItems( [ "a", "b", "c" ] );
+      dropdown.setSelectionIndex( 0 );
+      showDropDown();
+      TestUtil.flush();
+
+      widget.focus();
+      TestUtil.pressOnce( widget, "Up" );
+
+      assertEquals( -1, dropdown.getSelectionIndex() );
+    },
+
+    testPressDownOnLastItemResetsSelection : function() {
+      dropdown.setItems( [ "a", "b", "c" ] );
+      dropdown.setSelectionIndex( 2 );
+      showDropDown();
+      TestUtil.flush();
+
+      widget.focus();
+      TestUtil.pressOnce( widget, "Down" );
+
+      assertEquals( -1, dropdown.getSelectionIndex() );
     },
 
     testSelectionResetResetsLeadItem : function() {
