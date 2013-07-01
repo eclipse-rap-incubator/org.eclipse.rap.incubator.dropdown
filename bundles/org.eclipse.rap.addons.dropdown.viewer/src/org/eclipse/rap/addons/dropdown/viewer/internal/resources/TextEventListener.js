@@ -45,9 +45,9 @@ function handleModify( event ) {
   var viewer = rap.getObject( widget.getData( VIEWER_KEY ) );
   var dropdown = rap.getObject( viewer.get( "dropDown" ) );
   var data = viewer.get( "elements" );
-  var result = searchItems( data, createQuery( text ), 20 );
+  var result = searchItems( data, createQuery( text ) );
   if( result.items.length === 0 ) {
-    result = searchItems( data, /.*/, 20 );
+    result = searchItems( data, /.*/ );
     if( text.length >= 1 ) {
       showError( viewer, true )
     } else {

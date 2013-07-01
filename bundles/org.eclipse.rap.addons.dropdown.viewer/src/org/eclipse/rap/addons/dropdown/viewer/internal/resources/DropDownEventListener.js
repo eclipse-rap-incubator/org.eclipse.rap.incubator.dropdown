@@ -37,9 +37,9 @@ function handleShow( event ) {
     var data = viewer.get( "elements" );
     var text = rap.getObject( viewer.get( "text" ) );
     var str = text.getText();
-    var result = searchItems( data, createQuery( str ), 20 );
+    var result = searchItems( data, createQuery( str ) );
     if( result.items.length === 0 || ( result.items.length === 1 && str === result.items[ 0 ] ) ) {
-      result = searchItems( data, /.*/, 20 );
+      result = searchItems( data, /.*/ );
     }
     dropdown.setItems( result.items );
     dropdown.setData( "indexMapping", result.indicies );
