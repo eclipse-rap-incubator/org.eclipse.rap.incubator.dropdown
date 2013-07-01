@@ -719,11 +719,11 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       }
     },
 
-    testKeyEventForawarding_Escape : function() {
+    testKeyEventForwarding_Escape : function() {
       showDropDown();
       var logger = TestUtil.getLogger();
 
-      viewer.addEventListener( "keydown", logger.log );
+      viewer.addEventListener( "keypress", logger.log );
       widget.focus();
       TestUtil.pressOnce( widget, "Escape" );
 
@@ -731,71 +731,62 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       assertTrue( logger.getLog()[ 0 ].getDefaultPrevented() );
     },
 
-    testKeyEventForawarding_Up : function() {
+    testKeyEventForwarding_Up : function() {
       showDropDown();
       var logger = TestUtil.getLogger();
 
-      viewer.addEventListener( "keydown", logger.log );
       viewer.addEventListener( "keypress", logger.log );
       widget.focus();
       TestUtil.pressOnce( widget, "Up" );
 
-      assertEquals( 2, logger.getLog().length );
+      assertEquals( 1, logger.getLog().length );
       assertTrue( logger.getLog()[ 0 ].getDefaultPrevented() );
-      assertTrue( logger.getLog()[ 1 ].getDefaultPrevented() );
     },
 
-    testKeyEventForawarding_UpNotVisible : function() {
+    testKeyEventForwarding_UpNotVisible : function() {
       var logger = TestUtil.getLogger();
 
       viewer.addEventListener( "keypress", logger.log );
-      viewer.addEventListener( "keydown", logger.log );
       widget.focus();
       TestUtil.pressOnce( widget, "Up" );
 
       assertEquals( 0, logger.getLog().length );
     },
 
-    testKeyEventForawarding_Down : function() {
+    testKeyEventForwarding_Down : function() {
       showDropDown();
       var logger = TestUtil.getLogger();
 
-      viewer.addEventListener( "keydown", logger.log );
       viewer.addEventListener( "keypress", logger.log );
       widget.focus();
       TestUtil.pressOnce( widget, "Down" );
 
-      assertEquals( 2, logger.getLog().length );
+      assertEquals( 1, logger.getLog().length );
       assertTrue( logger.getLog()[ 0 ].getDefaultPrevented() );
-      assertTrue( logger.getLog()[ 1 ].getDefaultPrevented() );
     },
 
-    testKeyEventForawarding_PageUp : function() {
+    testKeyEventForwarding_PageUp : function() {
       showDropDown();
       var logger = TestUtil.getLogger();
 
-      viewer.addEventListener( "keydown", logger.log );
       viewer.addEventListener( "keypress", logger.log );
       widget.focus();
       TestUtil.pressOnce( widget, "PageUp" );
 
-      assertEquals( 2, logger.getLog().length );
+      assertEquals( 1, logger.getLog().length );
       assertTrue( logger.getLog()[ 0 ].getDefaultPrevented() );
-      assertTrue( logger.getLog()[ 1 ].getDefaultPrevented() );
     },
 
-    testKeyEventForawarding_PageDown : function() {
+    testKeyEventForwarding_PageDown : function() {
       showDropDown();
       var logger = TestUtil.getLogger();
 
-      viewer.addEventListener( "keydown", logger.log );
       viewer.addEventListener( "keypress", logger.log );
       widget.focus();
       TestUtil.pressOnce( widget, "PageDown" );
 
-      assertEquals( 2, logger.getLog().length );
+      assertEquals( 1, logger.getLog().length );
       assertTrue( logger.getLog()[ 0 ].getDefaultPrevented() );
-      assertTrue( logger.getLog()[ 1 ].getDefaultPrevented() );
     },
 
     testPressDownAfterSelectionResetSelectsFirstItem : function() {
@@ -809,6 +800,19 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       TestUtil.pressOnce( widget, "Down" );
 
       assertEquals( 0, dropdown.getSelectionIndex() );
+    },
+
+    testPressDownAfterSelectionResetFocusesFirstItem : function() {
+      dropdown.setItems( [ "a", "b", "c" ] );
+      dropdown.setSelectionIndex( 1 );
+      showDropDown();
+      dropdown.setSelectionIndex( -1 );
+      TestUtil.flush();
+
+      widget.focus();
+      TestUtil.pressOnce( widget, "Down" );
+
+      assertTrue( viewer.isFocusItem( viewer.getRootItem().getChild( 0 ) ) );
     },
 
     testSelectionResetResetsLeadItem : function() {

@@ -62,10 +62,9 @@
     this._.items = [];
     this._.inMouseSelection = false;
     this._.events = createEventsMap();
-    this._.parent.addEventListener( "keydown", onTextKeyEvent, this );
     this._.parent.addEventListener( "keypress", onTextKeyEvent, this );
     this._.viewer._sendSelectionChange = bind( this, onSelection );
-    this._.viewer.addEventListener( "keydown", onKeyEvent, this );
+    this._.viewer.addEventListener( "keypress", onKeyEvent, this );
     this._.viewer.addEventListener( "mousedown", onMouseDown, this );
     this._.viewer.addEventListener( "mouseup", onMouseUp, this );
     this._.popup.addEventListener( "appear", onAppear, this );
@@ -110,7 +109,9 @@
       }
       this._.viewer.deselectAll();
       if( index > -1 ) {
-        this._.viewer.selectItem( this._.viewer.getRootItem().getChild( index ) );
+        var item = this._.viewer.getRootItem().getChild( index );
+        this._.viewer.selectItem( item );
+        this._.viewer.setFocusItem( item );
       }
       this._.viewer._sendSelectionChange(); // Not called for selection changes by API/Server
     },
@@ -320,7 +321,11 @@
     var key = event.getKeyIdentifier();
     if( this._.visibility && forwardedKeys[ key ] ) {
       event.preventDefault();
-      this._.viewer.dispatchEvent( event );
+      if( key === "Down" && this.getSelectionIndex() === -1 && this.getItemCount() > 0 ) {
+        this.setSelectionIndex( 0 );
+      } else {
+        this._.viewer.dispatchEvent( event );
+      }
     }
   };
 
@@ -337,11 +342,6 @@
       break;
       case "Escape":
         this.hide();
-      break;
-      case "Down":
-        if( this.getSelectionIndex() === -1 && this.getItemCount() > 0 ) {
-          this.setSelectionIndex( 0 );
-        }
       break;
     }
   };
@@ -452,6 +452,7 @@
     result.setTreeColumn( -1 ); // TODO [tb] : should be default?
     result.setScrollBarsVisible( false, false );
     result._sendItemFocusChange = rwt.util.Functions.returnTrue;
+    result._sendTopItemIndexChange = rwt.util.Functions.returnTrue;
     return result;
   };
 
