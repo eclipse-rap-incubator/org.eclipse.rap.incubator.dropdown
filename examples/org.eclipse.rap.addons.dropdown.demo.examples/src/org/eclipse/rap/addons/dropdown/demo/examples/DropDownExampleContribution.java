@@ -21,7 +21,7 @@ public class DropDownExampleContribution implements IExampleContribution {
   }
 
   public String getTitle() {
-    return "Drop Down";
+    return "Auto Suggest";
   }
 
   public IExamplePage createPage() {
