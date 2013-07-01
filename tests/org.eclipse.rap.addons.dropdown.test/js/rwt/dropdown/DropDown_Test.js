@@ -59,7 +59,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
     },
 
     testConstructor_CreatesViewerInPopup : function() {
-      assertTrue( viewer instanceof rwt.widgets.base.BasicList );
+      assertTrue( viewer instanceof rwt.widgets.Grid );
       assertIdentical( popup, viewer.getParent() );
     },
 
@@ -69,8 +69,8 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
     },
 
     testConstructor_HideScrollbars : function() {
-      assertFalse( viewer.getVerticalBar().getDisplay() );
-      assertFalse( viewer.getHorizontalBar().getDisplay() );
+      assertFalse( viewer.getVerticalBar().getVisibility() );
+      assertFalse( viewer.getHorizontalBar().getVisibility() );
     },
 
     testSetData_SetDataWithTwoParameters : function() {
@@ -475,7 +475,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
 
       dropdown.addListener( "Selection", logger.log );
       dropdown.removeListener( "Selection", logger.log );
-      TestUtil.click( viewer.getItems()[ 1 ] );
+      TestUtil.click( getItem( 0 ) );
 
       assertEquals( 0, logger.getLog().length );
     },
@@ -676,6 +676,27 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       assertEquals( 1, dropdown.getSelectionIndex() );
     },
 
+    testSetSelectionIndex_ScrollToSelection : function() {
+      dropdown.setVisibleItemCount( 3 );
+      showDropDown();
+      dropdown.setItems( [ "a", "b", "c", "d", "e", "f" ] );
+
+      dropdown.setSelectionIndex( 5 );
+
+      assertEquals( 3, viewer.getTopItemIndex() );
+    },
+
+    testResetSelectionIndex_ResetScrollPosition : function() {
+      dropdown.setVisibleItemCount( 3 );
+      showDropDown();
+      dropdown.setItems( [ "a", "b", "c", "d", "e", "f" ] );
+      dropdown.setSelectionIndex( 5 );
+
+      dropdown.setSelectionIndex( -1 );
+
+      assertEquals( 0, viewer.getTopItemIndex() );
+    },
+
     testSetSelectionIndex_RemoteSet : function() {
       dropdown.setItems( [ "a", "b", "c" ] );
 
@@ -719,11 +740,11 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       }
     },
 
-    testKeyEventForawarding_Escape : function() {
+    testKeyEventForwarding_Escape : function() {
       showDropDown();
       var logger = TestUtil.getLogger();
 
-      viewer.addEventListener( "keydown", logger.log );
+      viewer.addEventListener( "keypress", logger.log );
       widget.focus();
       TestUtil.pressOnce( widget, "Escape" );
 
@@ -731,78 +752,74 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       assertTrue( logger.getLog()[ 0 ].getDefaultPrevented() );
     },
 
-    testKeyEventForawarding_Up : function() {
+    testKeyEventForwarding_Up : function() {
       showDropDown();
       var logger = TestUtil.getLogger();
 
-      viewer.addEventListener( "keydown", logger.log );
       viewer.addEventListener( "keypress", logger.log );
       widget.focus();
       TestUtil.pressOnce( widget, "Up" );
 
-      assertEquals( 2, logger.getLog().length );
+      assertEquals( 1, logger.getLog().length );
       assertTrue( logger.getLog()[ 0 ].getDefaultPrevented() );
-      assertTrue( logger.getLog()[ 1 ].getDefaultPrevented() );
     },
 
-    testKeyEventForawarding_UpNotVisible : function() {
+    testKeyEventForwarding_UpNotVisible : function() {
       var logger = TestUtil.getLogger();
 
       viewer.addEventListener( "keypress", logger.log );
-      viewer.addEventListener( "keydown", logger.log );
       widget.focus();
       TestUtil.pressOnce( widget, "Up" );
 
       assertEquals( 0, logger.getLog().length );
     },
 
-    testKeyEventForawarding_Down : function() {
+    testKeyEventForwarding_Down : function() {
+      dropdown.setItems( [ "a", "b", "c" ] );
+      dropdown.setSelectionIndex( 1 );
       showDropDown();
       var logger = TestUtil.getLogger();
 
-      viewer.addEventListener( "keydown", logger.log );
       viewer.addEventListener( "keypress", logger.log );
       widget.focus();
       TestUtil.pressOnce( widget, "Down" );
 
-      assertEquals( 2, logger.getLog().length );
+      assertEquals( 1, logger.getLog().length );
       assertTrue( logger.getLog()[ 0 ].getDefaultPrevented() );
-      assertTrue( logger.getLog()[ 1 ].getDefaultPrevented() );
     },
 
-    testKeyEventForawarding_PageUp : function() {
+    testKeyEventForwarding_PageUp : function() {
+      dropdown.setItems( [ "a", "b", "c" ] );
+      dropdown.setSelectionIndex( 1 );
       showDropDown();
       var logger = TestUtil.getLogger();
 
-      viewer.addEventListener( "keydown", logger.log );
       viewer.addEventListener( "keypress", logger.log );
       widget.focus();
       TestUtil.pressOnce( widget, "PageUp" );
 
-      assertEquals( 2, logger.getLog().length );
+      assertEquals( 1, logger.getLog().length );
       assertTrue( logger.getLog()[ 0 ].getDefaultPrevented() );
-      assertTrue( logger.getLog()[ 1 ].getDefaultPrevented() );
     },
 
-    testKeyEventForawarding_PageDown : function() {
+    testKeyEventForwarding_PageDown : function() {
+      dropdown.setItems( [ "a", "b", "c" ] );
+      dropdown.setSelectionIndex( 1 );
       showDropDown();
       var logger = TestUtil.getLogger();
 
-      viewer.addEventListener( "keydown", logger.log );
       viewer.addEventListener( "keypress", logger.log );
       widget.focus();
       TestUtil.pressOnce( widget, "PageDown" );
 
-      assertEquals( 2, logger.getLog().length );
+      assertEquals( 1, logger.getLog().length );
       assertTrue( logger.getLog()[ 0 ].getDefaultPrevented() );
-      assertTrue( logger.getLog()[ 1 ].getDefaultPrevented() );
     },
 
     testPressDownAfterSelectionResetSelectsFirstItem : function() {
       dropdown.setItems( [ "a", "b", "c" ] );
       dropdown.setSelectionIndex( 1 );
       showDropDown();
-
       dropdown.setSelectionIndex( -1 );
       TestUtil.flush();
 
@@ -810,6 +827,67 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       TestUtil.pressOnce( widget, "Down" );
 
       assertEquals( 0, dropdown.getSelectionIndex() );
+    },
+
+    testPressDownAfterSelectionResetFocusesFirstItem : function() {
+      dropdown.setItems( [ "a", "b", "c" ] );
+      dropdown.setSelectionIndex( 1 );
+      showDropDown();
+      dropdown.setSelectionIndex( -1 );
+      TestUtil.flush();
+
+      widget.focus();
+      TestUtil.pressOnce( widget, "Down" );
+
+      assertTrue( viewer.isFocusItem( viewer.getRootItem().getChild( 0 ) ) );
+    },
+
+    testPressUpAfterSelectionResetsSelectsLastItem : function() {
+      dropdown.setItems( [ "a", "b", "c" ] );
+      showDropDown();
+      dropdown.setSelectionIndex( -1 );
+      TestUtil.flush();
+
+      widget.focus();
+      TestUtil.pressOnce( widget, "Up" );
+
+      assertEquals( 2, dropdown.getSelectionIndex() );
+    },
+
+    testPressUpAfterSelectionFirstItemResetsFocus : function() {
+      dropdown.setItems( [ "a", "b", "c" ] );
+      showDropDown();
+      TestUtil.flush();
+
+      widget.focus();
+      TestUtil.pressOnce( widget, "Down" );
+      TestUtil.pressOnce( widget, "Up" );
+
+      assertFalse( viewer.isFocusItem( viewer.getRootItem().getChild( 0 ) ) );
+    },
+
+    testPressUpOnFirstItemResetsSelection : function() {
+      dropdown.setItems( [ "a", "b", "c" ] );
+      dropdown.setSelectionIndex( 0 );
+      showDropDown();
+      TestUtil.flush();
+
+      widget.focus();
+      TestUtil.pressOnce( widget, "Up" );
+
+      assertEquals( -1, dropdown.getSelectionIndex() );
+    },
+
+    testPressDownOnLastItemResetsSelection : function() {
+      dropdown.setItems( [ "a", "b", "c" ] );
+      dropdown.setSelectionIndex( 2 );
+      showDropDown();
+      TestUtil.flush();
+
+      widget.focus();
+      TestUtil.pressOnce( widget, "Down" );
+
+      assertEquals( -1, dropdown.getSelectionIndex() );
     },
 
     testSelectionResetResetsLeadItem : function() {
@@ -998,19 +1076,23 @@ var showDropDown = function() {
 
 var getViewerItems = function() {
   var result = [];
-  var items = viewer.getItems();
+  var items = viewer.getRootItem()._children;
   for( var i = 0; i < items.length; i++ ) {
-    result[ i ] = items[ i ].getLabel();
+    result[ i ] = items[ i ].getText( 0 );
   }
   return result;
 };
 
 var clickItem = function( index ) {
-  TestUtil.click( viewer.getItems()[ 1 ] );
+  TestUtil.click( getItem( index ) );
 };
 
 var doubleClickItem = function( index ) {
-  TestUtil.doubleClick( viewer.getItems()[ 1 ] );
+  TestUtil.doubleClick( getItem( index ) );
+};
+
+var getItem = function( index ) {
+  return viewer.getRowContainer()._findRowByItem( viewer.getRootItem().getChild( index ) );
 };
 
 var forceTimer = function() {

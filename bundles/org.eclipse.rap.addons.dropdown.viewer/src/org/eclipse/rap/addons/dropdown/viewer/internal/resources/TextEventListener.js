@@ -34,20 +34,20 @@ function handleVerify( event ) {
   // See Bug 404896 - [ClientScripting] Verify event keyCode is always zero when replacing txt
   if( event.text !== "" /* && event.keyCode !== 0 */ ) {
     event.widget.setData( "typing", true );
+  } else {
+    event.widget.setData( "deleting", true );
   }
 }
 
-//TODO : This can get very slow with huge lists. Possible optimizations include caching results,
-//       limiting result length (at least until first selection occurs), and virtual rendering
 function handleModify( event ) {
   var widget = event.widget;
   var text = widget.getText().toLowerCase();
   var viewer = rap.getObject( widget.getData( VIEWER_KEY ) );
   var dropdown = rap.getObject( viewer.get( "dropDown" ) );
   var data = viewer.get( "elements" );
-  var result = searchItems( data, createQuery( text ), 20 );
+  var result = searchItems( data, createQuery( text ) );
   if( result.items.length === 0 ) {
-    result = searchItems( data, /.*/, 20 );
+    result = searchItems( data, /.*/ );
     if( text.length >= 1 ) {
       showError( viewer, true )
     } else {
@@ -57,8 +57,12 @@ function handleModify( event ) {
     showError( viewer, false )
   }
   var typing = widget.getData( "typing" );
+  if( typing || widget.getData( "deleting" ) ) {
+    dropdown.setData( "userText", widget.getText() );
+  }
   var selecting = widget.getData( "selecting" );
   widget.setData( "typing", false );
+  widget.setData( "deleting", false );
   widget.setData( "selecting", false );
   if( !selecting ) {
     if( result.items.length > 0 ) {
