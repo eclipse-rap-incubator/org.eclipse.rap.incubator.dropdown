@@ -211,6 +211,7 @@
         if( popupFocusRoot && !popupFocusRoot.isDisposed() ) {
           popupFocusRoot.removeEventListener( "changeFocusedChild", onFocusChange, this );
         }
+        this._.viewer.getRootItem().setItemCount( 0 );
         if( !this._.parent.isDisposed() ) {
           this._.parent.removeEventListener( "appear", onTextAppear, this );
           this._.parent.removeEventListener( "keydown", onTextKeyEvent, this );
@@ -304,6 +305,7 @@
   var renderGridItems = function() {
     var rootItem = this._.viewer.getRootItem();
     var items = this._.items;
+    rootItem.setItemCount( 0 );
     rootItem.setItemCount( items.length );
     for( var i = 0; i < items.length; i++ ) {
       var gridItem = new rwt.widgets.GridItem( rootItem, i, false );
