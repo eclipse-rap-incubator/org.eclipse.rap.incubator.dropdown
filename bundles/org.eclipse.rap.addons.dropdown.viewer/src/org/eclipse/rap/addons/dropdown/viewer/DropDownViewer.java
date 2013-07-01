@@ -227,7 +227,7 @@ public class DropDownViewer extends ContentViewer {
     return clientListeners.getDropDownHideListener();
   }
 
-  // TODO : make exchangeable by accepting a class that extends the holder in the constructor
+  // TODO : no longer planned to be replaceable, streamline.
   private ClientListenerHolder getClientListenerHolder() {
     Object result = RWT.getUISession().getAttribute( ATTR_CLIENT_LISTNER_HOLDER );
     if( result == null ) {
