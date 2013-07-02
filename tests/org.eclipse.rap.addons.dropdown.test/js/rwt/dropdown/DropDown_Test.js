@@ -68,6 +68,19 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       assertEquals( 0, viewer.getTop() );
     },
 
+    testConstructor_SetsMarkupEnabledFalse : function() {
+      assertTrue( !viewer.getRenderConfig().markupEnabled );
+    },
+
+    testConstructor_SetsMarkupEnabledTrue : function() {
+      widget = new rwt.widgets.Composite();
+      widget.setParent( shell );
+      dropdown = new rwt.dropdown.DropDown( widget, true );
+      viewer = dropdown._.viewer;
+
+      assertTrue( viewer.getRenderConfig().markupEnabled );
+    },
+
     testConstructor_HideScrollbars : function() {
       assertFalse( viewer.getVerticalBar().getVisibility() );
       assertFalse( viewer.getHorizontalBar().getVisibility() );

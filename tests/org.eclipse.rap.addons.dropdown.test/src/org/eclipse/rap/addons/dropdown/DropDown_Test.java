@@ -32,6 +32,7 @@ import java.util.List;
 import org.eclipse.rap.clientscripting.ClientListener;
 import org.eclipse.rap.json.JsonArray;
 import org.eclipse.rap.json.JsonObject;
+import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.client.Client;
 import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteList;
 import org.eclipse.rap.rwt.internal.protocol.JsonUtil;
@@ -156,20 +157,20 @@ public class DropDown_Test {
   }
 
   @Test
-  public void testShow_Setsvisible() {
+  public void testShow_SetsVisible() {
     dropdown.show();
 
     assertTrue( dropdown.getVisible() );
   }
 
   @Test
-  public void testShow_RendersvisibleTrue() {
+  public void testShow_RendersVisibleTrue() {
     dropdown.show();
     verify( remoteObject ).set( "visible", true );
   }
 
   @Test
-  public void testShow_CallTwiceRendervisibleOnce() {
+  public void testShow_CallTwiceRenderVisibleOnce() {
     dropdown.show();
     dropdown.show();
 
@@ -188,7 +189,7 @@ public class DropDown_Test {
   }
 
   @Test
-  public void testHide_Setsvisible() {
+  public void testHide_SetsVisible() {
     dropdown.setVisible( true );
     dropdown.hide();
 
@@ -196,7 +197,7 @@ public class DropDown_Test {
   }
 
   @Test
-  public void testHide_RendersvisibleFalse() {
+  public void testHide_RendersVisibleFalse() {
     dropdown.show();
     dropdown.hide();
     verify( remoteObject ).set( "visible", false );
@@ -358,6 +359,15 @@ public class DropDown_Test {
     verify( remoteObject ).call( eq( "setData" ), argument.capture() );
 
     assertEquals( "bar", argument.getValue().get( "foo" ).asString() );
+  }
+
+  @Test
+  public void testSetData_RendersMarkupEnabled() {
+    Fixture.fakePhase( PhaseId.PROCESS_ACTION );
+
+    dropdown.setData( RWT.MARKUP_ENABLED, Boolean.TRUE );
+
+    verify( remoteObject ).set( "markupEnabled", true );
   }
 
   @Test

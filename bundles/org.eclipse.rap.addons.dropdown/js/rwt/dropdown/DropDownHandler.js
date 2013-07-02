@@ -16,7 +16,7 @@
 
     factory : function( properties ) {
       var control = rwt.remote.ObjectRegistry.getObject( properties.parent );
-      return new rwt.dropdown.DropDown( control );
+      return new rwt.dropdown.DropDown( control, properties.markupEnabled );
     },
 
     properties : [ "items", "visible", "visibleItemCount" ],

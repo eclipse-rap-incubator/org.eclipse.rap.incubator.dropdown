@@ -37,6 +37,8 @@ import org.eclipse.swt.widgets.*;
  * The list disappears automatically if the control looses focus, if an item is clicked,
  * or if the escape key is pressed.
  *
+ * This class supports the {@link RWT#MARKUP_ENABLED} property the same way Table and Tree do.
+ *
  * <p>
  * <dl>
  * <dt><b>Events:</b></dt>
@@ -259,6 +261,9 @@ public class DropDown extends Widget {
   public void setData( String key, Object value ) {
     super.setData( key, value );
     renderData( key, value );
+    if( RWT.MARKUP_ENABLED.equals( key ) && value instanceof Boolean ) {
+      remoteObject.set( "markupEnabled", ( ( Boolean )value ).booleanValue() );
+    }
   }
 
   @Override

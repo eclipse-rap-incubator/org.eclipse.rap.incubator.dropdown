@@ -51,12 +51,12 @@
   /**
    * @class Instances of DropDown represent the server-side counterpart of a DropDown widget
    */
-  rwt.dropdown.DropDown = function( parent ) {
+  rwt.dropdown.DropDown = function( parent, markupEnabled ) {
     this._ = {};
     this._.hideTimer = new rwt.client.Timer( 0 );
     this._.hideTimer.addEventListener( "interval", checkFocus, this );
     this._.popup = createPopup();
-    this._.viewer = createViewer( this._.popup );
+    this._.viewer = createViewer( this._.popup, markupEnabled );
     this._.visibleItemCount = 5;
     this._.parent = parent;
     this._.items = [];
@@ -459,10 +459,11 @@
     return result;
   };
 
-  var createViewer = function( parent ) {
+  var createViewer = function( parent, markupEnabled ) {
     var result = new rwt.widgets.Grid( {
-      fullSelection : true,
-      appearance : "table"
+      "fullSelection" : true,
+      "appearance" : "table",
+      "markupEnabled" : markupEnabled
     } );
     result.setLocation( 0, 0 );
     result.setParent( parent );

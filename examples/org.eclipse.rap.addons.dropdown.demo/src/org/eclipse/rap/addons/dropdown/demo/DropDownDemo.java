@@ -82,7 +82,7 @@ public class DropDownDemo extends AbstractEntryPoint {
 
   private void create80sMoviesExample( Composite parent ) {
     Group group = new Group( parent, SWT.NONE );
-    group.setText( "DropDown only, 760 entries, no ClientScripting" );
+    group.setText( "DropDown only, 760 entries, no ClientScripting, markup" );
     group.setLayout( new GridLayout( 1, true ) );
     final Text text = new Text( group, SWT.BORDER );
     GridData gridData = new GridData( 200, 23 );
@@ -90,6 +90,7 @@ public class DropDownDemo extends AbstractEntryPoint {
     text.setLayoutData( gridData );
     text.setMessage( "80's Movies" );
     final DropDown dropdown = new DropDown( text );
+    dropdown.setData( RWT.MARKUP_ENABLED, Boolean.TRUE );
     text.addListener( SWT.Modify, new Listener() {
       public void handleEvent( Event event ) {
         if( text.getData( "selecting" ) != Boolean.TRUE ) {
@@ -290,8 +291,10 @@ public class DropDownDemo extends AbstractEntryPoint {
   private String[] filter( String[] values, String text, int limit ) {
     List<String> result = new ArrayList<String>( limit );
     for( int i = 0; result.size() < limit && i < values.length; i++ ) {
-      if( values[ i ].toLowerCase().startsWith( text ) ) {
-        result.add( values[ i ] );
+      String item = values[ i ];
+      if( item.toLowerCase().startsWith( text ) ) {
+        int length = text.length();
+        result.add( "<b>" + item.substring( 0, length ) + "</b>" + item.substring( length ) );
       }
     }
     return result.toArray( new String[ result.size() ] );
