@@ -471,6 +471,10 @@
     result.setScrollBarsVisible( false, false );
     result._sendItemFocusChange = rwt.util.Functions.returnTrue;
     result._sendTopItemIndexChange = rwt.util.Functions.returnTrue;
+    result.getRenderConfig().focused = true;
+    result.addEventListener( "changeFocused", function() {
+      result.getRenderConfig().focused = true;
+    } );
     return result;
   };
 

@@ -81,6 +81,15 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       assertTrue( viewer.getRenderConfig().markupEnabled );
     },
 
+    testConstructor_FakesViewerFocus : function() {
+      assertTrue( viewer.getRenderConfig().focused );
+    },
+
+    testConstructor_FakesViewerFocusAfterBlur : function() {
+      viewer.setFocused( false );
+      assertTrue( viewer.getRenderConfig().focused );
+    },
+
     testConstructor_HideScrollbars : function() {
       assertFalse( viewer.getVerticalBar().getVisibility() );
       assertFalse( viewer.getHorizontalBar().getVisibility() );
