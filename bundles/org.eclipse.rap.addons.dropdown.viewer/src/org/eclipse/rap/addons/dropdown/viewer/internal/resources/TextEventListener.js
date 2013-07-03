@@ -56,33 +56,30 @@ function handleModify( event ) {
   } else {
     showError( viewer, false )
   }
-  var typing = widget.getData( "typing" );
-  if( typing || widget.getData( "deleting" ) ) {
-    dropdown.setData( "userText", widget.getText() );
-  }
-  var selecting = widget.getData( "selecting" );
-  widget.setData( "typing", false );
-  widget.setData( "deleting", false );
-  widget.setData( "selecting", false );
-  if( !selecting ) {
+  if( !widget.getData( "selecting" ) ) {
+    if( widget.getData( "typing" ) || widget.getData( "deleting" ) ) {
+      dropdown.setData( "userText", widget.getText() );
+    }
     if( result.items.length > 0 ) {
-      dropdown.setItems( result.items );
       dropdown.setData( "indexMapping", result.indicies );
-      dropdown.setData( "internalShow", true );
+      dropdown.setItems( result.items );
       dropdown.show();
-      dropdown.setData( "internalShow", false );
       var sel = widget.getSelection();
       var common = commonText( result.items );
-      if( typing && result.items.length === 1 ) {
+      if( widget.getData( "typing" ) && result.items.length === 1 ) {
         dropdown.setSelectionIndex( 0 );
       }
-      if( typing && common && common.length > text.length ) {
+      if( widget.getData( "typing" ) && common && common.length > text.length ) {
         var newSel = [ sel[ 0 ], common.length ];
         widget.setText( common );
         widget.setSelection( newSel );
       }
     } else {
       dropdown.hide();
+    }
+    if( widget.getData( "typing" ) || widget.getData( "deleting" ) ) {
+      widget.setData( "typing", false );
+      widget.setData( "deleting", false );
     }
   }
 }
@@ -114,7 +111,7 @@ function commonText( items ) {
     var cont = true;
     var commonTo = 0;
     while( cont ) {
-      var next = items[ 0 ].indexOf( " ", commonTo + 1 ); // TODO [tb] : also respect ,"':;
+      var next = items[ 0 ].indexOf( " ", commonTo + 1 ); // TODO [tb] : also respect ,"':;-!?
       if( next !== -1 ) {
         var testString = items[ 0 ].slice( 0, next + 1 );
         var commons = searchItems( items, createQuery( testString, true ) ).items;

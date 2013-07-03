@@ -32,10 +32,10 @@ function handleEvent( event ) {
 
 function handleShow( event ) {
   var dropdown = event.widget;
-  if( dropdown.getData( "internalShow" ) !== true ) {
-    var viewer = rap.getObject( dropdown.getData( VIEWER_KEY ) );
+  var viewer = rap.getObject( dropdown.getData( VIEWER_KEY ) );
+  var text = rap.getObject( viewer.get( "text" ) );
+  if( !text.getData( "typing" ) ) {
     var data = viewer.get( "elements" );
-    var text = rap.getObject( viewer.get( "text" ) );
     var str = text.getText();
     var result = searchItems( data, createQuery( str ) );
     if( result.items.length === 0 || ( result.items.length === 1 && str === result.items[ 0 ] ) ) {
@@ -56,19 +56,22 @@ function handleSelection( event ) {
   var dropdown = event.widget;
   var viewer = rap.getObject( dropdown.getData( VIEWER_KEY ) );
   var text = rap.getObject( viewer.get( "text" ) );
-  if( event.text.length > 0 ) {
+  if( !text.getData( "selecting" ) ) {
     text.setData( "selecting", true );
-    text.setText( event.text );
-    text.setSelection( [ 0, event.text.length ] );
-    if( event.widget.getItemCount() === 1 ) {
-      handleDefaultSelection( event );
-      dropdown.hide();
+    if( event.text.length > 0 ) {
+      text.setText( event.text );
+      text.setSelection( [ 0, event.text.length ] );
+      if( event.widget.getItemCount() === 1 ) {
+        handleDefaultSelection( event );
+        dropdown.hide();
+      }
+    } else if( !text.getData( "typing" ) && !text.getData( "deleting" ) ) {
+      var userText = dropdown.getData( "userText" );
+      userText = userText ? userText : "";
+      text.setText( userText );
+      text.setSelection( [ userText.length, userText.length ] );
     }
-  } else {
-    var userText = dropdown.getData( "userText" );
-    userText = userText ? userText : "";
-    text.setText( userText );
-    text.setSelection( [ userText.length, userText.length ] );
+    text.setData( "selecting", false );
   }
 }
 
@@ -78,9 +81,12 @@ function handleDefaultSelection( event ) {
   var mapping = dropdown.getData( "indexMapping" );
   var elementIndex = mapping[ selectionIndex ];
   var viewer = rap.getObject( dropdown.getData( VIEWER_KEY ) );
+  var text = rap.getObject( viewer.get( "text" ) );
   if( viewer.get( "selection" ) !== elementIndex ) {
     viewer.notify( "SelectionChanged", { "index" : elementIndex } );
     viewer.set( "selection", elementIndex );
   }
+  text.setData( "selecting", true );
   dropdown.setSelectionIndex( -1 ); // should this happen automatically?
+  text.setData( "selecting", false );
 }

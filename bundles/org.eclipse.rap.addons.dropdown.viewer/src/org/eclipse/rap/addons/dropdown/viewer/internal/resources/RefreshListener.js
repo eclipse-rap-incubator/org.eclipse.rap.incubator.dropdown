@@ -20,6 +20,8 @@ function handleEvent( viewer ) {
   if( result.items.length === 0 || ( result.items.length === 1 && str === result.items[ 0 ] ) ) {
     result = searchItems( data, /.*/ );
   }
+  dropdown.setData( "refreshing", true );
   dropdown.setItems( result.items );
+  dropdown.setData( "refreshing", false );
   dropdown.setData( "indexMapping", result.indicies );
 }
