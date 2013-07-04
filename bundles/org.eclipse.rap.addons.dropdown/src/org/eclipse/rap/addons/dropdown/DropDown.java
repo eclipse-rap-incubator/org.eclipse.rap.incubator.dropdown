@@ -295,7 +295,7 @@ public class DropDown extends Widget {
   @SuppressWarnings("unchecked")
   public <T> T getAdapter( Class<T> adapter ) {
     T result;
-    if( adapter == IClientObjectAdapter.class || adapter == WidgetAdapter.class ) {
+    if( adapter == WidgetAdapter.class ) {
       // TODO [tb] : This way of getting the right id into the WidgetAdapter is obviously
       //             not ideal. Revise once Bug 397602 (Render operations in the order of their
       //             occurrence) is fixed.
