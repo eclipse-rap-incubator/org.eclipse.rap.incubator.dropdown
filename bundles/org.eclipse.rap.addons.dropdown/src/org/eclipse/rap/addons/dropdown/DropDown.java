@@ -16,7 +16,6 @@ import org.eclipse.rap.addons.dropdown.internal.resources.DropDownResources;
 import org.eclipse.rap.json.JsonObject;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteList;
-import org.eclipse.rap.rwt.internal.protocol.IClientObjectAdapter;
 import org.eclipse.rap.rwt.internal.protocol.JsonUtil;
 import org.eclipse.rap.rwt.lifecycle.WidgetAdapter;
 import org.eclipse.rap.rwt.lifecycle.WidgetUtil;
@@ -27,6 +26,7 @@ import org.eclipse.swt.SWTException;
 import org.eclipse.swt.internal.events.EventLCAUtil;
 import org.eclipse.swt.internal.widgets.WidgetAdapterImpl;
 import org.eclipse.swt.widgets.*;
+
 
 /**
  * Instances of this class represent a list of items that are attached to a control (parent).
@@ -166,8 +166,8 @@ public class DropDown extends Widget {
    */
   public void setVisibleItemCount( int itemCount ) {
     checkWidget();
-    if( this.visibleItemCount != itemCount ) {
-      this.visibleItemCount = itemCount;
+    if( visibleItemCount != itemCount ) {
+      visibleItemCount = itemCount;
       remoteObject.set( "visibleItemCount", itemCount );
     }
   }
