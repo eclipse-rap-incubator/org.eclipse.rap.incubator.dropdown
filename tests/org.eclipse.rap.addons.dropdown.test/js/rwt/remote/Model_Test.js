@@ -74,53 +74,6 @@ rwt.qx.Class.define( "rwt.remote.Model_Test", {
       assertEquals( 0, TestUtil.getRequestsSend() );
     },
 
-    testAddListener : function() {
-      var log = [];
-      var logger = function() {
-        log.push( arguments );
-      };
-      model.addListener( "Selection", logger );
-
-      model.notify( "Selection", { "foo" : "bar" } );
-
-      assertEquals( 1, log.length );
-      assertIdentical( model, log[ 0 ][ 0 ] );
-      assertEquals( { "foo" : "bar" }, log[ 0 ][ 1 ] );
-    },
-
-    testAddListener_NoPropertiesInListenerArguments : function() {
-      var log = [];
-      var logger = function() {
-        log.push( arguments );
-      };
-      model.addListener( "Selection", logger );
-
-      model.notify( { "event" : "Selection", "nosync" : true } );
-
-      assertEquals( 1, log[ 0 ].length );
-      assertIdentical( model, log[ 0 ][ 0 ] );
-    },
-
-    testAddListener_IgnoreAddTwice : function() {
-      var logger = TestUtil.getLogger();
-      model.addListener( "Selection", logger.log );
-      model.addListener( "Selection", logger.log );
-
-      model.notify( "Selection", { "foo" : "bar" } );
-
-      assertEquals( 1, logger.getLog().length );
-    },
-
-    testRemoveListener : function() {
-      var logger = TestUtil.getLogger();
-      model.addListener( "Selection", logger.log );
-
-      model.removeListener( "Selection", logger.log );
-      model.notify( "Selection", { "foo" : "bar" } );
-
-      assertEquals( 0, logger.getLog().length );
-    },
-
     testDestroy : function() {
       TestUtil.protocolSet( "r11", { "foo" : {} } );
       var internals = model._;
@@ -128,19 +81,7 @@ rwt.qx.Class.define( "rwt.remote.Model_Test", {
       model.destroy();
 
       assertTrue( TestUtil.hasNoObjects( internals ) );
-    },
-
-    testRemove_AfterDestroy : function() {
-      var logger = TestUtil.getLogger();
-      model.addListener( "Selection", logger.log );
-      model.destroy();
-
-      model.removeListener( "Selection", logger.log );
-      model.notify( "Selection", { "foo" : "bar" } );
-
-      assertEquals( 0, logger.getLog().length );
     }
-
 
   }
 

@@ -44,16 +44,17 @@
         var value = arguments[ 1 ];
         var options = arguments[ 2 ];
         this._.properties[ property ] = value;
-
       }
     },
 
     destroy : function() {
-      for( var key in this._ ) {
-        this._[ key ] = null;
+      if( this._ ) {
+        for( var key in this._ ) {
+          this._[ key ] = null;
+        }
+        this._.properties = null;
+        this._ = null;
       }
-      this._.properties = null;
-      this._ = null;
     },
 
     get : function( property ) {
