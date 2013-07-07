@@ -32,7 +32,6 @@ import org.eclipse.rap.clientscripting.internal.ClientListenerBinding;
 import org.eclipse.rap.json.JsonObject;
 import org.eclipse.rap.json.JsonValue;
 import org.eclipse.rap.rwt.RWT;
-import org.eclipse.rap.rwt.internal.remote.RemoteObjectImpl;
 import org.eclipse.rap.rwt.remote.*;
 import org.eclipse.rap.rwt.testfixture.Fixture;
 import org.junit.*;
@@ -53,7 +52,7 @@ public class Model_Test {
   public void setUp() {
     Fixture.setUp();
     Fixture.fakeNewRequest();
-    remoteObject = mock( RemoteObjectImpl.class );
+    remoteObject = mock( RemoteObject.class );
     when( remoteObject.getId() ).thenReturn( "modelId" );
     connection = spy( RWT.getUISession().getConnection() );
     when( connection.createRemoteObject( REMOTE_TYPE ) ).thenReturn( remoteObject );

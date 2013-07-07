@@ -22,7 +22,6 @@ import org.eclipse.rap.rwt.application.AbstractEntryPoint;
 import org.eclipse.rap.rwt.client.service.JavaScriptLoader;
 import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteList;
 import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteListImpl;
-import org.eclipse.rap.rwt.internal.remote.RemoteObjectImpl;
 import org.eclipse.rap.rwt.lifecycle.WidgetUtil;
 import org.eclipse.rap.rwt.remote.RemoteObject;
 import org.eclipse.rap.rwt.service.ResourceManager;
@@ -285,7 +284,7 @@ public class DropDownDemo extends AbstractEntryPoint {
     jsl.require( manager.getLocation( registerFilename ) );
     RemoteObject remoteObject
       = RWT.getUISession().getConnection().createRemoteObject( "clientData." + type );
-    return ( ( RemoteObjectImpl )remoteObject ).getId();
+    return remoteObject.getId();
   }
 
   private String[] filter( String[] values, String text, int limit ) {

@@ -42,7 +42,6 @@ import org.eclipse.rap.json.JsonObject;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteList;
 import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteListImpl;
-import org.eclipse.rap.rwt.internal.remote.RemoteObjectImpl;
 import org.eclipse.rap.rwt.lifecycle.PhaseId;
 import org.eclipse.rap.rwt.lifecycle.WidgetUtil;
 import org.eclipse.rap.rwt.remote.*;
@@ -88,7 +87,7 @@ public class DropDownViewer_Test {
     shell = new Shell( display );
     text = new Text( shell, SWT.NONE );
     Fixture.fakeNewRequest();
-    remoteObject = mock( RemoteObjectImpl.class );
+    remoteObject = mock( RemoteObject.class );
     when( remoteObject.getId() ).thenReturn( "foo" );
     Connection connection = spy( RWT.getUISession().getConnection() );
     when( connection.createRemoteObject( REMOTE_TYPE ) ).thenReturn( remoteObject );
