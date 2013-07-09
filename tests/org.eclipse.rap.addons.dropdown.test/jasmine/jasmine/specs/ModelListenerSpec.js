@@ -12,7 +12,8 @@
  describe( "ModelListener", function() {
 
   function createClientListener( name ) {
-    var listenerScript = TestUtil.getResource( name );
+    // NOTE : Using + "" to convert Java string to JavaScript string. Alternatives?
+    var listenerScript = TestUtil.getResource( name ) + "";
     var listener = new org.eclipse.rap.clientscripting.Function( listenerScript );
     return function() {
       listener.call.apply( listener, arguments );

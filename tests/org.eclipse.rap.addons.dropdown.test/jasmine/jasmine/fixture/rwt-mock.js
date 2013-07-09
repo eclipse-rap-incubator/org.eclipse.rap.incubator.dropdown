@@ -19,6 +19,10 @@ rwt = {
   },
   qx : {
     Class : {
+      // NOTE: Rhino may create global objects such as "org" without asking. They can
+      // note be modified, but they CAN be overwritten. They are currently identified by
+      // ( typeof <obj> === "object" && !( <obj> instanceof Object )
+      // other methods are currently not known.
       createNamespace : function( name, object ) {
         var splits = name.split(".");
         var parent = window;
@@ -26,13 +30,17 @@ rwt = {
 
         for (var i=0, l=splits.length-1; i<l; i++, part=splits[i])
         {
-          if (!parent[part]) {
+          if(    !parent[part]
+              || ( typeof parent[ part ] === "object" && !( parent[ part ] instanceof Object ) )
+          ) {
             parent = parent[part] = {};
           } else {
             parent = parent[part];
           }
         }
-        if (parent[part] === undefined) {
+        if(    parent[part] === undefined
+            || ( typeof parent[ part ] === "object" && !( parent[ part ] instanceof Object ) )
+        ) {
           parent[part] = object;
         }
         return part;
