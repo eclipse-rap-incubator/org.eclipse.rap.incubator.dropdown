@@ -11,21 +11,35 @@
 
  describe( "ModelListener", function() {
 
+  function createClientListener( name ) {
+    var listenerScript = TestUtil.getResource( name );
+    var listener = new org.eclipse.rap.clientscripting.Function( listenerScript );
+    return function() {
+      listener.call.apply( listener, arguments );
+    };
+  }
+
   var model;
   var rap;
 
   beforeEach( function() {
     rap = new RapMock();
     model = rap.typeHandler[ "rwt.remote.Model" ].factory();
+    model.addListener( "refresh", createClientListener( "ModelListener" ) );
   } );
 
   afterEach( function() {
     model.destroy();
   } );
 
-  it( "runs", function() {
-    //console.log( TestUtil.getResource( "ModelListener" ) );
-    expect( true ).toBe( true );
+  it( "listens on refresh", function() {
+    var error =  null;
+    try {
+      model.notify( "refresh", {} );
+    } catch( ex ) {
+      error = ex;
+    }
+    expect( error ).not.toBeNull();
   } );
 
 } );

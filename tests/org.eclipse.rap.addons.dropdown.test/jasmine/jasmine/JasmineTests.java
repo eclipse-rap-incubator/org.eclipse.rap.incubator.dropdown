@@ -11,6 +11,7 @@
 package jasmine;
 
 import org.eclipse.rap.addons.dropdown.viewer.DropDownViewer;
+import org.eclipse.rap.clientscripting.ClientListener;
 import org.eclipse.rap.testrunner.jasmine.JasmineRunner;
 import org.eclipse.rap.testrunner.jasmine.JasmineSysoutReporter;
 
@@ -20,12 +21,15 @@ public class JasmineTests {
   public static void main( String[] args ) {
     JasmineRunner jasmine = new JasmineRunner();
     ClassLoader viewerClassLoader = DropDownViewer.class.getClassLoader();
+    ClassLoader scriptingClassLoader = ClientListener.class.getClassLoader();
     ClassLoader localClassLoader = JasmineTests.class.getClassLoader();
     jasmine.parseScript( localClassLoader, "jasmine/fixture/rap-mock.js" );
     jasmine.parseScript( localClassLoader, "jasmine/fixture/rwt-mock.js" );
     jasmine.parseScript( viewerClassLoader, "rwt/remote/Model.js" );
     jasmine.parseScript( localClassLoader, "jasmine/specs/ModelSpec.js" );
     jasmine.parseScript( localClassLoader, "jasmine/specs/ModelListenerSpec.js" );
+    jasmine.parseScript( scriptingClassLoader, "org/eclipse/rap/clientscripting/SWT.js" );
+    jasmine.parseScript( scriptingClassLoader, "org/eclipse/rap/clientscripting/Function.js" );
     jasmine.addResource(
       "ModelListener",
       viewerClassLoader,

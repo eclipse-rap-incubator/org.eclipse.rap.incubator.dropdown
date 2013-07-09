@@ -30,6 +30,7 @@ public class JasmineRunner {
     scope = Context.enter().initStandardObjects();
     createConsole();
     createTestUtil();
+    scope.put( "window", scope, scope );
     createStubs( "setTimeout", "clearTimeout", "setInterval", "clearInterval" );
     parseScript( getClass().getClassLoader(), "org/eclipse/rap/testrunner/jasmine/jasmine.js" );
     jasmineEnv = getJasmineEnv();
