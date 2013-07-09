@@ -29,25 +29,6 @@
 
   describe( "addListener", function() {
 
-    it( "notifies client listener for Selection", function() {
-      model.addListener( "Selection", logger );
-
-      model.notify( "Selection", { "foo" : "bar" } );
-
-      expect( log.length ).toBe( 1 );
-      expect( log[ 0 ][ 0 ] ).toBe( model );
-      expect( log[ 0 ][ 1 ] ).toEqual( { "foo" : "bar" }  );
-    } );
-
-    it( "notifies client listener without properties argument", function() {
-      model.addListener( "Selection", logger );
-
-      model.notify( { "event" : "Selection", "nosync" : true } );
-
-      expect( log[ 0 ].length ).toBe( 1 );
-      expect( log[ 0 ][ 0 ] ).toBe( model );
-    } );
-
     it( "ignores multiple registrations of same listener", function() {
       model.addListener( "Selection", logger );
       model.addListener( "Selection", logger );
@@ -78,6 +59,60 @@
       model.notify( "Selection", { "foo" : "bar" } );
 
       expect( log.length ).toBe( 0 );
+    } );
+
+  } );
+
+  describe( "notify", function() {
+
+    it( "notifies listener when called with event object", function() {
+      model.addListener( "Selection", logger );
+
+      model.notify( "Selection", { "foo" : "bar" } );
+
+      expect( log.length ).toBe( 1 );
+      expect( log[ 0 ][ 0 ] ).toBe( model );
+      expect( log[ 0 ][ 1 ] ).toEqual( { "foo" : "bar" }  );
+    } );
+
+    it( "notifies listener without properties argument when called with minimal map", function() {
+      model.addListener( "Selection", logger );
+
+      model.notify( { "event" : "Selection" } );
+
+      expect( log[ 0 ].length ).toBe( 1 );
+      expect( log[ 0 ][ 0 ] ).toBe( model );
+      expect( log[ 0 ][ 1 ] ).toBe( undefined );
+    } );
+
+   it( "notifies listener without properties argument when called with string only", function() {
+      model.addListener( "foo", logger );
+
+      model.notify( "foo" );
+
+      expect( log.length ).toBe( 1 );
+      expect( log[ 0 ][ 0 ] ).toBe( model );
+      expect( log[ 0 ][ 1 ] ).toBe( undefined );
+    } );
+
+  } );
+
+  describe( "set", function() {
+
+    it( "notifies change listener", function() {
+      model.addListener( "change:foo", logger );
+
+      model.set( "foo", 23 );
+
+      expect( log.length ).toBe( 1 );
+    } );
+
+    it( "notifies change listener with options", function() {
+      model.addListener( "change:foo", logger );
+
+      model.set( "foo", 23, { x : 1 } );
+
+      expect( log[ 0 ][ 1 ] ).toEqual( { x : 1 } );
     } );
 
   } );

@@ -44,16 +44,7 @@
         var value = arguments[ 1 ];
         var options = arguments[ 2 ];
         this._.properties[ property ] = value;
-      }
-    },
-
-    destroy : function() {
-      if( this._ ) {
-        for( var key in this._ ) {
-          this._[ key ] = null;
-        }
-        this._.properties = null;
-        this._ = null;
+        this.notify( "change:" + property, options );
       }
     },
 
@@ -62,9 +53,10 @@
     },
 
     notify : function() {
-      var event = arguments.length === 1 ? arguments[ 0 ].event : arguments[ 0 ];
-      var properties = arguments.length === 1 ? arguments[ 0 ].properties : arguments[ 1 ];
-      var nosync = arguments.length === 1 ? arguments[ 0 ].nosync : false;
+      var useMap = arguments[ 0 ] instanceof Object;
+      var event = useMap ? arguments[ 0 ].event : arguments[ 0 ];
+      var properties = useMap ? arguments[ 0 ].properties : arguments[ 1 ];
+      var nosync = useMap ? arguments[ 0 ].nosync : false;
       if( !nosync ) {
         rap.getRemoteObject( this ).notify( event, properties );
       }
@@ -85,7 +77,18 @@
         var index = this._.listeners[ event ].indexOf( listener );
         rwt.util.Arrays.removeAt( this._.listeners[ event ], index );
       }
-    }
+    },
+
+    destroy : function() {
+      if( this._ ) {
+        for( var key in this._ ) {
+          this._[ key ] = null;
+        }
+        this._.properties = null;
+        this._ = null;
+      }
+    },
+
 
   };
 
