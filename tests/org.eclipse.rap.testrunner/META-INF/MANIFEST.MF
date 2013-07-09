@@ -6,6 +6,7 @@ Bundle-Version: 2.2.0.qualifier
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Import-Package: org.eclipse.rap.addons.dropdown,
  org.eclipse.rap.addons.dropdown.viewer
-Require-Bundle: org.mozilla.javascript
+Require-Bundle: org.junit;bundle-version="4.8.2",
+ org.mozilla.javascript;bundle-version="1.7.4"
 Export-Package: org.eclipse.rap.testrunner.jasmine
 Bundle-Vendor: Eclipse.org - RAP
