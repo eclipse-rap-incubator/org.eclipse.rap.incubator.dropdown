@@ -18,7 +18,7 @@ public interface JasmineReporter {
 
   public void reportSpecStarting( String suiteDescription, String specDescription );
 
-  public void reportSpecResults( boolean passed );
+  public void reportSpecResults( boolean passed, String errorMessage );
 
   public void reportSuiteResults( String suiteDescription );
 

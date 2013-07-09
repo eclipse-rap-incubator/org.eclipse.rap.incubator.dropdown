@@ -162,12 +162,34 @@ public class JasmineRunner {
     }
 
     public void reportSpecResults( ScriptableObject spec ) {
-      ScriptableObject results = ( ScriptableObject )ScriptableObject.callMethod( spec, "results", null );
-      boolean passed = ( ( Boolean )ScriptableObject.callMethod( results, "passed", null ) ).booleanValue();
-      if( passed ) {
+      ScriptableObject results
+        = ( ScriptableObject )ScriptableObject.callMethod( spec, "results", null );
+      boolean specsPassed
+        = ( ( Boolean )ScriptableObject.callMethod( results, "passed", null ) ).booleanValue();
+      String message = null;
+      if( specsPassed ) {
         passedSpecs++;
+       } else {
+         message = getMessageForSpec( results );
        }
-      publicReporter.reportSpecResults( passed );
+      publicReporter.reportSpecResults( specsPassed, message );
+    }
+
+    public String getMessageForSpec( ScriptableObject results ) {
+      String result = "";
+      ScriptableObject items
+         = ( ( ScriptableObject )ScriptableObject.callMethod( results, "getItems", null ) );
+       Object[] itemIds = items.getIds();
+       for( Object id : itemIds ) {
+         ScriptableObject item = ( ScriptableObject )items.get( id );
+         boolean itemPassed
+           = ( ( Boolean )ScriptableObject.callMethod( item, "passed", null ) ).booleanValue();
+         if( !itemPassed ) {
+           result += "Error " + id + ": ";
+           result += ScriptableObject.getProperty( item, "message" ) + "\n";
+         }
+       }
+       return result;
     }
 
     public void reportSuiteResults( ScriptableObject suite ) {

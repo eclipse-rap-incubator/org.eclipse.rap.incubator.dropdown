@@ -32,8 +32,8 @@ public final class JasmineJUnitReporter implements JasmineReporter {
     log.append( suiteDescription + " : " + specDescription + " ... " );
   }
 
-  public void reportSpecResults( boolean passed ) {
-    log.append( passed ? "passed\n" : "FAILED\n" );
+  public void reportSpecResults( boolean passed, String error ) {
+    log.append( passed ? "passed\n" : error );
   }
 
   public void log( String message ) {

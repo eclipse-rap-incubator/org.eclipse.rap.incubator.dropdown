@@ -34,11 +34,12 @@ public final class JasmineSysoutReporter implements JasmineReporter {
     System.out.print( suiteDescription + " : " + specDescription + " ... ");
   }
 
-  public void reportSpecResults( boolean passed ) {
+  public void reportSpecResults( boolean passed, String error ) {
     if( passed ) {
       System.out.println( "Passed." );
     } else {
-      System.err.println( "Failed." );
+      System.err.println( "Failed:" );
+      System.err.println( error );
     }
   }
 
