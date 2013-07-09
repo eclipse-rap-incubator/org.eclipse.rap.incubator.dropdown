@@ -14,13 +14,15 @@ package org.eclipse.rap.testrunner.jasmine;
 public final class JasmineJUnitReporter implements JasmineReporter {
 
   private final StringBuilder log = new StringBuilder();
-  private boolean passed;
+  private int passedSpecs;
+  private int executedSpecs;
 
   public void reportRunnerStarting() {
   }
 
   public void reportRunnerResults( int passedSpecs, int executedSpecs ) {
-    log.append( passedSpecs + " of " + executedSpecs + " Specs passed\n" );
+    this.passedSpecs = passedSpecs;
+    this.executedSpecs = executedSpecs;
   }
 
   public void reportSuiteResults( String suiteDescription ) {
@@ -31,8 +33,7 @@ public final class JasmineJUnitReporter implements JasmineReporter {
   }
 
   public void reportSpecResults( boolean passed ) {
-    this.passed = passed;
-    log.append( passed ? "Passed.\n" : "Failed.\n" );
+    log.append( passed ? "passed\n" : "FAILED\n" );
   }
 
   public void log( String message ) {
@@ -41,11 +42,14 @@ public final class JasmineJUnitReporter implements JasmineReporter {
   }
 
   public boolean hasPassed() {
-    return passed;
+    return executedSpecs > 0 && passedSpecs == executedSpecs;
   }
 
   public String getLog() {
-    return log.toString();
+    if( executedSpecs == 0 ) {
+      return "No specs executed\n";
+    }
+    return passedSpecs + " of " + executedSpecs + " specs passed\n" + log.toString();
   }
 
 }
