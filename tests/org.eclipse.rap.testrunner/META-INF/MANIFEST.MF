@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: RAP Testrunner
+Bundle-SymbolicName: org.eclipse.rap.testrunner
+Bundle-Version: 2.2.0.qualifier
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Import-Package: org.eclipse.rap.addons.dropdown,
+ org.eclipse.rap.addons.dropdown.viewer
+Require-Bundle: org.mozilla.javascript
+Export-Package: org.eclipse.rap.testrunner.jasmine
+Bundle-Vendor: Eclipse.org - RAP

@@ -8,7 +8,7 @@
  * Contributors:
  *    EclipseSource - initial API and implementation
  ******************************************************************************/
- 
+
  describe( "rwt.remote.Model", function() {
 
   var model;
