@@ -46,6 +46,10 @@ public class DropDownViewer extends ContentViewer {
   private static final String DECORATOR_KEY = "decorator";
   private static final String ELEMENTS_KEY = "elements";
   private static final String SELECTION_KEY = "selection";
+  private static final boolean USE_NEW_SCRIPTS = false;
+  private final static String PREFIX
+    = "org/eclipse/rap/addons/dropdown/viewer/internal/resources/";
+
 
   private final DropDown dropDown;
   private final Text text;
@@ -158,15 +162,29 @@ public class DropDownViewer extends ContentViewer {
   }
 
   private void attachClientListener() {
-    text.addListener( ClientListener.Modify, getTextModifyListener() );
-    text.addListener( ClientListener.Verify, getTextVerifyListener() );
-    text.addListener( ClientListener.KeyDown, getTextKeyDownListener() );
-    text.addListener( ClientListener.MouseDown, getTextMouseDownListener() );
-    dropDown.addListener( ClientListener.Selection, getDropDownSelectionListener() );
-    dropDown.addListener( ClientListener.DefaultSelection, getDropDownDefaultSelectionListener() );
-    dropDown.addListener( ClientListener.Show, getDropDownShowListener() );
-    dropDown.addListener( ClientListener.Hide, getDropDownHideListener() );
-    model.addListener( "refresh", getRefreshListener() );
+    if( USE_NEW_SCRIPTS ) {
+      text.addListener( SWT.Modify, getClientListener( "DataBinding.js" ) );
+      model.addListener( "change:results", getModelListener( "DataBinding.js" ) );
+      model.addListener( "change:text", getModelListener( "ModelListener.js" ) );
+    } else {
+      text.addListener( ClientListener.Modify, getTextModifyListener() );
+      text.addListener( ClientListener.Verify, getTextVerifyListener() );
+      text.addListener( ClientListener.KeyDown, getTextKeyDownListener() );
+      text.addListener( ClientListener.MouseDown, getTextMouseDownListener() );
+      dropDown.addListener( ClientListener.Selection, getDropDownSelectionListener() );
+      dropDown.addListener( ClientListener.DefaultSelection, getDropDownDefaultSelectionListener() );
+      dropDown.addListener( ClientListener.Show, getDropDownShowListener() );
+      dropDown.addListener( ClientListener.Hide, getDropDownHideListener() );
+      model.addListener( "refresh", getRefreshListener() );
+    }
+  }
+
+  public ClientListener getClientListener( String name ) {
+    return new ClientListener( ResourceLoaderUtil.readTextContent( PREFIX + name ) );
+  }
+
+  public ClientModelListener getModelListener( String name ) {
+    return new ClientModelListener( ResourceLoaderUtil.readTextContent( PREFIX + name ) );
   }
 
   private void linkClientObjects() {
@@ -174,9 +192,9 @@ public class DropDownViewer extends ContentViewer {
     WidgetDataWhiteList.addKey( VIEWER_LINK );
     text.setData( VIEWER_LINK, model.getId() );
     dropDown.setData( VIEWER_LINK, model.getId() );
-    model.set( DROPDOWN_KEY, WidgetUtil.getId( dropDown ) );
-    model.set( TEXT_KEY, WidgetUtil.getId( text ) );
-    model.set( DECORATOR_KEY, WidgetUtil.getId( decorator ) );
+    model.set( USE_NEW_SCRIPTS ? "dropDownWidgetId" : DROPDOWN_KEY, WidgetUtil.getId( dropDown ) );
+    model.set( USE_NEW_SCRIPTS ? "textWidgetId" : TEXT_KEY, WidgetUtil.getId( text ) );
+    model.set( USE_NEW_SCRIPTS ? "decoratorWidgetId" : DECORATOR_KEY, WidgetUtil.getId( decorator ) );
   }
 
   Model getModel() {
@@ -263,8 +281,6 @@ public class DropDownViewer extends ContentViewer {
   }
 
   private static class ClientListenerHolder {
-
-    private final String PREFIX = "org/eclipse/rap/addons/dropdown/viewer/internal/resources/";
 
     private final ClientListener textListener = createListener( "TextEventListener.js" );
     private final ClientListener dropDownListener = createListener( "DropDownEventListener.js" );

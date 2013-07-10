@@ -9,8 +9,17 @@
  *    EclipseSource - initial API and implementation
  ******************************************************************************/
 
-function handleEvent( viewer ) {
-  throw new Error( "not implemented" );
+function handleEvent( model, type, event ) {
+  switch( type ) {
+    case "change:text":
+      onChangeText.call( model, event );
+    break;
+  }
+}
+
+function onChangeText( options ) {
+  var query = createQuery( this.get( "text" ).toLowerCase() );
+  this.set( "results", searchItems( this.get( "elements" ), query ) );
 }
 
 function searchItems( items, query, limit ) {

@@ -78,6 +78,8 @@
 
   rwt.dropdown.DropDown.prototype = {
 
+    cassname : "rwt.dropdown.DropDown",
+
     setItems : function( items ) {
       this.setSelectionIndex( -1 );
       this._.items = rwt.util.Arrays.copy( items );

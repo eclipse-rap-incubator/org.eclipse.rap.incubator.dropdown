@@ -72,7 +72,8 @@
 
       expect( log.length ).toBe( 1 );
       expect( log[ 0 ][ 0 ] ).toBe( model );
-      expect( log[ 0 ][ 1 ] ).toEqual( { "foo" : "bar" }  );
+      expect( log[ 0 ][ 1 ] ).toBe( "Selection" );
+      expect( log[ 0 ][ 2 ] ).toEqual( { "foo" : "bar" }  );
     } );
 
     it( "notifies listener without properties argument when called with minimal map", function() {
@@ -80,9 +81,10 @@
 
       model.notify( { "event" : "Selection" } );
 
-      expect( log[ 0 ].length ).toBe( 1 );
+      expect( log[ 0 ].length ).toBe( 2 );
       expect( log[ 0 ][ 0 ] ).toBe( model );
-      expect( log[ 0 ][ 1 ] ).toBe( undefined );
+      expect( log[ 0 ][ 1 ] ).toBe( "Selection" );
+      expect( log[ 0 ][ 2 ] ).toBe( undefined );
     } );
 
    it( "notifies listener without properties argument when called with string only", function() {
@@ -92,7 +94,8 @@
 
       expect( log.length ).toBe( 1 );
       expect( log[ 0 ][ 0 ] ).toBe( model );
-      expect( log[ 0 ][ 1 ] ).toBe( undefined );
+      expect( log[ 0 ][ 1 ] ).toBe( "foo" );
+      expect( log[ 0 ][ 2 ] ).toBe( undefined );
     } );
 
   } );
@@ -112,7 +115,7 @@
 
       model.set( "foo", 23, { x : 1 } );
 
-      expect( log[ 0 ][ 1 ] ).toEqual( { x : 1 } );
+      expect( log[ 0 ][ 2 ] ).toEqual( { x : 1 } );
     } );
 
   } );

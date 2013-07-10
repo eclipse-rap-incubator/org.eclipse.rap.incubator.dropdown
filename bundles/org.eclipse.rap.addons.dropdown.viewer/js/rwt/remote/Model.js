@@ -95,7 +95,7 @@
   var notifyInternal = function( model, type, properties ) {
     if( model._ ) {
       var listeners = model._.listeners[ type ];
-      var args = [ model ];
+      var args = [ model, type ];
       if( properties ) {
         args.push( properties )
       }

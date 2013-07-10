@@ -22,37 +22,14 @@
 
   var getVarFromScript = function( scriptName, functionName ) {
     var script = TestUtil.getResource( scriptName ) + "";
-    var result = eval( script + "\n" + functionName + ";" );
+    var result;
+    try {
+      result = eval( script + "\n" + functionName + ";" );
+    } catch( ex ) {
+      throw new Error( "Could not evaluate script " + scriptName + ": " + ex );
+    }
     return result;
   };
-
-
-  describe( "handleEvent", function() {
-
-    var model;
-    var rap;
-
-    beforeEach( function() {
-      rap = new RapMock();
-      model = rap.typeHandler[ "rwt.remote.Model" ].factory();
-      model.addListener( "refresh", createClientListener( "ModelListener" ) );
-    } );
-
-    afterEach( function() {
-      model.destroy();
-    } );
-
-    it( "listens on refresh", function() {
-      var error =  null;
-      try {
-        model.notify( "refresh", {} );
-      } catch( ex ) {
-        error = ex;
-      }
-      expect( error ).not.toBeNull();
-    } );
-
-  } );
 
   describe( "createQuery", function() {
 
@@ -154,5 +131,30 @@
 
   } );
 
-} );
+  describe( "change:text listener", function() {
+
+    var model;
+    var rap;
+
+    beforeEach( function() {
+      rap = new RapMock();
+      model = rap.typeHandler[ "rwt.remote.Model" ].factory();
+      model.set( "elements", [ "foo", "bar", "foobar", "banana", "apple", "cherry" ] );
+      model.addListener( "change:text", createClientListener( "ModelListener" ) );
+    } );
+
+    afterEach( function() {
+      model.destroy();
+    } );
+
+    it( "updates results", function() {
+      model.set( "text", "ba" );
+      var results = model.get( "results" );
+
+      expect( results.items ).toEqual( [ "bar", "banana" ] );
+    } );
+
+  } );
+
+ } );
 
