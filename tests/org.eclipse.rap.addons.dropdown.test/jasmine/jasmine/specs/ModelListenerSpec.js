@@ -149,9 +149,58 @@
 
     it( "updates results", function() {
       model.set( "text", "ba" );
-      var results = model.get( "results" );
 
+      var results = model.get( "results" );
       expect( results.items ).toEqual( [ "bar", "banana" ] );
+    } );
+
+    it( "ignores resultSelection", function() {
+      model.set( "text", "ba" );
+      model.set( "text", "bar", { "resultSelection" : true } );
+
+      var results = model.get ( "results" );
+      expect( results.items ).toEqual( [ "bar", "banana" ] );
+    } );
+
+  } );
+
+  describe( "change:resultSelection listener", function() {
+
+    var model;
+    var rap;
+    var logger;
+    var log;
+
+    beforeEach( function() {
+      rap = new RapMock();
+      model = rap.typeHandler[ "rwt.remote.Model" ].factory();
+      model.set( "elements", [ "foo", "bar", "foobar", "banana", "apple", "cherry" ] );
+      model.addListener( "change:resultSelection", createClientListener( "ModelListener" ) );
+      log = [];
+      logger = function() {
+        log.push( arguments );
+      };
+    } );
+
+    afterEach( function() {
+      model.destroy();
+    } );
+
+    it( "sets text to selected result", function() {
+      model.set( "results", { "items" : [ "bar", "banana" ] } );
+
+      model.set( "resultSelection", 1 );
+
+      expect( model.get( "text" ) ).toEqual( "banana" );
+    } );
+
+    it( "sets text with option flag", function() {
+      model.set( "results", { "items" : [ "bar", "banana" ] } );
+      model.addListener( "change:text", logger );
+
+      model.set( "resultSelection", 1 );
+
+      expect( log[ 0 ][ 2 ] ).toEqual( { "resultSelection" : true } );
     } );
 
   } );

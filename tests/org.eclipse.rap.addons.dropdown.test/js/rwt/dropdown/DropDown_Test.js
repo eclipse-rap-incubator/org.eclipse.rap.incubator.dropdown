@@ -673,14 +673,6 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       assertEquals( -1, dropdown.getSelectionIndex() );
     },
 
-    testGetSelectionIndex_ResetValueIsMinusOne : function() {
-      dropdown.setItems( [ "a", "b", "c" ] );
-      dropdown.setSelectionIndex( 1 );
-      dropdown.setItems( [ "a", "b", "c" ] );
-
-      assertEquals( -1, dropdown.getSelectionIndex() );
-    },
-
     testGetSelectionIndex_ValueAfterSelection : function() {
       dropdown.setItems( [ "a", "b", "c" ] );
       showDropDown();
@@ -708,6 +700,19 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       assertEquals( 3, viewer.getTopItemIndex() );
     },
 
+
+    testSetSelectionIndex_DoesNotFireEventIfValueIsUnchanged : function() {
+      dropdown.setItems( [ "a", "b", "c" ] );
+      showDropDown();
+      var logger = TestUtil.getLogger();
+
+      dropdown.addListener( "Selection", logger.log );
+      dropdown.setSelectionIndex( 1 );
+      dropdown.setSelectionIndex( 1 );
+
+      assertEquals( 1, logger.getLog().length );
+    },
+
     testResetSelectionIndex_ResetScrollPosition : function() {
       dropdown.setVisibleItemCount( 3 );
       showDropDown();
@@ -717,6 +722,14 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       dropdown.setSelectionIndex( -1 );
 
       assertEquals( 0, viewer.getTopItemIndex() );
+    },
+
+    testSetItems_ResetsSelection : function() {
+      dropdown.setItems( [ "a", "b", "c" ] );
+      dropdown.setSelectionIndex( 1 );
+      dropdown.setItems( [ "a", "b", "d" ] );
+
+      assertEquals( -1, dropdown.getSelectionIndex() );
     },
 
     testSetSelectionIndex_RemoteSet : function() {

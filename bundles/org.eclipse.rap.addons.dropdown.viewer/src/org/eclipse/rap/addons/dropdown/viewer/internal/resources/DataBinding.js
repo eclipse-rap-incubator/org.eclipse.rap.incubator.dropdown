@@ -16,28 +16,31 @@
 
 function handleEvent() {
   if( arguments.length === 1 ) {
-    handleWidgetEvent.apply( this, arguments );
+    var event = arguments[ 0 ];
+    var model = rap.getObject( event.widget.getData( VIEWER_KEY ) );
+    if( event.widget.classname === "rwt.dropdown.DropDown" ) {
+      handleDropDownEvent( model, event );
+    } else {
+      handleTextEvent( model, event );
+    }
   } else {
     handleModelEvent.apply( this, arguments );
   }
 }
 
-function handleWidgetEvent( event ) {
-  var model = rap.getObject( event.widget.getData( VIEWER_KEY ) );
-  if( event.widget.classname === "rwt.dropdown.DropDown" ) {
-    var dropDown = rap.getObject( model.get( "textWidgetId" ) );
-    switch( event.type ) {
-      case SWT.Selection:
-        //onDropDownSelection( model, event.widget, dropDown, event );
-      break;
-    }
-  } else {
-    var textWidget = rap.getObject( model.get( "textWidgetId" ) );
-    switch( event.type ) {
-      case SWT.Modify:
-        onTextModify( model, textWidget, event.widget, event );
-      break;
-    }
+function handleDropDownEvent( model, event ) {
+  switch( event.type ) {
+    case SWT.Selection:
+      onDropDownSelection( model, event.widget.getSelectionIndex(), event );
+    break;
+  }
+}
+
+function handleTextEvent( model, event ) {
+  switch( event.type ) {
+    case SWT.Modify:
+      onTextModify( model, event.widget.getText(), event );
+    break;
   }
 }
 
@@ -46,10 +49,10 @@ function handleModelEvent( model, type, event ) {
   var dropDown = rap.getObject( model.get( "dropDownWidgetId" ) );
   switch( type ) {
     case "change:text":
-      //onModelChangeText( model, textWidget, dropDown, event );
+      onModelChangeText( textWidget, model.get( "text" ), event );
     break;
     case "change:results":
-      onModelChangeResults( model, dropDown, event );
+      onModelChangeResults( dropDown, model.get( "results" ), event );
     break;
   }
 }
@@ -57,12 +60,20 @@ function handleModelEvent( model, type, event ) {
 /////////////////
 // Event Handling
 
-function onTextModify( model, textWidget, event ) {
-  model.set( "text", textWidget.getText() );
+function onTextModify( model, text, event ) {
+  model.set( "text", text );
 }
 
-function onModelChangeResults( model, dropDown, event ) {
-  //temporary hack:
-  dropDown.show();
-  dropDown.setItems( model.get( "results" ).items );
+function onDropDownSelection( model, selectionIndex, event ) {
+  model.set( "resultSelection", selectionIndex );
 }
+
+function onModelChangeResults( dropDown, results, event ) {
+  dropDown.show(); //temporary hack
+  dropDown.setItems( results.items );
+}
+
+function onModelChangeText( textWidget, text, event ) {
+  textWidget.setText( text );
+}
+

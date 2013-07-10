@@ -118,6 +118,15 @@
       expect( log[ 0 ][ 2 ] ).toEqual( { x : 1 } );
     } );
 
+    it( "does not notify change listener if value is unchanged", function() {
+      model.addListener( "change:foo", logger );
+
+      model.set( "foo", 23 );
+      model.set( "foo", 23 );
+
+      expect( log.length ).toBe( 1 );
+    } );
+
   } );
 
 } );

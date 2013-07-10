@@ -9,18 +9,38 @@
  *    EclipseSource - initial API and implementation
  ******************************************************************************/
 
+///////////////////
+// Event Delegation
+
 function handleEvent( model, type, event ) {
   switch( type ) {
     case "change:text":
-      onChangeText.call( model, event );
+      onChangeText.apply( model, [ event, model.get( "text" ) ] );
+    break;
+    case "change:resultSelection":
+      onChangeResultSelection.apply( model, [ event, model.get( "resultSelection" ) ] );
     break;
   }
 }
 
-function onChangeText( options ) {
-  var query = createQuery( this.get( "text" ).toLowerCase() );
-  this.set( "results", searchItems( this.get( "elements" ), query ) );
+//////////////////
+// Event Handling
+
+function onChangeText( options, value ) {
+  if( !options.resultSelection ) {
+    var query = createQuery( value.toLowerCase() );
+    var results = searchItems( this.get( "elements" ), query );
+    this.set( "results", results );
+  }
 }
+
+function onChangeResultSelection( options, value ) {
+  var text = this.get( "results" ).items[ value ] || "";
+  this.set( "text", text, { "resultSelection" : true } );
+}
+
+/////////
+// Helper
 
 function searchItems( items, query, limit ) {
   var resultIndicies = [];

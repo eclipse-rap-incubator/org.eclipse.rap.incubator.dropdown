@@ -78,7 +78,7 @@
 
   rwt.dropdown.DropDown.prototype = {
 
-    cassname : "rwt.dropdown.DropDown",
+    classname : "rwt.dropdown.DropDown",
 
     setItems : function( items ) {
       this.setSelectionIndex( -1 );
@@ -108,6 +108,9 @@
     setSelectionIndex : function( index ) {
       if( index < -1 || index >= this.getItemCount() || isNaN( index ) ) {
         throw new Error( "Can not select item: Index " + index + " not valid" );
+      }
+      if( this.getSelectionIndex() === index ) {
+        return;
       }
       // This is more than optimization, it prevents too early rendering that can crash the client:
       this._.viewer._inServerResponse = rwt.util.Functions.returnTrue;

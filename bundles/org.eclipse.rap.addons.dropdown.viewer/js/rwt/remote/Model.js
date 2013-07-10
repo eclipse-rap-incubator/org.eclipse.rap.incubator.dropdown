@@ -42,9 +42,11 @@
       } else if( typeof arguments[ 0 ] === "string" ) {
         var property = arguments[ 0 ];
         var value = arguments[ 1 ];
-        var options = arguments[ 2 ];
-        this._.properties[ property ] = value;
-        this.notify( "change:" + property, options );
+        var options = arguments[ 2 ] || {};
+        if( this._.properties[ property ] !== value ) {
+          this._.properties[ property ] = value;
+          this.notify( "change:" + property, options );
+        }
       }
     },
 
