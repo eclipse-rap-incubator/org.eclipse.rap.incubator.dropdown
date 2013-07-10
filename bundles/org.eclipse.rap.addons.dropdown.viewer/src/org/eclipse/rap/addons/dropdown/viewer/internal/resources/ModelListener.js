@@ -14,8 +14,8 @@
 
 function handleEvent( model, type, event ) {
   switch( type ) {
-    case "change:text":
-      onChangeText.apply( model, [ event, model.get( "text" ) ] );
+    case "change:userText":
+      onChangeText.apply( model, [ event, model.get( "userText" ) ] );
     break;
     case "change:resultSelection":
       onChangeResultSelection.apply( model, [ event, model.get( "resultSelection" ) ] );
@@ -27,11 +27,9 @@ function handleEvent( model, type, event ) {
 // Event Handling
 
 function onChangeText( options, value ) {
-  if( !options.resultSelection ) {
-    var query = createQuery( value.toLowerCase() );
-    var results = searchItems( this.get( "elements" ), query );
-    this.set( "results", results );
-  }
+  var query = createQuery( value.toLowerCase() );
+  var results = searchItems( this.get( "elements" ), query );
+  this.set( "results", results );
 }
 
 function onChangeResultSelection( options, value ) {

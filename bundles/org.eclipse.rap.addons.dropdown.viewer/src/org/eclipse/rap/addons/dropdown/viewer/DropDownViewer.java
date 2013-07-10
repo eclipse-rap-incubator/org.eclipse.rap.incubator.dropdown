@@ -46,7 +46,7 @@ public class DropDownViewer extends ContentViewer {
   private static final String DECORATOR_KEY = "decorator";
   private static final String ELEMENTS_KEY = "elements";
   private static final String SELECTION_KEY = "selection";
-  private static final boolean USE_NEW_SCRIPTS = false;
+  private static final boolean USE_NEW_SCRIPTS = true;
   private final static String PREFIX
     = "org/eclipse/rap/addons/dropdown/viewer/internal/resources/";
 
@@ -164,10 +164,12 @@ public class DropDownViewer extends ContentViewer {
   private void attachClientListener() {
     if( USE_NEW_SCRIPTS ) {
       text.addListener( SWT.Modify, getClientListener( "DataBinding.js" ) );
+      text.addListener( SWT.Verify, getClientListener( "DataBinding.js" ) );
       dropDown.addListener( SWT.Selection, getClientListener( "DataBinding.js" ) );
+      // TODO [tb] : introduce "change" event
       model.addListener( "change:results", getModelListener( "DataBinding.js" ) );
       model.addListener( "change:resultSelection", getModelListener( "ModelListener.js" ) );
-      model.addListener( "change:text", getModelListener( "ModelListener.js" ) );
+      model.addListener( "change:userText", getModelListener( "ModelListener.js" ) );
       model.addListener( "change:text", getModelListener( "DataBinding.js" ) );
     } else {
       text.addListener( ClientListener.Modify, getTextModifyListener() );

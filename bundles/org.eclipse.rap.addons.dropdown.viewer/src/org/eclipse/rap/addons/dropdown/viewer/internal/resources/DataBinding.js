@@ -31,17 +31,33 @@ function handleEvent() {
 function handleDropDownEvent( model, event ) {
   switch( event.type ) {
     case SWT.Selection:
-      onDropDownSelection( model, event.widget.getSelectionIndex(), event );
+      onDropDownSelection( model, event.widget.getSelectionIndex() );
     break;
   }
 }
 
 function handleTextEvent( model, event ) {
+  var userAction = getUserAction( event );
   switch( event.type ) {
     case SWT.Modify:
-      onTextModify( model, event.widget.getText(), event );
+      onTextModify( model, event.widget.getText(), userAction );
     break;
   }
+  setUserAction( event );
+}
+
+function setUserAction( event ) {
+  if( event.type === SWT.Verify ) {
+    // See Bug 404896 - [ClientScripting] Verify event keyCode is always zero when replacing txt
+    var action = ( event.text !== "" /* && event.keyCode !== 0 */ ) ? "typing" : "deleting";
+    event.widget.setData( "userAction", action );
+  }
+}
+
+function getUserAction( event ) {
+  var action = event.widget.getData( "userAction" );
+  event.widget.setData( "userAction", null );
+  return action;
 }
 
 function handleModelEvent( model, type, event ) {
@@ -49,10 +65,10 @@ function handleModelEvent( model, type, event ) {
   var dropDown = rap.getObject( model.get( "dropDownWidgetId" ) );
   switch( type ) {
     case "change:text":
-      onModelChangeText( textWidget, model.get( "text" ), event );
+      onModelChangeText( textWidget, model.get( "text" ) );
     break;
     case "change:results":
-      onModelChangeResults( dropDown, model.get( "results" ), event );
+      onModelChangeResults( dropDown, model.get( "results" ) );
     break;
   }
 }
@@ -60,20 +76,22 @@ function handleModelEvent( model, type, event ) {
 /////////////////
 // Event Handling
 
-function onTextModify( model, text, event ) {
-  model.set( "text", text );
+function onTextModify( model, text, userAction ) {
+  if( userAction ) {
+    model.set( "userText", text );
+  }
 }
 
-function onDropDownSelection( model, selectionIndex, event ) {
+function onDropDownSelection( model, selectionIndex ) {
   model.set( "resultSelection", selectionIndex );
 }
 
-function onModelChangeResults( dropDown, results, event ) {
+function onModelChangeResults( dropDown, results ) {
   dropDown.show(); //temporary hack
   dropDown.setItems( results.items );
 }
 
-function onModelChangeText( textWidget, text, event ) {
+function onModelChangeText( textWidget, text ) {
   textWidget.setText( text );
 }
 
