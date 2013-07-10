@@ -19,6 +19,8 @@ import org.junit.*;
 
 public class DropDown_JsTest {
 
+  private static final String MODEL_LISTENER_JS
+    = "org/eclipse/rap/addons/dropdown/viewer/internal/resources/ModelListener.js";
   private static final ClassLoader LOCAL_LOADER = DropDown_Test.class.getClassLoader();
   private static final ClassLoader VIEWER_LOADER = DropDownViewer.class.getClassLoader();
   private static final ClassLoader SCRIPTING_LOADER = ClientListener.class.getClassLoader();
@@ -44,9 +46,7 @@ public class DropDown_JsTest {
     jasmine.parseScript( LOCAL_LOADER, "jasmine/specs/ModelListenerSpec.js" );
     jasmine.parseScript( SCRIPTING_LOADER, "org/eclipse/rap/clientscripting/SWT.js" );
     jasmine.parseScript( SCRIPTING_LOADER, "org/eclipse/rap/clientscripting/Function.js" );
-    jasmine.addResource( "ModelListener",
-                         VIEWER_LOADER,
-                         "org/eclipse/rap/addons/dropdown/viewer/internal/resources/RefreshListener.js" );
+    jasmine.addResource( "ModelListener", VIEWER_LOADER, MODEL_LISTENER_JS );
     jasmine.execute();
   }
 
