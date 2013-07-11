@@ -131,33 +131,7 @@
 
   } );
 
-  describe( "change:userText listener", function() {
-
-    var model;
-    var rap;
-
-    beforeEach( function() {
-      rap = new RapMock();
-      model = rap.typeHandler[ "rwt.remote.Model" ].factory();
-      model.set( "elements", [ "foo", "bar", "foobar", "banana", "apple", "cherry" ] );
-      // NOTE: server uses "change", not "change:property", but this is better for unit testing:
-      model.addListener( "change:userText", createClientListener( "ModelListener" ) );
-    } );
-
-    afterEach( function() {
-      model.destroy();
-    } );
-
-    it( "updates results", function() {
-      model.set( "userText", "ba" );
-
-      var results = model.get( "results" );
-      expect( results.items ).toEqual( [ "bar", "banana" ] );
-    } );
-
-  } );
-
-  describe( "change:resultSelection listener", function() {
+  describe( "listener", function() {
 
     var model;
     var rap;
@@ -168,7 +142,6 @@
       rap = new RapMock();
       model = rap.typeHandler[ "rwt.remote.Model" ].factory();
       model.set( "elements", [ "foo", "bar", "foobar", "banana", "apple", "cherry" ] );
-      model.addListener( "change:resultSelection", createClientListener( "ModelListener" ) );
       log = [];
       logger = function() {
         log.push( arguments );
@@ -179,15 +152,31 @@
       model.destroy();
     } );
 
-    it( "sets text to selected result", function() {
-      model.set( "results", { "items" : [ "bar", "banana" ] } );
+    describe( "change:userText", function() {
 
-      model.set( "resultSelection", 1 );
+      it( "updates results", function() {
+        model.addListener( "change:userText", createClientListener( "ModelListener" ) );
 
-      expect( model.get( "text" ) ).toEqual( "banana" );
+        model.set( "userText", "ba" );
+
+        expect( model.get( "results" ).items ).toEqual( [ "bar", "banana" ] );
+      } );
+
+    } );
+
+    describe( "change:resultSelection", function() {
+
+      it( "sets text to selected result", function() {
+        model.addListener( "change:resultSelection", createClientListener( "ModelListener" ) );
+        model.set( "results", { "items" : [ "bar", "banana" ] } );
+
+        model.set( "resultSelection", 1 );
+
+        expect( model.get( "text" ) ).toEqual( "banana" );
+      } );
+
     } );
 
   } );
 
  } );
-
