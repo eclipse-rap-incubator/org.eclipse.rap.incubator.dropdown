@@ -63,12 +63,12 @@ function getUserAction( event ) {
 function handleModelEvent( model, type, event ) {
   var textWidget = rap.getObject( model.get( "textWidgetId" ) );
   var dropDown = rap.getObject( model.get( "dropDownWidgetId" ) );
-  switch( type ) {
-    case "change:text":
-      onModelChangeText( textWidget, model.get( "text" ) );
+  switch( event.property ) {
+    case "text":
+      onModelChangeText( textWidget, event.value );
     break;
-    case "change:results":
-      onModelChangeResults( dropDown, model.get( "results" ) );
+    case "results":
+      onModelChangeResults( dropDown, event.value );
     break;
   }
 }

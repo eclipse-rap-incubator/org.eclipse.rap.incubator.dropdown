@@ -140,6 +140,7 @@
       rap = new RapMock();
       model = rap.typeHandler[ "rwt.remote.Model" ].factory();
       model.set( "elements", [ "foo", "bar", "foobar", "banana", "apple", "cherry" ] );
+      // NOTE: server uses "change", not "change:property", but this is better for unit testing:
       model.addListener( "change:userText", createClientListener( "ModelListener" ) );
     } );
 

@@ -13,12 +13,12 @@
 // Event Delegation
 
 function handleEvent( model, type, event ) {
-  switch( type ) {
-    case "change:userText":
-      onChangeText.apply( model, [ event, model.get( "userText" ) ] );
+  switch( event.property ) {
+    case "userText":
+      onChangeText.apply( model, [ event ] );
     break;
-    case "change:resultSelection":
-      onChangeResultSelection.apply( model, [ event, model.get( "resultSelection" ) ] );
+    case "resultSelection":
+      onChangeResultSelection.apply( model, [ event ] );
     break;
   }
 }
@@ -26,14 +26,14 @@ function handleEvent( model, type, event ) {
 //////////////////
 // Event Handling
 
-function onChangeText( options, value ) {
-  var query = createQuery( value.toLowerCase() );
+function onChangeText( options ) {
+  var query = createQuery( options.value.toLowerCase() );
   var results = searchItems( this.get( "elements" ), query );
   this.set( "results", results );
 }
 
-function onChangeResultSelection( options, value ) {
-  var text = this.get( "results" ).items[ value ] || "";
+function onChangeResultSelection( options ) {
+  var text = this.get( "results" ).items[ options.value ] || "";
   this.set( "text", text, { "resultSelection" : true } );
 }
 

@@ -15,6 +15,22 @@ rwt = {
       removeAt : function(arr, i) {
         return arr.splice(i, 1)[0];
       }
+    },
+    Objects : {
+      mergeWith : function( target, source, overwrite ) {
+        if (overwrite === undefined) {
+          overwrite = true;
+        }
+
+        for (var key in source)
+        {
+          if (overwrite || target[key] === undefined) {
+            target[key] = source[key];
+          }
+        }
+
+        return target;
+      }
     }
   },
   qx : {

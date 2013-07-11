@@ -108,6 +108,7 @@
       model.set( "foo", 23 );
 
       expect( log.length ).toBe( 1 );
+      expect( log[ 0 ][ 2 ] ).toEqual( { value : 23, property : "foo" } );
     } );
 
     it( "notifies change listener with options", function() {
@@ -115,7 +116,16 @@
 
       model.set( "foo", 23, { x : 1 } );
 
-      expect( log[ 0 ][ 2 ] ).toEqual( { x : 1 } );
+      expect( log[ 0 ][ 2 ] ).toEqual( { value : 23, x : 1, property : "foo" } );
+    } );
+
+    it( "notifies global change listener", function() {
+      model.addListener( "change", logger );
+
+      model.set( "foo", 23 );
+      model.set( "bar", 25 );
+
+      expect( log.length ).toBe( 2 );
     } );
 
     it( "does not notify change listener if value is unchanged", function() {

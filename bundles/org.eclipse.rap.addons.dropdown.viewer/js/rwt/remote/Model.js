@@ -44,8 +44,14 @@
         var value = arguments[ 1 ];
         var options = arguments[ 2 ] || {};
         if( this._.properties[ property ] !== value ) {
+          var notifyOptions = {
+            "value" : value,
+            "property" : property
+          }
+          rwt.util.Objects.mergeWith( notifyOptions, options, false );
           this._.properties[ property ] = value;
-          this.notify( "change:" + property, options );
+          this.notify( "change:" + property, notifyOptions );
+          this.notify( "change", notifyOptions );
         }
       }
     },
@@ -89,8 +95,7 @@
         this._.properties = null;
         this._ = null;
       }
-    },
-
+    }
 
   };
 

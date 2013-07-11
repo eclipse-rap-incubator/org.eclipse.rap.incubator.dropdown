@@ -83,7 +83,7 @@ function handleDefaultSelection( event ) {
   var viewer = rap.getObject( dropdown.getData( VIEWER_KEY ) );
   var text = rap.getObject( viewer.get( "text" ) );
   if( viewer.get( "selection" ) !== elementIndex ) {
-    viewer.notify( "SelectionChanged", { "index" : elementIndex } );
+    viewer.notify( "change:elementSelection", { "value" : elementIndex } );
     viewer.set( "selection", elementIndex );
   }
   text.setData( "selecting", true );
