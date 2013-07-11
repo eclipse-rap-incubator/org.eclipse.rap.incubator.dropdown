@@ -13,13 +13,17 @@
 // Event Delegation
 
 function handleEvent( model, type, event ) {
-  switch( event.property ) {
-    case "userText":
-      onChangeText.apply( model, [ event ] );
-    break;
-    case "resultSelection":
-      onChangeResultSelection.apply( model, [ event ] );
-    break;
+  if( type === "acceptSuggestion" ) {
+    onAcceptSuggestion.apply( model, [ event ] );
+  } else {
+    switch( event.property ) {
+      case "userText":
+        onChangeText.apply( model, [ event ] );
+      break;
+      case "resultSelection":
+        onChangeResultSelection.apply( model, [ event ] );
+      break;
+    }
   }
 }
 
@@ -35,6 +39,12 @@ function onChangeText( options ) {
 function onChangeResultSelection( options ) {
   var text = this.get( "results" ).items[ options.value ] || "";
   this.set( "text", text, { "resultSelection" : true } );
+}
+
+function onAcceptSuggestion( options ) {
+  var indicies = this.get( "results" ).indicies;
+  var index = this.get( "resultSelection" );
+  this.set( "elementSelection", indicies[ index ] );
 }
 
 /////////

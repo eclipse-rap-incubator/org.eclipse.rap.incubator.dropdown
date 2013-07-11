@@ -166,8 +166,10 @@ public class DropDownViewer extends ContentViewer {
       text.addListener( SWT.Modify, getClientListener( "DataBinding.js" ) );
       text.addListener( SWT.Verify, getClientListener( "DataBinding.js" ) );
       dropDown.addListener( SWT.Selection, getClientListener( "DataBinding.js" ) );
-      model.addListener( "change", getModelListener( "ModelListener.js" ) );
+      dropDown.addListener( SWT.DefaultSelection, getClientListener( "DataBinding.js" ) );
       model.addListener( "change", getModelListener( "DataBinding.js" ) );
+      model.addListener( "change", getModelListener( "ModelListener.js" ) );
+      model.addListener( "acceptSuggestion", getModelListener( "ModelListener.js" ) );
     } else {
       text.addListener( ClientListener.Modify, getTextModifyListener() );
       text.addListener( ClientListener.Verify, getTextVerifyListener() );

@@ -177,6 +177,20 @@
 
     } );
 
+    describe( "acceptSuggestion", function() {
+
+      it( "sets elementSelection", function() {
+        model.addListener( "acceptSuggestion", createClientListener( "ModelListener" ) );
+        model.set( "results", { "items" : [ "bar", "banana" ], "indicies" : [ 1, 3 ] } );
+        model.set( "resultSelection", 1 );
+
+        model.notify( "acceptSuggestion" );
+
+        expect( model.get( "elementSelection" ) ).toBe( 3 );
+      } );
+
+    } );
+
   } );
 
  } );

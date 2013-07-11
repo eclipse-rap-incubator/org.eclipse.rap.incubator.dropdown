@@ -33,6 +33,9 @@ function handleDropDownEvent( model, event ) {
     case SWT.Selection:
       onDropDownSelection( model, event.widget.getSelectionIndex() );
     break;
+    case SWT.DefaultSelection:
+      onDropDownDefaultSelection( model );
+    break;
   }
 }
 
@@ -84,6 +87,10 @@ function onTextModify( model, text, userAction ) {
 
 function onDropDownSelection( model, selectionIndex ) {
   model.set( "resultSelection", selectionIndex );
+}
+
+function onDropDownDefaultSelection( model ) {
+  model.notify( "acceptSuggestion" );
 }
 
 function onModelChangeResults( dropDown, results ) {
