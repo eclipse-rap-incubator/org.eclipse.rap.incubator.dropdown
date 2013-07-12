@@ -43,14 +43,16 @@ function onChangeResults( options ) {
   if( this.get( "autoComplete" ) ) {
     var items = this.get( "results" ).items;
     if( items.length === 1 ) {
-      this.set( "text", items[ 0 ] );
+      this.set( "suggestion", items[ 0 ] );
+    } else {
+      this.set( "suggestion", null );
     }
   }
 }
 
 function onChangeResultSelection( options ) {
   var text = this.get( "results" ).items[ options.value ] || "";
-  this.set( "text", text, { "resultSelection" : true } );
+  this.set( "suggestion", text );
 }
 
 function onAcceptSuggestion( options ) {

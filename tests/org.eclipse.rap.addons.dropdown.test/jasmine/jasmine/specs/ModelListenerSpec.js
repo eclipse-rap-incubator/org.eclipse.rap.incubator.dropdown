@@ -166,13 +166,13 @@
 
     describe( "change:resultSelection", function() {
 
-      it( "sets text to selected result", function() {
+      it( "sets suggestion to selected result", function() {
         model.addListener( "change:resultSelection", createClientListener( "ModelListener" ) );
         model.set( "results", { "items" : [ "bar", "banana" ] } );
 
         model.set( "resultSelection", 1 );
 
-        expect( model.get( "text" ) ).toEqual( "banana" );
+        expect( model.get( "suggestion" ) ).toEqual( "banana" );
       } );
 
     } );
@@ -180,22 +180,32 @@
     describe( "change:results", function() {
 
       it( "does nothing without autocomplete", function() {
-        model.set( "text", "ban" );
+        model.set( "suggestion", "ban" );
         model.addListener( "change:results", createClientListener( "ModelListener" ) );
 
         model.set( "results", { "items" : [ "banana" ] } );
 
-        expect( model.get( "text" ) ).toEqual( "ban" );
+        expect( model.get( "suggestion" ) ).toEqual( "ban" );
       } );
 
-      it( "autocompletes on single result", function() {
-        model.set( "text", "ban" );
+      it( "autocompletes suggestion on single result", function() {
+        model.set( "suggestion", "ban" );
         model.set( "autoComplete", true );
         model.addListener( "change:results", createClientListener( "ModelListener" ) );
 
         model.set( "results", { "items" : [ "banana" ] } );
 
-        expect( model.get( "text" ) ).toEqual( "banana" );
+        expect( model.get( "suggestion" ) ).toEqual( "banana" );
+      } );
+
+      it( "clears suggestion on multiple results", function() {
+        model.set( "suggestion", "ban" );
+        model.set( "autoComplete", true );
+        model.addListener( "change:results", createClientListener( "ModelListener" ) );
+
+        model.set( "results", { "items" : [ "banana", "apple" ] } );
+
+        expect( model.get( "suggestion" ) ).toBeNull();
       } );
 
     } );

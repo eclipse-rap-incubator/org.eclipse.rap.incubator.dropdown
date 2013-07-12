@@ -67,11 +67,11 @@ function handleModelEvent( model, type, event ) {
   var textWidget = rap.getObject( model.get( "textWidgetId" ) );
   var dropDown = rap.getObject( model.get( "dropDownWidgetId" ) );
   switch( event.property ) {
-    case "text":
-      onModelChangeText( textWidget, event.value );
+    case "suggestion":
+      onModelChangeSuggestion( textWidget, model, event );
     break;
     case "results":
-      onModelChangeResults( dropDown, event.value );
+      onModelChangeResults( dropDown, model, event );
     break;
   }
 }
@@ -93,12 +93,17 @@ function onDropDownDefaultSelection( model ) {
   model.notify( "accept" );
 }
 
-function onModelChangeResults( dropDown, results ) {
+function onModelChangeResults( dropDown, model, event ) {
   dropDown.show(); //temporary hack
+  var results = model.get( "results" );
   dropDown.setItems( results.items );
 }
 
-function onModelChangeText( textWidget, text ) {
+function onModelChangeSuggestion( textWidget, model, event ) {
+  var text = model.get( "suggestion" );
+  if( text == null ) {
+    text = model.get( "userText" );
+  }
   textWidget.setText( text );
 }
 
