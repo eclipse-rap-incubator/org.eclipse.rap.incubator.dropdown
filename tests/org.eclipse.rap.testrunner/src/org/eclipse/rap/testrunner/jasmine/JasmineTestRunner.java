@@ -15,6 +15,7 @@ import static org.junit.Assert.fail;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
+import org.mozilla.javascript.ScriptableObject;
 
 
 public class JasmineTestRunner implements TestRule {
@@ -34,6 +35,10 @@ public class JasmineTestRunner implements TestRule {
 
   public void addResource( String name, ClassLoader loader, String path ) {
     jasmine.addResource( name, loader, path );
+  }
+
+  public ScriptableObject getScope() {
+    return jasmine.getScope();
   }
 
   public void execute() {

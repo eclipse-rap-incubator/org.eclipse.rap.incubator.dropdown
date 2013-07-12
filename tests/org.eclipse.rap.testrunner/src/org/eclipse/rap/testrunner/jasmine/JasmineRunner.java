@@ -23,12 +23,10 @@ public class JasmineRunner {
   private ScriptableObject scope;
   private ScriptableObject jasmineEnv;
   private JasmineReporter publicReporter;
-  private JsConsole console;
   private TestUtil testUtil;
 
   public JasmineRunner() {
     scope = Context.enter().initStandardObjects();
-    createConsole();
     createTestUtil();
     scope.put( "window", scope, scope );
     createStubs( "setTimeout", "clearTimeout", "setInterval", "clearInterval" );
@@ -38,11 +36,6 @@ public class JasmineRunner {
     Context.exit();
   }
 
-  private void createConsole() {
-    console = new JsConsole();
-    scope.put( "console", scope, console );
-  }
-
   private void createTestUtil() {
     testUtil = new TestUtil();
     scope.put( "TestUtil", scope, testUtil );
@@ -50,6 +43,10 @@ public class JasmineRunner {
 
   public void setReporter( JasmineReporter publicReporter ) {
     this.publicReporter = publicReporter;
+  }
+
+  public ScriptableObject getScope() {
+    return scope;
   }
 
   public void parseScript( ClassLoader loader, String path )  {
@@ -75,10 +72,6 @@ public class JasmineRunner {
     ScriptableObject.putProperty( jasmineEnv, "updateInterval", Integer.valueOf( 0 ) );
     ScriptableObject.callMethod( jasmineEnv, "execute", null );
     Context.exit();
-  }
-
-  public void enterConsole() {
-    console.enter();
   }
 
   ////////////
@@ -198,55 +191,6 @@ public class JasmineRunner {
 
     public void log( String str ) {
       publicReporter.log( str );
-    }
-
-  }
-
-  public class JsConsole {
-
-    private boolean readFromInput = false;
-
-    public void log( Object... args ) {
-      System.out.print( "console.log: " );
-      for( int i = 0; i < args.length; i++ ) {
-        System.out.print( args[ i ] );
-        if( i != args.length -1 ) {
-          System.out.print( ", " );
-        }
-      }
-      System.out.println();
-    }
-
-    public void enter() {
-      if( readFromInput ) {
-        throw new IllegalStateException( "Console already active" );
-      }
-      readFromInput = true;
-      Context context = Context.enter();
-      BufferedReader br = new BufferedReader( new InputStreamReader( System.in ) );
-      while( readFromInput ) {
-        System.out.print( "JS > " );
-        try {
-          Object result = context.evaluateString( scope, br.readLine(), "console", 1, null );
-          if( !( result instanceof org.mozilla.javascript.Undefined ) ) {
-            System.out.println( result );
-          }
-        } catch( EcmaError e ) {
-          System.out.println( e.details() );
-        } catch( IOException e ) {
-          System.out.println( "IO Error" );
-          e.printStackTrace();
-          Context.exit();
-          System.exit( 0 );
-        }
-      }
-    }
-
-    public void exit() {
-      if( !readFromInput ) {
-        throw new IllegalStateException( "Console not active" );
-      }
-      readFromInput = false;
     }
 
   }
