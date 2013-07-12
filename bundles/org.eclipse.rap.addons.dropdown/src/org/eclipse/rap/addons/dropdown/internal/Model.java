@@ -44,6 +44,10 @@ public class Model {
     remoteObject.set( name, value );
   }
 
+  public void set( String name, boolean value ) {
+    remoteObject.set( name, value );
+  }
+
   public void set( String name, JsonValue value ) {
     remoteObject.set( name, value );
   }

@@ -378,8 +378,8 @@ public class DropDownViewer_Test {
       }
     } );
 
-    JsonObject event = new JsonObject().add( "index", 2 );
-    handler.handleNotify( "SelectionChanged", event );
+    JsonObject event = new JsonObject().add( "value", 2 );
+    handler.handleNotify( "change:elementSelection", event );
 
     assertEquals( 1, log.size() );
   }
@@ -397,8 +397,8 @@ public class DropDownViewer_Test {
 
     viewer.addSelectionChangedListener( listener );
     viewer.addSelectionChangedListener( listener );
-    JsonObject event = new JsonObject().add( "index", 2 );
-    handler.handleNotify( "SelectionChanged", event );
+    JsonObject event = new JsonObject().add( "value", 2 );
+    handler.handleNotify( "change:elementSelection", event );
 
     assertEquals( 1, log.size() );
   }
@@ -414,8 +414,8 @@ public class DropDownViewer_Test {
       }
     } );
 
-    JsonObject event = new JsonObject().add( "index", 2 );
-    handler.handleNotify( "SelectionChanged", event );
+    JsonObject event = new JsonObject().add( "value", 2 );
+    handler.handleNotify( "change:elementSelection", event );
 
     IStructuredSelection selection = ( IStructuredSelection )log.get( 0 ).getSelection();
     assertEquals( new Integer( 21 ), selection.getFirstElement() );
@@ -503,6 +503,15 @@ public class DropDownViewer_Test {
     viewer.getControl().dispose();
 
     verify( provider ).dispose();
+  }
+
+  @Test
+  public void testAutoComplete() {
+    createViewer();
+
+    viewer.setAutoComplete( true );
+
+    verify( remoteObject ).set( eq( "autoComplete" ), eq( true ) );
   }
 
   //////////

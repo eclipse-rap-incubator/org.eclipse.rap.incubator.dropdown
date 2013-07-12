@@ -90,7 +90,7 @@ function onDropDownSelection( model, selectionIndex ) {
 }
 
 function onDropDownDefaultSelection( model ) {
-  model.notify( "acceptSuggestion" );
+  model.notify( "accept" );
 }
 
 function onModelChangeResults( dropDown, results ) {

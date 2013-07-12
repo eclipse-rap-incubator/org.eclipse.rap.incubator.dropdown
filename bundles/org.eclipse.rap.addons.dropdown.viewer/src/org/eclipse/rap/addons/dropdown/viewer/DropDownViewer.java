@@ -100,6 +100,13 @@ public class DropDownViewer extends ContentViewer {
     model.addListener( SELECTION_CHANGED, modelSelectionListener );
   }
 
+  /**
+   * experimental
+   */
+  public void setAutoComplete( boolean value ) {
+    model.set( "autoComplete", value );
+  }
+
   @Override
   protected void inputChanged( Object input, Object oldInput ) {
     updateElements();
@@ -169,7 +176,7 @@ public class DropDownViewer extends ContentViewer {
       dropDown.addListener( SWT.DefaultSelection, getClientListener( "DataBinding.js" ) );
       model.addListener( "change", getModelListener( "DataBinding.js" ) );
       model.addListener( "change", getModelListener( "ModelListener.js" ) );
-      model.addListener( "acceptSuggestion", getModelListener( "ModelListener.js" ) );
+      model.addListener( "accept", getModelListener( "ModelListener.js" ) );
     } else {
       text.addListener( ClientListener.Modify, getTextModifyListener() );
       text.addListener( ClientListener.Verify, getTextVerifyListener() );

@@ -124,10 +124,11 @@ public class DropDownDemo extends AbstractEntryPoint {
   private void createKFZExample( Composite parent ) {
     Group group = new Group( parent, SWT.NONE );
     group.setText( "DropDownViewer + server-side expand button, dynamic input (586 entries max)" );
-    group.setLayout( new GridLayout( 2, false) );
+    group.setLayout( new GridLayout( 3, false ) );
     final Text text = createKFZExample_Text( group );
     final DropDownViewer viewer = createKFZExample_Viewer( text );
     createKFZExample_Location( group, viewer );
+    createKFZExample_Config( group, viewer );
     createKFZExample_Log( group, viewer );
     createDisposeButton( group, text );
   }
@@ -145,7 +146,7 @@ public class DropDownDemo extends AbstractEntryPoint {
   private void createKFZExample_Location( Group group, final DropDownViewer viewer ) {
     Group location = new Group( group, SWT.NONE );
     location.setText( "Location" );
-    GridData layoutData = new GridData( SWT.TOP, SWT.CENTER, false, true );
+    GridData layoutData = new GridData( SWT.CENTER, SWT.FILL, false, true );
     location.setLayoutData( layoutData );
     layoutData.verticalSpan = 2;
     location.setLayout( new GridLayout( 1, true ) );
@@ -173,6 +174,22 @@ public class DropDownDemo extends AbstractEntryPoint {
           germany.setSelection( true );
           germany.notifyListeners( SWT.Selection, new Event() );
         }
+      }
+    } );
+  }
+
+  private void createKFZExample_Config( Group group, final DropDownViewer viewer ) {
+    Group location = new Group( group, SWT.NONE );
+    location.setText( "Config" );
+    GridData layoutData = new GridData( SWT.CENTER, SWT.FILL, false, true );
+    location.setLayoutData( layoutData );
+    layoutData.verticalSpan = 2;
+    location.setLayout( new GridLayout( 1, true ) );
+    final Button autoComplete = new Button( location, SWT.CHECK );
+    autoComplete.setText( "AutoComplete" );
+    autoComplete.addListener( SWT.Selection, new Listener() {
+      public void handleEvent( Event event ) {
+        viewer.setAutoComplete( autoComplete.getSelection() );
       }
     } );
   }

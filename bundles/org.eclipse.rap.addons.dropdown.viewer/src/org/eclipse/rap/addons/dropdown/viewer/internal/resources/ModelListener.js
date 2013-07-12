@@ -13,15 +13,18 @@
 // Event Delegation
 
 function handleEvent( model, type, event ) {
-  if( type === "acceptSuggestion" ) {
+  if( type === "accept" ) {
     onAcceptSuggestion.apply( model, [ event ] );
   } else {
     switch( event.property ) {
       case "userText":
-        onChangeText.apply( model, [ event ] );
+        onChangeUserText.apply( model, [ event ] );
       break;
       case "resultSelection":
         onChangeResultSelection.apply( model, [ event ] );
+      break;
+      case "results":
+        onChangeResults.apply( model, [ event ] );
       break;
     }
   }
@@ -30,10 +33,19 @@ function handleEvent( model, type, event ) {
 //////////////////
 // Event Handling
 
-function onChangeText( options ) {
+function onChangeUserText( options ) {
   var query = createQuery( options.value.toLowerCase() );
   var results = searchItems( this.get( "elements" ), query );
   this.set( "results", results );
+}
+
+function onChangeResults( options ) {
+  if( this.get( "autoComplete" ) ) {
+    var items = this.get( "results" ).items;
+    if( items.length === 1 ) {
+      this.set( "text", items[ 0 ] );
+    }
+  }
 }
 
 function onChangeResultSelection( options ) {

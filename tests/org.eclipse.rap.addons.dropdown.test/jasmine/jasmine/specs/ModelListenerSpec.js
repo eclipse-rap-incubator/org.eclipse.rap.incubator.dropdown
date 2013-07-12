@@ -177,14 +177,37 @@
 
     } );
 
-    describe( "acceptSuggestion", function() {
+    describe( "change:results", function() {
+
+      it( "does nothing without autocomplete", function() {
+        model.set( "text", "ban" );
+        model.addListener( "change:results", createClientListener( "ModelListener" ) );
+
+        model.set( "results", { "items" : [ "banana" ] } );
+
+        expect( model.get( "text" ) ).toEqual( "ban" );
+      } );
+
+      it( "autocompletes on single result", function() {
+        model.set( "text", "ban" );
+        model.set( "autoComplete", true );
+        model.addListener( "change:results", createClientListener( "ModelListener" ) );
+
+        model.set( "results", { "items" : [ "banana" ] } );
+
+        expect( model.get( "text" ) ).toEqual( "banana" );
+      } );
+
+    } );
+
+    describe( "accept", function() {
 
       it( "sets elementSelection", function() {
-        model.addListener( "acceptSuggestion", createClientListener( "ModelListener" ) );
+        model.addListener( "accept", createClientListener( "ModelListener" ) );
         model.set( "results", { "items" : [ "bar", "banana" ], "indicies" : [ 1, 3 ] } );
         model.set( "resultSelection", 1 );
 
-        model.notify( "acceptSuggestion" );
+        model.notify( "accept" );
 
         expect( model.get( "elementSelection" ) ).toBe( 3 );
       } );
