@@ -15,14 +15,34 @@ public interface JasmineReporter {
 
   public void reportRunnerStarting();
 
-  public void reportRunnerResults( int passedSpecs, int executedSpecs  );
+  public void reportRunnerResults();
 
-  public void reportSpecStarting( String suiteDescription, String specDescription );
+  public void reportSpecStarting( Spec spec );
 
-  public void reportSpecResults( boolean passed, String errorMessage );
+  public void reportSpecResults( Spec spec );
 
-  public void reportSuiteResults( String suiteDescription );
+  public void reportSuiteResults( Suite suite );
 
   public void log( String str );
+
+  public interface Spec {
+
+    public String getDescription();
+
+    public Suite getSuite();
+
+    public boolean hasPassed();
+
+    public String getError();
+
+  }
+
+  public interface Suite {
+
+    public String getDescription();
+
+    public Suite getParent();
+
+  }
 
 }

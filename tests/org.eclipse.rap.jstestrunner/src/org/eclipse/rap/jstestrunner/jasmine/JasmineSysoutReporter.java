@@ -13,37 +13,38 @@ package org.eclipse.rap.jstestrunner.jasmine;
 
 public final class JasmineSysoutReporter implements JasmineReporter {
 
+  private int passedSpecs;
+  private int executedSpecs;
+
   public void reportRunnerStarting() {
-    System.out.println( "Jasmine Started" );
+    System.out.println( "Test runner started." );
   }
 
-  public void reportRunnerResults( int passedSpecs, int executedSpecs ) {
-    System.out.println( "Jasmine Finished" );
-    String msg = passedSpecs + " of " + executedSpecs + " Specs passed";
-    if( passedSpecs == executedSpecs ) {
-      System.out.println( msg );
+  public void reportRunnerResults() {
+    System.out.println( "Test runner finished." );
+    System.out.println( passedSpecs + " of " + executedSpecs + " specs passed" );
+  }
+
+  public void reportSuiteResults( Suite suite ) {
+  }
+
+  public void reportSpecStarting( Spec spec ) {
+    System.out.print( spec.getSuite().getDescription() + " : " + spec.getDescription() + " ... " );
+  }
+
+  public void reportSpecResults( Spec spec ) {
+    executedSpecs++;
+    if( spec.hasPassed() ) {
+      passedSpecs++;
+      System.out.println( "passed." );
     } else {
-      System.err.println( msg );
-    }
-  }
-
-  public void reportSuiteResults( String suiteDescription ) {
-  }
-
-  public void reportSpecStarting( String suiteDescription, String specDescription ) {
-    System.out.print( suiteDescription + " : " + specDescription + " ... ");
-  }
-
-  public void reportSpecResults( boolean passed, String error ) {
-    if( passed ) {
-      System.out.println( "Passed." );
-    } else {
-      System.err.println( "Failed:" );
-      System.err.println( error );
+      System.err.println( "FAILED." );
+      System.err.println( spec.getError() );
     }
   }
 
   public void log( String str ) {
     System.out.println( "Jasmine log: " + str );
   }
+
 }
