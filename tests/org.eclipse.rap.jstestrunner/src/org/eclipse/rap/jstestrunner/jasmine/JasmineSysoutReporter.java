@@ -8,7 +8,7 @@
  * Contributors:
  *    EclipseSource - initial API and implementation
  ******************************************************************************/
-package org.eclipse.rap.testrunner.jasmine;
+package org.eclipse.rap.jstestrunner.jasmine;
 
 
 public final class JasmineSysoutReporter implements JasmineReporter {

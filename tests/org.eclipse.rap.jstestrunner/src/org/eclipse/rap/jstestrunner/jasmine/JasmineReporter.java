@@ -8,7 +8,8 @@
  * Contributors:
  *    EclipseSource - initial API and implementation
  ******************************************************************************/
-package org.eclipse.rap.testrunner.jasmine;
+package org.eclipse.rap.jstestrunner.jasmine;
+
 
 public interface JasmineReporter {
 

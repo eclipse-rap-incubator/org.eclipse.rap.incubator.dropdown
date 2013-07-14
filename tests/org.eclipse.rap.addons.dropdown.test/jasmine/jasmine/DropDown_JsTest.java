@@ -13,7 +13,7 @@ package jasmine;
 import org.eclipse.rap.addons.dropdown.DropDown_Test;
 import org.eclipse.rap.addons.dropdown.viewer.DropDownViewer;
 import org.eclipse.rap.clientscripting.ClientListener;
-import org.eclipse.rap.testrunner.jasmine.*;
+import org.eclipse.rap.jstestrunner.jasmine.*;
 import org.junit.*;
 
 

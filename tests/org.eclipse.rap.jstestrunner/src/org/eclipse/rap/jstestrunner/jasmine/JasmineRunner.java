@@ -8,7 +8,7 @@
  * Contributors:
  *    EclipseSource - initial API and implementation
  ******************************************************************************/
-package org.eclipse.rap.testrunner.jasmine;
+package org.eclipse.rap.jstestrunner.jasmine;
 
 import java.io.*;
 import java.util.HashMap;
@@ -20,8 +20,8 @@ import org.mozilla.javascript.*;
 public class JasmineRunner {
 
   private static final String CHARSET = "UTF-8";
-  private ScriptableObject scope;
-  private ScriptableObject jasmineEnv;
+  private final ScriptableObject scope;
+  private final ScriptableObject jasmineEnv;
   private JasmineReporter publicReporter;
   private TestUtil testUtil;
 
@@ -30,7 +30,7 @@ public class JasmineRunner {
     createTestUtil();
     scope.put( "window", scope, scope );
     createStubs( "setTimeout", "clearTimeout", "setInterval", "clearInterval" );
-    parseScript( getClass().getClassLoader(), "org/eclipse/rap/testrunner/jasmine/jasmine.js" );
+    parseScript( getClass().getClassLoader(), "org/eclipse/rap/jstestrunner/jasmine/jasmine.js" );
     jasmineEnv = getJasmineEnv();
     createReporter();
     Context.exit();
