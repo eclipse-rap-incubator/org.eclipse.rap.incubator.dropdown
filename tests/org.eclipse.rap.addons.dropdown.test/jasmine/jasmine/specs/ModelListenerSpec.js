@@ -323,7 +323,7 @@
 
     describe( "accept", function() {
 
-      it( "sets elementSelection", function() {
+      it( "sets elementSelection for resultSelection", function() {
         model.addListener( "accept", createClientListener( "ModelListener" ) );
         model.set( "results", { "items" : [ "bar", "banana" ], "indicies" : [ 1, 3 ] } );
         model.set( "resultSelection", 1 );
@@ -331,6 +331,28 @@
         model.notify( "accept", { source : model, type : "accept" } );
 
         expect( model.get( "elementSelection" ) ).toBe( 3 );
+      } );
+
+      it( "sets elementSelection for single result and autoComplete", function() {
+        model.addListener( "accept", createClientListener( "ModelListener" ) );
+        model.set( "results", { "items" : [ "banana" ], "indicies" : [ 3 ] } );
+        model.set( "resultSelection", -1 );
+        model.set( "autoComplete", true );
+
+        model.notify( "accept", { source : model, type : "accept" } );
+
+        expect( model.get( "elementSelection" ) ).toBe( 3 );
+      } );
+
+      it( "does nothin for single result without autoComplete", function() {
+        model.addListener( "accept", createClientListener( "ModelListener" ) );
+        model.set( "results", { "items" : [ "banana" ], "indicies" : [ 3 ] } );
+        model.set( "resultSelection", -1 );
+        model.set( "elementSelection", 0 );
+
+        model.notify( "accept", { source : model, type : "accept" } );
+
+        expect( model.get( "elementSelection" ) ).toBe( 0 );
       } );
 
       it( "clears text selection", function() {

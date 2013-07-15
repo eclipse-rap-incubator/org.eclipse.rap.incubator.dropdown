@@ -84,9 +84,13 @@ function onChangeSuggestion( event ) {
 
 function onAcceptSuggestion( event ) {
   var results = this.get( "results" );
-  var index = this.get( "resultSelection" );
-  if( results && typeof index === "number" && index > -1 ) {
-    this.set( "elementSelection", results.indicies[ index ] );
+  if( results ) {
+    var index = this.get( "resultSelection" );
+    if( typeof index === "number" && index > -1 ) {
+      this.set( "elementSelection", results.indicies[ index ] );
+    } else if( this.get( "autoComplete" ) && results.indicies.length === 1 ) {
+      this.set( "elementSelection", results.indicies[ 0 ] );
+    }
   }
   var text = this.get( "text" ) || "";
   this.set( "textSelection", [ text.length, text.length ] );
