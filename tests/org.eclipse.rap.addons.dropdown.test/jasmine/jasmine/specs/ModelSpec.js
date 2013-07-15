@@ -71,31 +71,6 @@
       model.notify( "Selection", { "foo" : "bar" } );
 
       expect( log.length ).toBe( 1 );
-      expect( log[ 0 ][ 0 ] ).toBe( model );
-      expect( log[ 0 ][ 1 ] ).toBe( "Selection" );
-      expect( log[ 0 ][ 2 ] ).toEqual( { "foo" : "bar" }  );
-    } );
-
-    it( "notifies listener without properties argument when called with minimal map", function() {
-      model.addListener( "Selection", logger );
-
-      model.notify( { "event" : "Selection" } );
-
-      expect( log[ 0 ].length ).toBe( 2 );
-      expect( log[ 0 ][ 0 ] ).toBe( model );
-      expect( log[ 0 ][ 1 ] ).toBe( "Selection" );
-      expect( log[ 0 ][ 2 ] ).toBe( undefined );
-    } );
-
-   it( "notifies listener without properties argument when called with string only", function() {
-      model.addListener( "foo", logger );
-
-      model.notify( "foo" );
-
-      expect( log.length ).toBe( 1 );
-      expect( log[ 0 ][ 0 ] ).toBe( model );
-      expect( log[ 0 ][ 1 ] ).toBe( "foo" );
-      expect( log[ 0 ][ 2 ] ).toBe( undefined );
     } );
 
   } );
@@ -108,7 +83,18 @@
       model.set( "foo", 23 );
 
       expect( log.length ).toBe( 1 );
-      expect( log[ 0 ][ 2 ] ).toEqual( { value : 23, property : "foo" } );
+    } );
+
+    it( "notifies change listener with event", function() {
+      model.addListener( "change:foo", logger );
+
+      model.set( "foo", 23 );
+
+      var event = log[ 0 ][ 0 ];
+      expect( event.type ).toBe( "change" );
+      expect( event.property ).toBe( "foo" );
+      expect( event.value ).toBe( 23 );
+      expect( event.options ).toEqual( {} );
     } );
 
     it( "notifies change listener with options", function() {
@@ -116,7 +102,7 @@
 
       model.set( "foo", 23, { x : 1 } );
 
-      expect( log[ 0 ][ 2 ] ).toEqual( { value : 23, x : 1, property : "foo" } );
+      expect( log[ 0 ][ 0 ].options ).toEqual( { x : 1 } );
     } );
 
     it( "notifies global change listener", function() {

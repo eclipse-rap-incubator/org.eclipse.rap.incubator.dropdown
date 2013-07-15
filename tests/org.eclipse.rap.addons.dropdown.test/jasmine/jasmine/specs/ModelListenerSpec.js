@@ -162,7 +162,7 @@
         model.set( "userText", "ba" );
 
         expect( model.get( "suggestion" ) ).toBeNull();
-        expect( log[ 0 ][ 2 ].sourceEvent ).toBe( "change:userText" );
+        expect( log[ 0 ][ 0 ].options.sourceEvent ).toBe( "change:userText" );
       } );
 
       it( "updates results", function() {
@@ -193,7 +193,7 @@
 
         model.set( "resultSelection", 1 );
 
-        expect( log[ 0 ][ 2 ].sourceEvent ).toBe( "change:resultSelection" );
+        expect( log[ 0 ][ 0 ].options.sourceEvent ).toBe( "change:resultSelection" );
       } );
 
     } );
@@ -286,7 +286,7 @@
 
         model.set( "results", { "items" : [ "banana" ] } );
 
-        expect( log[ 0 ][ 2 ].sourceEvent ).toBe( "change:results" );
+        expect( log[ 0 ][ 0 ].options.sourceEvent ).toBe( "change:results" );
       } );
 
       it( "sets sourceEvent option when resetting suggestion", function() {
@@ -297,7 +297,7 @@
 
         model.set( "results", { "items" : [ "banana", "apple" ] } );
 
-        expect( log[ 0 ][ 2 ].sourceEvent ).toBe( "change:results" );
+        expect( log[ 0 ][ 0 ].options.sourceEvent ).toBe( "change:results" );
       } );
 
     } );
@@ -309,7 +309,7 @@
         model.set( "results", { "items" : [ "bar", "banana" ], "indicies" : [ 1, 3 ] } );
         model.set( "resultSelection", 1 );
 
-        model.notify( "accept" );
+        model.notify( "accept", { source : model, type : "accept" } );
 
         expect( model.get( "elementSelection" ) ).toBe( 3 );
       } );

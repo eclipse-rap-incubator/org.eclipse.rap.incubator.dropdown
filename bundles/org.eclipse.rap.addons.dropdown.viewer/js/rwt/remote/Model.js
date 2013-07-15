@@ -44,14 +44,17 @@
         var value = arguments[ 1 ];
         var options = arguments[ 2 ] || {};
         if( this._.properties[ property ] !== value ) {
-          var notifyOptions = {
+          var event = {
             "value" : value,
-            "property" : property
-          }
-          rwt.util.Objects.mergeWith( notifyOptions, options, false );
+            "type" : "change:" + property,
+            "property" : property,
+            "options" : options,
+            "source" : this
+          };
           this._.properties[ property ] = value;
-          this.notify( "change:" + property, notifyOptions );
-          this.notify( "change", notifyOptions );
+          this.notify( event.type, event );
+          event.type = "change";
+          this.notify( event.type, event );
         }
       }
     },
@@ -102,10 +105,7 @@
   var notifyInternal = function( model, type, properties ) {
     if( model._ ) {
       var listeners = model._.listeners[ type ];
-      var args = [ model, type ];
-      if( properties ) {
-        args.push( properties )
-      }
+      var args = [ properties ];
       if( listeners instanceof Array ) {
         for( var i = 0; listeners && i < listeners.length; i++ ) {
           listeners[ i ].apply( listeners[ i ], args );

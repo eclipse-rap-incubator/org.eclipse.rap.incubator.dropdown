@@ -16,9 +16,8 @@
 
  var VIEWER_KEY = "org.eclipse.rap.addons.dropdown.viewer.DropDownViewer#viewer";
 
-function handleEvent() {
-  if( arguments.length === 1 ) {
-    var event = arguments[ 0 ];
+function handleEvent( event ) {
+  if( event.widget  ) {
     var model = rap.getObject( event.widget.getData( VIEWER_KEY ) );
     if( event.widget.classname === "rwt.dropdown.DropDown" ) {
       handleDropDownEvent( model, event );
@@ -51,7 +50,8 @@ function handleTextEvent( model, event ) {
   setUserAction( event );
 }
 
-function handleModelEvent( model, type, event ) {
+function handleModelEvent( event ) {
+  var model = event.source;
   var textWidget = rap.getObject( model.get( "textWidgetId" ) );
   var dropDown = rap.getObject( model.get( "dropDownWidgetId" ) );
   switch( event.property ) {
@@ -88,7 +88,7 @@ function onTextModify( model, event, userAction ) {
   var text = event.widget.getText();
   model.set( "text", text, { "source" : "Text" } );
   if( userAction ) {
-    model.set( "userText", text );
+    model.set( "userText", text, { "userAction" : userAction } );
   }
 }
 
@@ -97,7 +97,7 @@ function onDropDownSelection( model, event ) {
 }
 
 function onDropDownDefaultSelection( model, event ) {
-  model.notify( "accept", { "source" : "DropDown" }  );
+  model.notify( "accept", { type : "accept", "source" : "DropDown" }  );
 }
 
 function onModelChangeResults( dropDown, model, event ) {
