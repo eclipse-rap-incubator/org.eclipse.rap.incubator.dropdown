@@ -164,6 +164,14 @@
         expect( model.get( "suggestion" ) ).toBeNull();
       } );
 
+      it( "shows results", function() {
+        model.addListener( "change:userText", createClientListener( "ModelListener" ) );
+
+        model.set( "userText", "ba" );
+
+        expect( model.get( "resultsVisible" ) ).toBe( true );
+      } );
+
       it( "updates results", function() {
         model.addListener( "change:userText", createClientListener( "ModelListener" ) );
 

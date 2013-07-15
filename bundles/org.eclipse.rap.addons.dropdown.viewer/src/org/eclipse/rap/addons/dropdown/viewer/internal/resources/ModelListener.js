@@ -39,6 +39,7 @@ function handleEvent( event ) {
 // Event Handling
 
 function onChangeUserText( event ) {
+  this.set( "resultsVisible", true );
   this.set( "suggestion", null, { "action" : "sync" } );
   var query = createQuery( event.value.toLowerCase() );
   var results = searchItems( this.get( "elements" ), query );

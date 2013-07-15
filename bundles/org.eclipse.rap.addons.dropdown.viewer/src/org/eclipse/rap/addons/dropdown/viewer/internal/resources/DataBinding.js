@@ -31,6 +31,10 @@ function handleEvent( event ) {
 
 function handleDropDownEvent( model, event ) {
   switch( event.type ) {
+    case SWT.Show:
+    case SWT.Hide:
+      onDropDownChangeVisible( model, event );
+    break;
     case SWT.Selection:
       onDropDownSelection( model, event );
     break;
@@ -64,6 +68,9 @@ function handleModelEvent( event ) {
     case "results":
       onModelChangeResults( dropDown, model, event );
     break;
+    case "resultsVisible":
+      onModelChangeResultsVisible( dropDown, model, event );
+    break;
   }
 }
 
@@ -92,6 +99,10 @@ function onTextModify( model, event, userAction ) {
   }
 }
 
+function onDropDownChangeVisible( model, event ) {
+  model.set( "resultsVisible", event.widget.getVisible(), { "action" : "sync" }  );
+}
+
 function onDropDownSelection( model, event ) {
   model.set( "resultSelection", event.index, { "action" : "sync" }  );
 }
@@ -101,14 +112,19 @@ function onDropDownDefaultSelection( model, event ) {
 }
 
 function onModelChangeResults( dropDown, model, event ) {
-  dropDown.show(); //temporary hack
   var results = model.get( "results" );
   dropDown.setItems( results.items );
 }
 
+function onModelChangeResultsVisible( dropDown, model, event ) {
+  if( event.options.action !== "sync" ) {
+    dropDown.setVisible( event.value )
+  }
+}
+
 function onModelChangeText( textWidget, model, event ) {
   if( event.options.action !== "sync" ) {
-    textWidget.setText( model.get( "text" ) );
+    textWidget.setText( event.value );
   }
 }
 
