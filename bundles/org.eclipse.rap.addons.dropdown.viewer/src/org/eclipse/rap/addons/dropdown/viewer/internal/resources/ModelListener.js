@@ -39,7 +39,7 @@ function handleEvent( event ) {
 // Event Handling
 
 function onChangeUserText( event ) {
-  this.set( "suggestion", null, { "sourceEvent" : "change:userText" } );
+  this.set( "suggestion", null, { "action" : "sync" } );
   var query = createQuery( event.value.toLowerCase() );
   var results = searchItems( this.get( "elements" ), query );
   this.set( "results", results );
@@ -48,11 +48,10 @@ function onChangeUserText( event ) {
 function onChangeResults( event ) {
   if( this.get( "autoComplete" ) ) {
     var items = this.get( "results" ).items;
-    var options = { "sourceEvent" : "change:results" };
     if( items.length === 1 ) {
-      this.set( "suggestion", items[ 0 ], options );
+      this.set( "suggestion", items[ 0 ] );
     } else {
-      this.set( "suggestion", null, options );
+      this.set( "suggestion", null );
     }
   }
 }
@@ -62,15 +61,16 @@ function onChangeResultSelection( event ) {
   if( event.value !== -1 ) {
     suggestion = this.get( "results" ).items[ event.value ] || "";
   }
-  this.set( "suggestion", suggestion, { "sourceEvent" : "change:resultSelection" } );
+  var options = { "action" : "selection" };
+  this.set( "suggestion", suggestion, options );
 }
 
 function onChangeSuggestion( event ) {
-  if( event.options.sourceEvent !== "change:userText" ) {
+  if( event.options.action !== "sync" ) {
     var userText = this.get( "userText" ) || "";
     var text = event.value || userText;
     this.set( "text", text );
-    if( event.options.sourceEvent === "change:resultSelection" ) {
+    if( event.options.action === "selection" ) {
       if( event.value === null ) {
         this.set( "textSelection", [ text.length , text.length ] );
       } else {
