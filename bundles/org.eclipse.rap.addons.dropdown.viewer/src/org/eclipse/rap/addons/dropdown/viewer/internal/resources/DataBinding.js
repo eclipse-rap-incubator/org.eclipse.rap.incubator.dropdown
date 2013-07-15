@@ -17,7 +17,7 @@
  var VIEWER_KEY = "org.eclipse.rap.addons.dropdown.viewer.DropDownViewer#viewer";
 
 function handleEvent( event ) {
-  if( event.widget  ) {
+  if( event.widget ) {
     var model = rap.getObject( event.widget.getData( VIEWER_KEY ) );
     if( event.widget.classname === "rwt.dropdown.DropDown" ) {
       handleDropDownEvent( model, event );
@@ -86,14 +86,14 @@ function getUserAction( event ) {
 
 function onTextModify( model, event, userAction ) {
   var text = event.widget.getText();
-  model.set( "text", text, { "source" : "Text" } );
+  model.set( "text", text, { "action" : "sync" } );
   if( userAction ) {
-    model.set( "userText", text, { "userAction" : userAction } );
+    model.set( "userText", text, { "action" : userAction } );
   }
 }
 
 function onDropDownSelection( model, event ) {
-  model.set( "resultSelection", event.index, { "source" : "DropDown" } );
+  model.set( "resultSelection", event.index, { "action" : "sync" }  );
 }
 
 function onDropDownDefaultSelection( model, event ) {
@@ -107,7 +107,7 @@ function onModelChangeResults( dropDown, model, event ) {
 }
 
 function onModelChangeText( textWidget, model, event ) {
-  if( event.source !== "Text" ) {
+  if( event.options.action !== "sync" ) {
     textWidget.setText( model.get( "text" ) );
   }
 }
