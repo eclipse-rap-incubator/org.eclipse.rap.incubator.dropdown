@@ -58,6 +58,9 @@ function handleModelEvent( model, type, event ) {
     case "text":
       onModelChangeText( textWidget, model, event );
     break;
+    case "textSelection":
+      onModelChangeTextSelection( textWidget, model, event );
+    break;
     case "results":
       onModelChangeResults( dropDown, model, event );
     break;
@@ -107,5 +110,9 @@ function onModelChangeText( textWidget, model, event ) {
   if( event.source !== "Text" ) {
     textWidget.setText( model.get( "text" ) );
   }
+}
+
+function onModelChangeTextSelection( textWidget, model, event ) {
+  textWidget.setSelection( event.value );
 }
 

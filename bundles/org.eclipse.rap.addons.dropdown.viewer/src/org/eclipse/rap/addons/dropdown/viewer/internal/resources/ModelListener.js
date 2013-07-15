@@ -38,34 +38,44 @@ function handleEvent( model, type, event ) {
 //////////////////
 // Event Handling
 
-function onChangeUserText( options ) {
-  var query = createQuery( options.value.toLowerCase() );
+function onChangeUserText( event ) {
+  this.set( "suggestion", null, { "sourceEvent" : "change:userText" } );
+  var query = createQuery( event.value.toLowerCase() );
   var results = searchItems( this.get( "elements" ), query );
   this.set( "results", results );
 }
 
-function onChangeResults( options ) {
+function onChangeResults( event ) {
   if( this.get( "autoComplete" ) ) {
     var items = this.get( "results" ).items;
+    var options = { "sourceEvent" : "change:results" };
     if( items.length === 1 ) {
-      this.set( "suggestion", items[ 0 ] );
+      this.set( "suggestion", items[ 0 ], options );
     } else {
-      this.set( "suggestion", null );
+      this.set( "suggestion", null, options );
     }
   }
 }
 
-function onChangeResultSelection( options ) {
-  var text = this.get( "results" ).items[ options.value ] || "";
-  this.set( "suggestion", text );
+function onChangeResultSelection( event ) {
+  var text = this.get( "results" ).items[ event.value ] || "";
+  this.set( "suggestion", text, { "sourceEvent" : "change:resultSelection" } );
 }
 
-function onChangeSuggestion( options ) {
-  var text = options.value != null ? options.value : this.get( "userText" );
-  this.set( "text", text );
+function onChangeSuggestion( event ) {
+  if( event.sourceEvent !== "change:userText" ) {
+    var text = event.value != null ? event.value : this.get( "userText" );
+    this.set( "text", text );
+    if( event.sourceEvent === "change:resultSelection" ) {
+      this.set( "textSelection", [ 0, text.length ] );
+    } else {
+      var userText = this.get( "userText" ) || "";
+      this.set( "textSelection", [ userText.length, text.length ] );
+    }
+  }
 }
 
-function onAcceptSuggestion( options ) {
+function onAcceptSuggestion( event ) {
   var indicies = this.get( "results" ).indicies;
   var index = this.get( "resultSelection" );
   this.set( "elementSelection", indicies[ index ] );

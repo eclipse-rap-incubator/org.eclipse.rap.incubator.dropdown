@@ -154,6 +154,17 @@
 
     describe( "change:userText", function() {
 
+      it( "clears suggestion", function() {
+        model.addListener( "change:userText", createClientListener( "ModelListener" ) );
+        model.set( "suggestion", "banana" );
+        model.addListener( "change:suggestion", logger );
+
+        model.set( "userText", "ba" );
+
+        expect( model.get( "suggestion" ) ).toBeNull();
+        expect( log[ 0 ][ 2 ].sourceEvent ).toBe( "change:userText" );
+      } );
+
       it( "updates results", function() {
         model.addListener( "change:userText", createClientListener( "ModelListener" ) );
 
@@ -175,9 +186,30 @@
         expect( model.get( "suggestion" ) ).toEqual( "banana" );
       } );
 
+      it( "sets sourceEvent option", function() {
+        model.addListener( "change:resultSelection", createClientListener( "ModelListener" ) );
+        model.addListener( "change:suggestion", logger );
+        model.set( "results", { "items" : [ "bar", "banana" ] } );
+
+        model.set( "resultSelection", 1 );
+
+        expect( log[ 0 ][ 2 ].sourceEvent ).toBe( "change:resultSelection" );
+      } );
+
     } );
 
     describe( "change:suggestion", function() {
+
+      it( "ignores events from change:userText", function() {
+        model.addListener( "change:suggestion", createClientListener( "ModelListener" ) );
+        model.set( "text", "bar" );
+        model.set( "textSelection", [ 0, 0 ] );
+
+        model.set( "suggestion", "foo", { "sourceEvent" : "change:userText" } );
+
+        expect( model.get( "text" ) ).toEqual( "bar" );
+        expect( model.get( "textSelection" ) ).toEqual( [ 0, 0 ] );
+      } );
 
       it( "sets text to suggestion", function() {
         model.addListener( "change:suggestion", createClientListener( "ModelListener" ) );
@@ -185,6 +217,23 @@
         model.set( "suggestion", "foo" );
 
         expect( model.get( "text" ) ).toEqual( "foo" );
+      } );
+
+      it( "sets textSelection for result selection", function() {
+        model.addListener( "change:suggestion", createClientListener( "ModelListener" ) );
+
+        model.set( "suggestion", "foo", { "sourceEvent" : "change:resultSelection" } );
+
+        expect( model.get( "textSelection" ) ).toEqual( [ 0, 3 ] );
+      } );
+
+      it( "sets textSelection for auto complete", function() {
+        model.addListener( "change:suggestion", createClientListener( "ModelListener" ) );
+        model.set( "userText", "foo" );
+
+        model.set( "suggestion", "foobar", { "sourceEvent" : "change:results" } );
+
+        expect( model.get( "textSelection" ) ).toEqual( [ 3, 6 ] );
       } );
 
       it( "resets text to userText", function() {
@@ -227,6 +276,28 @@
         model.set( "results", { "items" : [ "banana", "apple" ] } );
 
         expect( model.get( "suggestion" ) ).toBeNull();
+      } );
+
+      it( "sets sourceEvent option when setting suggestion", function() {
+        model.set( "suggestion", "ban" );
+        model.set( "autoComplete", true );
+        model.addListener( "change:results", createClientListener( "ModelListener" ) );
+        model.addListener( "change:suggestion", logger );
+
+        model.set( "results", { "items" : [ "banana" ] } );
+
+        expect( log[ 0 ][ 2 ].sourceEvent ).toBe( "change:results" );
+      } );
+
+      it( "sets sourceEvent option when resetting suggestion", function() {
+        model.set( "suggestion", "ban" );
+        model.set( "autoComplete", true );
+        model.addListener( "change:results", createClientListener( "ModelListener" ) );
+        model.addListener( "change:suggestion", logger );
+
+        model.set( "results", { "items" : [ "banana", "apple" ] } );
+
+        expect( log[ 0 ][ 2 ].sourceEvent ).toBe( "change:results" );
       } );
 
     } );
