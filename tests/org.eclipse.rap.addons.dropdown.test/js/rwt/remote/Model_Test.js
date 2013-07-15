@@ -57,6 +57,15 @@ rwt.qx.Class.define( "rwt.remote.Model_Test", {
       assertEquals( "bar", message.findNotifyProperty( "r11", "Selection", "foo" ) );
     },
 
+    testNotify_ReplacesProtocolObjectsWithId : function() {
+      TestUtil.protocolListen( "r11", { "Selection" : true } );
+
+      model.notify( "Selection", { "foo" : model } );
+
+      var message = TestUtil.getMessageObject();
+      assertEquals( "r11", message.findNotifyProperty( "r11", "Selection", "foo" ) );
+    },
+
     testNotify_CallWithParameterMap : function() {
       TestUtil.protocolListen( "r11", { "Selection" : true } );
 

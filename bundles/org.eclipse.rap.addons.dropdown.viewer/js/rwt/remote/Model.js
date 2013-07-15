@@ -69,7 +69,7 @@
       var properties = useMap ? arguments[ 0 ].properties : arguments[ 1 ];
       var nosync = useMap ? arguments[ 0 ].nosync : false;
       if( !nosync ) {
-        rap.getRemoteObject( this ).notify( event, properties );
+        notifyRemote( this, event, properties );
       }
       notifyInternal( this, event, properties );
     },
@@ -112,6 +112,18 @@
         }
       }
     }
+  };
+
+  var notifyRemote = function( model, type, properties ) {
+    var propCopy = {};
+    for( var key in properties ) {
+      if( properties[ key ] && properties[ key ]._rwtId ) {
+        propCopy[ key ] = properties[ key ]._rwtId;
+      } else {
+        propCopy[ key ] = properties[ key ];
+      }
+    }
+    rap.getRemoteObject( model ).notify( type, propCopy );
   };
 
 }());
