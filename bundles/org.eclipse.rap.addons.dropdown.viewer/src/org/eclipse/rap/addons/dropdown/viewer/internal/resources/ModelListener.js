@@ -22,14 +22,17 @@ function handleEvent( event ) {
       case "userText":
         onChangeUserText.apply( event.source, [ event ] );
       break;
-      case "suggestion":
-        onChangeSuggestion.apply( event.source, [ event ] );
+      case "results":
+        onChangeResults.apply( event.source, [ event ] );
       break;
       case "resultSelection":
         onChangeResultSelection.apply( event.source, [ event ] );
       break;
-      case "results":
-        onChangeResults.apply( event.source, [ event ] );
+      case "suggestion":
+        onChangeSuggestion.apply( event.source, [ event ] );
+      break;
+      case "elementSelection":
+        onChangeElementSelection.apply( event.source, [ event ] );
       break;
     }
   }
@@ -95,6 +98,10 @@ function onAcceptSuggestion( event ) {
   }
   var text = this.get( "text" ) || "";
   this.set( "textSelection", [ text.length, text.length ] );
+}
+
+function onChangeElementSelection( event ) {
+  this.set( "resultsVisible", false );
 }
 
 /////////

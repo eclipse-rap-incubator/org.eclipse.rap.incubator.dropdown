@@ -46,7 +46,7 @@ public class DropDownViewer extends ContentViewer {
   private static final String DECORATOR_KEY = "decorator";
   private static final String ELEMENTS_KEY = "elements";
   private static final String SELECTION_KEY = "selection";
-  private static final boolean USE_NEW_SCRIPTS = false;
+  private static final boolean USE_NEW_SCRIPTS = true;
   private final static String PREFIX
     = "org/eclipse/rap/addons/dropdown/viewer/internal/resources/";
 

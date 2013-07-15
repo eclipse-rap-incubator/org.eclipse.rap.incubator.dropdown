@@ -351,6 +351,20 @@
 
     } );
 
+    describe( "change:elementSelection", function() {
+
+      it( "hides results", function() {
+        model.addListener( "change:elementSelection", createClientListener( "ModelListener" ) );
+        model.set( "resultsVisible", true );
+
+        model.set( "elementSelection", 22 );
+
+        expect( model.get( "resultsVisible" ) ).toBe( false );
+      } );
+
+    } );
+
+
   } );
 
  } );
