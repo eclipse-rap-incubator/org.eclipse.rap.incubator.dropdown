@@ -186,6 +186,16 @@
         expect( model.get( "suggestion" ) ).toEqual( "banana" );
       } );
 
+      it( "resets suggestion when selection index is -1", function() {
+        model.addListener( "change:resultSelection", createClientListener( "ModelListener" ) );
+        model.set( "results", { "items" : [ "bar", "banana" ] } );
+        model.set( "suggestion", "banana" );
+
+        model.set( "resultSelection", -1 );
+
+        expect( model.get( "suggestion" ) ).toBeNull();
+      } );
+
       it( "sets sourceEvent option", function() {
         model.addListener( "change:resultSelection", createClientListener( "ModelListener" ) );
         model.addListener( "change:suggestion", logger );
@@ -240,9 +250,18 @@
         model.addListener( "change:suggestion", createClientListener( "ModelListener" ) );
         model.set( "userText", "bar" );
 
-        model.set( "suggestion", null );
+        model.set( "suggestion", null, { "sourceEvent" : "change:resultSelection" } );
 
         expect( model.get( "text" ) ).toEqual( "bar" );
+      } );
+
+      it( "resets selection to userText end", function() {
+        model.addListener( "change:suggestion", createClientListener( "ModelListener" ) );
+        model.set( "userText", "bar" );
+
+        model.set( "suggestion", null, { "sourceEvent" : "change:resultSelection" } );
+
+        expect( model.get( "textSelection" ) ).toEqual( [ 3, 3 ] );
       } );
 
     } );

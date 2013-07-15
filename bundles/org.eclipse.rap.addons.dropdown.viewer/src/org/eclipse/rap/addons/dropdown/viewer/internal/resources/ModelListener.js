@@ -58,18 +58,25 @@ function onChangeResults( event ) {
 }
 
 function onChangeResultSelection( event ) {
-  var text = this.get( "results" ).items[ event.value ] || "";
-  this.set( "suggestion", text, { "sourceEvent" : "change:resultSelection" } );
+  var suggestion = null;
+  if( event.value !== -1 ) {
+    suggestion = this.get( "results" ).items[ event.value ] || "";
+  }
+  this.set( "suggestion", suggestion, { "sourceEvent" : "change:resultSelection" } );
 }
 
 function onChangeSuggestion( event ) {
   if( event.options.sourceEvent !== "change:userText" ) {
-    var text = event.value != null ? event.value : this.get( "userText" );
+    var userText = this.get( "userText" ) || "";
+    var text = event.value || userText;
     this.set( "text", text );
     if( event.options.sourceEvent === "change:resultSelection" ) {
-      this.set( "textSelection", [ 0, text.length ] );
+      if( event.value === null ) {
+        this.set( "textSelection", [ text.length , text.length ] );
+      } else {
+        this.set( "textSelection", [ 0, text.length ] );
+      }
     } else {
-      var userText = this.get( "userText" ) || "";
       this.set( "textSelection", [ userText.length, text.length ] );
     }
   }
