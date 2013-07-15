@@ -9,6 +9,8 @@
  *    EclipseSource - initial API and implementation
  ******************************************************************************/
 
+//@ sourceURL=ModelListener.js
+
 ///////////////////
 // Event Delegation
 
@@ -19,6 +21,9 @@ function handleEvent( model, type, event ) {
     switch( event.property ) {
       case "userText":
         onChangeUserText.apply( model, [ event ] );
+      break;
+      case "suggestion":
+        onChangeSuggestion.apply( model, [ event ] );
       break;
       case "resultSelection":
         onChangeResultSelection.apply( model, [ event ] );
@@ -53,6 +58,11 @@ function onChangeResults( options ) {
 function onChangeResultSelection( options ) {
   var text = this.get( "results" ).items[ options.value ] || "";
   this.set( "suggestion", text );
+}
+
+function onChangeSuggestion( options ) {
+  var text = options.value != null ? options.value : this.get( "userText" );
+  this.set( "text", text );
 }
 
 function onAcceptSuggestion( options ) {

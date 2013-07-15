@@ -9,6 +9,8 @@
  *    EclipseSource - initial API and implementation
  ******************************************************************************/
 
+ //@ sourceURL=DataBinding.js
+
 ///////////////////
 // Event Delegation
 
@@ -31,10 +33,10 @@ function handleEvent() {
 function handleDropDownEvent( model, event ) {
   switch( event.type ) {
     case SWT.Selection:
-      onDropDownSelection( model, event.widget.getSelectionIndex() );
+      onDropDownSelection( model, event );
     break;
     case SWT.DefaultSelection:
-      onDropDownDefaultSelection( model );
+      onDropDownDefaultSelection( model, event );
     break;
   }
 }
@@ -43,10 +45,23 @@ function handleTextEvent( model, event ) {
   var userAction = getUserAction( event );
   switch( event.type ) {
     case SWT.Modify:
-      onTextModify( model, event.widget.getText(), userAction );
+      onTextModify( model, event, userAction );
     break;
   }
   setUserAction( event );
+}
+
+function handleModelEvent( model, type, event ) {
+  var textWidget = rap.getObject( model.get( "textWidgetId" ) );
+  var dropDown = rap.getObject( model.get( "dropDownWidgetId" ) );
+  switch( event.property ) {
+    case "text":
+      onModelChangeText( textWidget, model, event );
+    break;
+    case "results":
+      onModelChangeResults( dropDown, model, event );
+    break;
+  }
 }
 
 function setUserAction( event ) {
@@ -63,34 +78,23 @@ function getUserAction( event ) {
   return action;
 }
 
-function handleModelEvent( model, type, event ) {
-  var textWidget = rap.getObject( model.get( "textWidgetId" ) );
-  var dropDown = rap.getObject( model.get( "dropDownWidgetId" ) );
-  switch( event.property ) {
-    case "suggestion":
-      onModelChangeSuggestion( textWidget, model, event );
-    break;
-    case "results":
-      onModelChangeResults( dropDown, model, event );
-    break;
-  }
-}
-
 /////////////////
 // Event Handling
 
-function onTextModify( model, text, userAction ) {
+function onTextModify( model, event, userAction ) {
+  var text = event.widget.getText();
+  model.set( "text", text, { "source" : "Text" } );
   if( userAction ) {
     model.set( "userText", text );
   }
 }
 
-function onDropDownSelection( model, selectionIndex ) {
-  model.set( "resultSelection", selectionIndex );
+function onDropDownSelection( model, event ) {
+  model.set( "resultSelection", event.index, { "source" : "DropDown" } );
 }
 
-function onDropDownDefaultSelection( model ) {
-  model.notify( "accept" );
+function onDropDownDefaultSelection( model, event ) {
+  model.notify( "accept", { "source" : "DropDown" }  );
 }
 
 function onModelChangeResults( dropDown, model, event ) {
@@ -99,11 +103,9 @@ function onModelChangeResults( dropDown, model, event ) {
   dropDown.setItems( results.items );
 }
 
-function onModelChangeSuggestion( textWidget, model, event ) {
-  var text = model.get( "suggestion" );
-  if( text == null ) {
-    text = model.get( "userText" );
+function onModelChangeText( textWidget, model, event ) {
+  if( event.source !== "Text" ) {
+    textWidget.setText( model.get( "text" ) );
   }
-  textWidget.setText( text );
 }
 

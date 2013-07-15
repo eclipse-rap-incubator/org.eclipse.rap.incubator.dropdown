@@ -177,6 +177,27 @@
 
     } );
 
+    describe( "change:suggestion", function() {
+
+      it( "sets text to suggestion", function() {
+        model.addListener( "change:suggestion", createClientListener( "ModelListener" ) );
+
+        model.set( "suggestion", "foo" );
+
+        expect( model.get( "text" ) ).toEqual( "foo" );
+      } );
+
+      it( "resets text to userText", function() {
+        model.addListener( "change:suggestion", createClientListener( "ModelListener" ) );
+        model.set( "userText", "bar" );
+
+        model.set( "suggestion", null );
+
+        expect( model.get( "text" ) ).toEqual( "bar" );
+      } );
+
+    } );
+
     describe( "change:results", function() {
 
       it( "does nothing without autocomplete", function() {
