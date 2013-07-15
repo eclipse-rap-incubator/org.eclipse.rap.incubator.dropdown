@@ -46,16 +46,14 @@ function onChangeUserText( event ) {
   this.set( "suggestion", null, { "action" : "sync" } );
   var query = createQuery( event.value.toLowerCase() );
   var results = searchItems( this.get( "elements" ), query );
-  this.set( "results", results );
+  this.set( "results", results, { "action" : event.options.action } );
 }
 
 function onChangeResults( event ) {
-  if( this.get( "autoComplete" ) ) {
+  if( this.get( "autoComplete" ) && event.options.action === "typing" ) {
     var items = this.get( "results" ).items;
     if( items.length === 1 ) {
       this.set( "suggestion", items[ 0 ] );
-    } else {
-      this.set( "suggestion", null );
     }
   }
 }

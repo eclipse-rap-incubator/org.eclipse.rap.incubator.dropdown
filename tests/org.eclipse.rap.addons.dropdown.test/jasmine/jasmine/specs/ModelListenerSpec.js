@@ -180,6 +180,15 @@
         expect( model.get( "results" ).items ).toEqual( [ "bar", "banana" ] );
       } );
 
+      it( "forwards action option", function() {
+        model.addListener( "change:userText", createClientListener( "ModelListener" ) );
+        model.addListener( "change:results", logger );
+
+        model.set( "userText", "ba", { "action" : "foo" );
+
+        expect( log[ 0 ][ 0 ].options.action ).toBe( "foo" );
+      } );
+
     } );
 
     describe( "change:resultSelection", function() {
@@ -284,24 +293,24 @@
         expect( model.get( "suggestion" ) ).toEqual( "ban" );
       } );
 
+      it( "does nothing if not typing", function() {
+        model.set( "suggestion", "ban" );
+        model.addListener( "change:results", createClientListener( "ModelListener" ) );
+        model.set( "autoComplete", true );
+
+        model.set( "results", { "items" : [ "banana" ] } );
+
+        expect( model.get( "suggestion" ) ).toEqual( "ban" );
+      } );
+
       it( "autocompletes suggestion on single result", function() {
         model.set( "suggestion", "ban" );
         model.set( "autoComplete", true );
         model.addListener( "change:results", createClientListener( "ModelListener" ) );
 
-        model.set( "results", { "items" : [ "banana" ] } );
+        model.set( "results", { "items" : [ "banana" ] }, { "action" : "typing" } );
 
         expect( model.get( "suggestion" ) ).toEqual( "banana" );
-      } );
-
-      it( "clears suggestion on multiple results", function() {
-        model.set( "suggestion", "ban" );
-        model.set( "autoComplete", true );
-        model.addListener( "change:results", createClientListener( "ModelListener" ) );
-
-        model.set( "results", { "items" : [ "banana", "apple" ] } );
-
-        expect( model.get( "suggestion" ) ).toBeNull();
       } );
 
     } );
