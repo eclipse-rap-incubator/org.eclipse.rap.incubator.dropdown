@@ -414,14 +414,12 @@
         event.index = this.getSelectionIndex();
         event.text = this._.items[ event.index ];
       }
-      if( selection.length > 0 || type !== "DefaultSelection" ) {
-        notify.apply( this, [ type, event ] );
-        if( !rwt.remote.EventUtil.getSuspended() ) { // TODO [tb] : ClientScripting must reset flag
-          // TODO : merge multiple changes? How long?
-          rap.getRemoteObject( this ).notify( type, event );
-          if( type === "DefaultSelection" ) {
-            this.hide();
-          }
+      notify.apply( this, [ type, event ] );
+      if( !rwt.remote.EventUtil.getSuspended() ) { // TODO [tb] : ClientScripting must reset flag
+        // TODO : merge multiple changes? How long?
+        rap.getRemoteObject( this ).notify( type, event );
+        if( type === "DefaultSelection" && selection.length > 0 ) {
+          this.hide();
         }
       }
     } else {

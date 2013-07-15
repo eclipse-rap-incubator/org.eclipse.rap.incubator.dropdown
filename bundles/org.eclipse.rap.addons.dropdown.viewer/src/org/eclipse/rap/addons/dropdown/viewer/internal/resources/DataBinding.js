@@ -97,7 +97,7 @@ function onDropDownSelection( model, event ) {
 }
 
 function onDropDownDefaultSelection( model, event ) {
-  model.notify( "accept", { type : "accept", "source" : "DropDown" }  );
+  model.notify( "accept", { type : "accept", "source" : model }  );
 }
 
 function onModelChangeResults( dropDown, model, event ) {

@@ -581,19 +581,6 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       assertEquals( 1, logger.getLog().length );
     },
 
-    testAddDefaultSelectionListener_FiresOnEnterOnlyIfHasSelection : function() {
-      dropdown.setItems( [ "a", "b", "c" ] );
-      showDropDown();
-      var logger = TestUtil.getLogger();
-
-      dropdown.addListener( "DefaultSelection", logger.log );
-      widget.focus();
-      TestUtil.pressOnce( widget, "Enter" );
-      TestUtil.forceTimerOnce();
-
-      assertEquals( 0, logger.getLog().length );
-    },
-
     testAddDefaultSelectionListener_FiresOnClick : function() {
       dropdown.setItems( [ "a", "b", "c" ] );
       showDropDown();
@@ -618,19 +605,6 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       TestUtil.forceTimerOnce();
 
       assertEquals( 1, logger.getLog().length );
-    },
-
-    testAddDefaultSelectionListener_FiresNotOnTextEnterWithoutSelection : function() {
-      dropdown.setItems( [ "a", "b", "c" ] );
-      showDropDown();
-      var logger = TestUtil.getLogger();
-
-      dropdown.addListener( "DefaultSelection", logger.log );
-      widget.focus();
-      TestUtil.pressOnce( widget, "Enter" );
-      TestUtil.forceTimerOnce();
-
-      assertEquals( 0, logger.getLog().length );
     },
 
     testAddDefaultSelectionListener_HidesNotOnTextEnterWithoutSelection : function() {

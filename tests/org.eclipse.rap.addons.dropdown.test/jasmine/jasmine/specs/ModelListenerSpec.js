@@ -333,6 +333,15 @@
         expect( model.get( "elementSelection" ) ).toBe( 3 );
       } );
 
+      it( "clears text selection", function() {
+        model.addListener( "accept", createClientListener( "ModelListener" ) );
+        model.set( "text", "foobar" );
+
+        model.notify( "accept", { source : model, type : "accept" } );
+
+        expect( model.get( "textSelection" ) ).toEqual( [ 6, 6 ] );
+      } );
+
     } );
 
   } );

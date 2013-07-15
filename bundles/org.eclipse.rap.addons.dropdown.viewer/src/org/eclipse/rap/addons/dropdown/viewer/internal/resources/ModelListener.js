@@ -83,9 +83,13 @@ function onChangeSuggestion( event ) {
 }
 
 function onAcceptSuggestion( event ) {
-  var indicies = this.get( "results" ).indicies;
+  var results = this.get( "results" );
   var index = this.get( "resultSelection" );
-  this.set( "elementSelection", indicies[ index ] );
+  if( results && typeof index === "number" && index > -1 ) {
+    this.set( "elementSelection", results.indicies[ index ] );
+  }
+  var text = this.get( "text" ) || "";
+  this.set( "textSelection", [ text.length, text.length ] );
 }
 
 /////////
