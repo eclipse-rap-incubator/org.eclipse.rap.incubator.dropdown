@@ -8,20 +8,22 @@
  * Contributors:
  *    EclipseSource - initial API and implementation
  ******************************************************************************/
-package org.eclipse.rap.testrunner.jasmine;
+package org.eclipse.rap.jstestrunner.jasmine;
 
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.rap.jstestrunner.jasmine.JasmineReporter.Spec;
+import org.eclipse.rap.jstestrunner.jasmine.JasmineReporter.Suite;
 import org.mozilla.javascript.*;
 
 
-public class JasmineRunner {
+class JasmineRunner {
 
   private static final String CHARSET = "UTF-8";
-  private ScriptableObject scope;
-  private ScriptableObject jasmineEnv;
+  private final ScriptableObject scope;
+  private final ScriptableObject jasmineEnv;
   private JasmineReporter publicReporter;
   private TestUtil testUtil;
 
@@ -30,7 +32,7 @@ public class JasmineRunner {
     createTestUtil();
     scope.put( "window", scope, scope );
     createStubs( "setTimeout", "clearTimeout", "setInterval", "clearInterval" );
-    parseScript( getClass().getClassLoader(), "org/eclipse/rap/testrunner/jasmine/jasmine.js" );
+    parseScript( getClass().getClassLoader(), "org/eclipse/rap/jstestrunner/jasmine/jasmine.js" );
     jasmineEnv = getJasmineEnv();
     createReporter();
     Context.exit();
@@ -52,13 +54,17 @@ public class JasmineRunner {
   public void parseScript( ClassLoader loader, String path )  {
     String script = readContent( loader, path );
     Context.enter();
-    Context c = Context.getCurrentContext();
+    Context context = Context.getCurrentContext();
     try {
-      c.evaluateString( scope, script, path, 1, null );
+      context.evaluateString( scope, script, path, 1, null );
     } catch( EcmaError ex ) {
-      System.out.println( ex.getErrorMessage() );
-      System.out.println( ex.getScriptStackTrace() );
-      throw new IllegalStateException( "Could not execute " + path );
+      String message = "Could not execute "
+                       + path
+                       + "\n"
+                       + ex.getErrorMessage()
+                       + "\n"
+                       + ex.getScriptStackTrace();
+      throw new IllegalStateException( message );
     }
     Context.exit();
   }
@@ -135,62 +141,64 @@ public class JasmineRunner {
 
   public class InternalReporter {
 
-    private int passedSpecs = 0;
-    private int executedSpecs = 0;
-
     public void reportRunnerStarting( ScriptableObject runner ) {
       publicReporter.reportRunnerStarting();
     }
 
     public void reportRunnerResults( ScriptableObject runner ) {
-      publicReporter.reportRunnerResults( passedSpecs, executedSpecs );
+      publicReporter.reportRunnerResults();
     }
 
-    public void reportSpecStarting( ScriptableObject spec ) {
-      executedSpecs++;
-      ScriptableObject suite = ( ScriptableObject )spec.get( "suite" );
-      String suiteDescription = ( String )suite.get( "description" );
-      String specDescription = ( String )spec.get( "description" );
-      publicReporter.reportSpecStarting( suiteDescription, specDescription );
+    public void reportSpecStarting( ScriptableObject specObj ) {
+      publicReporter.reportSpecStarting( createSpec( specObj ) );
     }
 
-    public void reportSpecResults( ScriptableObject spec ) {
+    public void reportSpecResults( ScriptableObject specObj ) {
+      publicReporter.reportSpecResults( createSpec( specObj ) );
+    }
+
+
+    public void reportSuiteResults( ScriptableObject suiteObj ) {
+      publicReporter.reportSuiteResults( createSuite( suiteObj ) );
+    }
+
+    public void log( String message ) {
+      publicReporter.log( message );
+    }
+
+    private Spec createSpec( ScriptableObject specObj ) {
+      Suite suite = createSuite( ( ScriptableObject )specObj.get( "suite" ) );
+      String description = ( String )specObj.get( "description" );
       ScriptableObject results
-        = ( ScriptableObject )ScriptableObject.callMethod( spec, "results", null );
-      boolean specsPassed
+        = ( ScriptableObject )ScriptableObject.callMethod( specObj, "results", null );
+      boolean passed
         = ( ( Boolean )ScriptableObject.callMethod( results, "passed", null ) ).booleanValue();
-      String message = null;
-      if( specsPassed ) {
-        passedSpecs++;
-       } else {
-         message = getMessageForSpec( results );
-       }
-      publicReporter.reportSpecResults( specsPassed, message );
+      String error = getMessageForSpec( results );
+      return new SpecImpl( suite, description, passed, error );
     }
 
-    public String getMessageForSpec( ScriptableObject results ) {
+    private String getMessageForSpec( ScriptableObject resultsObj ) {
       String result = "";
       ScriptableObject items
-         = ( ( ScriptableObject )ScriptableObject.callMethod( results, "getItems", null ) );
-       Object[] itemIds = items.getIds();
-       for( Object id : itemIds ) {
-         ScriptableObject item = ( ScriptableObject )items.get( id );
-         boolean itemPassed
-           = ( ( Boolean )ScriptableObject.callMethod( item, "passed", null ) ).booleanValue();
-         if( !itemPassed ) {
-           result += "Error " + id + ": ";
-           result += ScriptableObject.getProperty( item, "message" ) + "\n";
-         }
-       }
-       return result;
+        = ( ( ScriptableObject )ScriptableObject.callMethod( resultsObj, "getItems", null ) );
+      for( Object id : items.getIds() ) {
+        ScriptableObject item = ( ScriptableObject )items.get( id );
+        boolean itemPassed
+          = ( ( Boolean )ScriptableObject.callMethod( item, "passed", null ) ).booleanValue();
+        if( !itemPassed ) {
+          result += "Error [" + id + "]: " + ScriptableObject.getProperty( item, "message" ) + "\n";
+        }
+      }
+      return result;
     }
 
-    public void reportSuiteResults( ScriptableObject suite ) {
-      publicReporter.reportSuiteResults( ( String )suite.get( "description" ) );
-    }
-
-    public void log( String str ) {
-      publicReporter.log( str );
+    private Suite createSuite( ScriptableObject suite ) {
+      if( suite == null ) {
+        return null;
+      }
+      String description = ( String )suite.get( "description" );
+      ScriptableObject parent = ( ScriptableObject )suite.get( "parentSuite" );
+      return new SuiteImpl( createSuite( parent ), description );
     }
 
   }
