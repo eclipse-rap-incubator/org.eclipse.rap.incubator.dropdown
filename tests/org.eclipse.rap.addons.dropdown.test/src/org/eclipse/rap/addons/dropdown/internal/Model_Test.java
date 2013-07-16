@@ -10,10 +10,7 @@
  ******************************************************************************/
 package org.eclipse.rap.addons.dropdown.internal;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyString;
@@ -84,19 +81,39 @@ public class Model_Test {
   }
 
   @Test
-  public void testDestroy_CallsRemoteObjectDestroy() {
-    model.destroy();
+  public void testDispose_CallsRemoteObjectDestroy() {
+    model.dispose();
 
     verify( remoteObject ).destroy();
   }
 
   @Test
-  public void testDestroy_DisposesListenerBinding() {
+  public void testDispose_callTwiceHasNoEffect() {
+    model.dispose();
+    model.dispose();
+
+    verify( remoteObject, times( 1 ) ).destroy();
+  }
+
+  @Test
+  public void testIsDisposed_returnsFalse() {
+    assertFalse( model.isDisposed() );
+  }
+
+  @Test
+  public void testIsDisposed_returnsTrueAfterDispose() {
+    model.dispose();
+
+    assertTrue( model.isDisposed() );
+  }
+
+  @Test
+  public void testDispose_DisposesListenerBinding() {
     ClientModelListener listener = new ClientModelListener( "" );
     model.addListener( "foo", listener );
     ClientListenerBinding binding = listener.findBinding( model, "foo" );
 
-    model.destroy();
+    model.dispose();
 
     assertTrue( binding.isDisposed() );
   }

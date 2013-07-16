@@ -26,6 +26,8 @@ public class Model {
   private RemoteObject remoteObject;
   private Map<String, List<ModelListener>> listeners = new HashMap<String, List<ModelListener>>();
 
+  private boolean isDisposed;
+
   public Model() {
     remoteObject = RWT.getUISession().getConnection().createRemoteObject( REMOTE_TYPE );
     remoteObject.setHandler( new AbstractOperationHandler() {
@@ -88,9 +90,16 @@ public class Model {
     remoteObject.call( "notify", callProperties );
   }
 
-  public void destroy() {
-    remoteObject.destroy();
-    notifyInternal( "destroy", null ); // TODO : find other solution or also fire on client
+  public void dispose() {
+    if( !isDisposed ) {
+      isDisposed = true;
+      remoteObject.destroy();
+      notifyInternal( "destroy", null ); // TODO : find other solution or also fire on client
+    }
+  }
+
+  public boolean isDisposed() {
+    return isDisposed;
   }
 
   public String getId() {
