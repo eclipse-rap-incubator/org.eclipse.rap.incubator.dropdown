@@ -52,8 +52,9 @@ function onChangeUserText( event ) {
 function onChangeResults( event ) {
   if( this.get( "autoComplete" ) && event.options.action === "typing" ) {
     var items = this.get( "results" ).items;
-    if( items.length === 1 ) {
-      this.set( "suggestion", items[ 0 ] );
+    var common = commonText( items );
+    if( common && common.length > this.get( "userText" ).length ) {
+      this.set( "suggestion", common );
     }
   }
 }
@@ -63,8 +64,7 @@ function onChangeResultSelection( event ) {
   if( event.value !== -1 ) {
     suggestion = this.get( "results" ).items[ event.value ] || "";
   }
-  var options = { "action" : "selection" };
-  this.set( "suggestion", suggestion, options );
+  this.set( "suggestion", suggestion, { "action" : "selection" } );
 }
 
 function onChangeSuggestion( event ) {
@@ -104,6 +104,62 @@ function onChangeElementSelection( event ) {
 
 /////////
 // Helper
+
+
+function commonText( items ) {
+  var result = null;
+  if( items.length === 1 ) {
+    result = items[ 0 ];
+  } else if( items.length > 1 ) {
+    var common = commonChars( items );
+    if( common.length > 0 ) {
+      if( allItemsSplitAt( items, common.length ) ) {
+        result = common;
+      } else {
+        var splitRegExp = /\W/g
+        var matches = common.match( splitRegExp );
+        if( matches && matches.length > 0 ) {
+          var lastSplitCharOffset = common.lastIndexOf( matches.pop() );
+          result = common.slice( 0, lastSplitCharOffset + 1 );
+        }
+      }
+    }
+  }
+  return result;
+}
+
+function commonChars( items ) {
+  var testItem = items[ 0 ];
+  var result = "";
+  var matches = true
+  for( var offset = 0; ( offset < testItem.length ) && matches; offset++ ) {
+    var candidate = result + testItem.charAt( offset );
+    for( var i = 0; i < items.length; i++ ) {
+      if( items[ i ].indexOf( candidate ) !== 0 ) {
+        matches = false;
+        break;
+      }
+    }
+    if( matches ) {
+      result = candidate;
+    }
+  }
+  return result;
+}
+
+function allItemsSplitAt( items, offset ) {
+  var splitRegExp = /\W/ // not a letter/digit/underscore
+  var result = true;
+  for( var i = 0; i < items.length; i++ ) {
+    if( items[ i ].length !== offset ) {
+      var itemChar = items[ i ].charAt( offset );
+      if( !splitRegExp.test( itemChar ) ) {
+        result = false;
+      }
+    }
+  }
+  return result;
+}
 
 function searchItems( items, query, limit ) {
   var resultIndicies = [];

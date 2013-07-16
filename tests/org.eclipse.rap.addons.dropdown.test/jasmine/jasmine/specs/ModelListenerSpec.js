@@ -76,6 +76,63 @@
 
   } );
 
+  describe( "commonText", function() {
+
+    var commonText;
+
+    beforeEach( function() {
+      if( !commonText ) {
+        commonText = getVarFromScript( "ModelListener", "commonText" );
+      }
+    } );
+
+    it( "returns the only item", function() {
+      expect( commonText( [ "foo" ] ) ).toBe( "foo" );
+    } );
+
+    it( "returns null for empty list", function() {
+      expect( commonText( [ ] ) ).toBeNull();
+    } );
+
+    it( "returns null for no common text", function() {
+      expect( commonText( [ "foo", "bar", "lalafoobar" ] ) ).toBeNull();
+    } );
+
+    it( "returns null for no common text before space", function() {
+      expect( commonText( [ "foobar", "foola", "foo doo" ] ) ).toBeNull();
+    } );
+
+    it( "returns common text until space", function() {
+      expect( commonText( [ "foo bar", "foo la", "foo doo" ] ) ).toBe( "foo " );
+    } );
+
+    it( "returns common text until dot", function() {
+      expect( commonText( [ "foo.bar", "foo.la", "foo.doo" ] ) ).toBe( "foo." );
+    } );
+
+    it( "returns common text until comma", function() {
+      expect( commonText( [ "foo,bar", "foo,la", "foo,doo" ] ) ).toBe( "foo," );
+    } );
+
+    it( "returns common text after space until dot", function() {
+      var items = [ "banana foo.bar", "banana foo.la", "banana foo.doo" ];
+      expect( commonText( items ) ).toBe( "banana foo." );
+    } );
+
+    it( "returns null for common until underscore", function() {
+      expect( commonText( [ "foo_bar", "foo_la", "foo_doo" ] ) ).toBeNull();
+    } );
+
+    it( "returns common text with first item that equals common text", function() {
+      expect( commonText( [ "foo bar", "foo bar la", "foo bar doo" ] ) ).toBe( "foo bar" );
+    } );
+
+    it( "returns common text with last item that equals common text", function() {
+      expect( commonText( [ "foo bar la", "foo bar doo", "foo bar" ] ) ).toBe( "foo bar" );
+    } );
+
+  } );
+
   describe( "searchItems", function() {
 
     var searchItems;
@@ -184,7 +241,7 @@
         model.addListener( "change:userText", createClientListener( "ModelListener" ) );
         model.addListener( "change:results", logger );
 
-        model.set( "userText", "ba", { "action" : "foo" );
+        model.set( "userText", "ba", { "action" : "foo" } );
 
         expect( log[ 0 ][ 0 ].options.action ).toBe( "foo" );
       } );
@@ -305,12 +362,36 @@
 
       it( "autocompletes suggestion on single result", function() {
         model.set( "suggestion", "ban" );
+        model.set( "userText", "b" );
         model.set( "autoComplete", true );
         model.addListener( "change:results", createClientListener( "ModelListener" ) );
 
         model.set( "results", { "items" : [ "banana" ] }, { "action" : "typing" } );
 
         expect( model.get( "suggestion" ) ).toEqual( "banana" );
+      } );
+
+      it( "partially autocompletes suggestion for common text", function() {
+        model.set( "autoComplete", true );
+        model.set( "userText", "b" );
+        model.addListener( "change:results", createClientListener( "ModelListener" ) );
+
+        var items = [ "banana foo", "banana bar" ];
+        model.set( "results", { "items" : items }, { "action" : "typing" } );
+
+        expect( model.get( "suggestion" ) ).toEqual( "banana " );
+      } );
+
+      it( "does not autocomplete if common text is shorter than userText", function() {
+        model.set( "suggestion", null );
+        model.set( "autoComplete", true );
+        model.set( "userText", "banana xxx" );
+        model.addListener( "change:results", createClientListener( "ModelListener" ) );
+
+        var items = [ "banana foo", "banana bar" ];
+        model.set( "results", { "items" : items }, { "action" : "typing" } );
+
+        expect( model.get( "suggestion" ) ).toBe( null );
       } );
 
     } );
