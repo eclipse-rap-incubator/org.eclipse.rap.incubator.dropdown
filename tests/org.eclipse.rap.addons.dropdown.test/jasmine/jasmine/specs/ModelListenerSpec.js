@@ -248,6 +248,52 @@
 
     } );
 
+    describe( "change:elements", function() {
+
+      it( "clears suggestion", function() {
+        model.addListener( "change:elements", createClientListener( "ModelListener" ) );
+        model.set( "suggestion", "banana" );
+        model.set( "resultsVisible", true );
+        model.addListener( "change:suggestion", logger );
+
+        model.set( "elements", [] );
+
+        expect( model.get( "suggestion" ) ).toBeNull();
+      } );
+
+      it( "updates results", function() {
+        model.addListener( "change:elements", createClientListener( "ModelListener" ) );
+        model.set( "userText", "ba" );
+        model.set( "resultsVisible", true );
+
+        model.set( "elements", [ "foo", "bar" ] );
+
+        expect( model.get( "results" ).items ).toEqual( [ "bar" ] );
+      } );
+
+      it( "does not update results if not visible", function() {
+        model.addListener( "change:elements", createClientListener( "ModelListener" ) );
+        model.set( "resultsVisible", false );
+        model.addListener( "change:results", logger );
+
+        model.set( "elements", [ "foo", "bar" ] );
+
+        expect( log.length ).toBe( 0 );
+      } );
+
+      it( "sets results with refresh option", function() {
+        model.addListener( "change:elements", createClientListener( "ModelListener" ) );
+        model.addListener( "change:results", logger );
+        model.set( "resultsVisible", true );
+        model.set( "userText", "ba" );
+
+        model.set( "elements", [ "foo", "bar" ] );
+
+        expect( log[ 0 ][ 0 ].options.action ).toBe( "refresh" );
+      } );
+
+    } );
+
     describe( "change:resultSelection", function() {
 
       it( "sets suggestion to selected result", function() {
@@ -360,13 +406,24 @@
         expect( model.get( "suggestion" ) ).toEqual( "ban" );
       } );
 
-      it( "autocompletes suggestion on single result", function() {
+      it( "autocompletes suggestion while typing on single result", function() {
         model.set( "suggestion", "ban" );
         model.set( "userText", "b" );
         model.set( "autoComplete", true );
         model.addListener( "change:results", createClientListener( "ModelListener" ) );
 
         model.set( "results", { "items" : [ "banana" ] }, { "action" : "typing" } );
+
+        expect( model.get( "suggestion" ) ).toEqual( "banana" );
+      } );
+
+      it( "autocompletes suggestion while refreshing on single result", function() {
+        model.set( "suggestion", "ban" );
+        model.set( "userText", "b" );
+        model.set( "autoComplete", true );
+        model.addListener( "change:results", createClientListener( "ModelListener" ) );
+
+        model.set( "results", { "items" : [ "banana" ] }, { "action" : "refresh" } );
 
         expect( model.get( "suggestion" ) ).toEqual( "banana" );
       } );
@@ -459,20 +516,6 @@
       } );
 
     } );
-
-//    describe( "change:elementSelection", function() {
-//
-//      it( "hides results", function() {
-//        model.addListener( "change:elementSelection", createClientListener( "ModelListener" ) );
-//        model.set( "resultsVisible", true );
-//
-//        model.set( "elementSelection", 22 );
-//
-//        expect( model.get( "resultsVisible" ) ).toBe( false );
-//      } );
-//
-//    } );
-
 
   } );
 

@@ -168,9 +168,10 @@ public class DropDownDemo extends AbstractEntryPoint {
         }
       }
     } );
-    viewer.getControl().addListener( SWT.FocusIn, new Listener() {
+    final Text text = ( Text )viewer.getControl();
+    text.addListener( SWT.Modify, new Listener() {
       public void handleEvent( Event event ) {
-        if( viewer.getInput() == null ) {
+        if( viewer.getInput() == null && text.getText().length() >= 3 ) {
           germany.setSelection( true );
           germany.notifyListeners( SWT.Selection, new Event() );
         }

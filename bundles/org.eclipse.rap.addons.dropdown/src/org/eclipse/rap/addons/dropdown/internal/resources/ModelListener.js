@@ -19,6 +19,9 @@ function handleEvent( event ) {
     onAcceptSuggestion.apply( event.source, [ event ] );
   } else {
     switch( event.property ) {
+      case "elements":
+        onChangeElements.apply( event.source, [ event ] );
+      break;
       case "userText":
         onChangeUserText.apply( event.source, [ event ] );
       break;
@@ -31,9 +34,6 @@ function handleEvent( event ) {
       case "suggestion":
         onChangeSuggestion.apply( event.source, [ event ] );
       break;
-//      case "elementSelection":
-//        onChangeElementSelection.apply( event.source, [ event ] );
-//      break;
     }
   }
 }
@@ -41,16 +41,22 @@ function handleEvent( event ) {
 //////////////////
 // Event Handling
 
+function onChangeElements( event ) {
+  // NOTE: Nothing to do if not visible, but would need to update when it becomes visible.
+  //       Currently only onChangeUserText can set resultsVisible to true, which updates implicitly.
+  if( this.get( "resultsVisible" ) ) {
+    search.apply( this, [ { "action" : "refresh" } ] );
+  }
+}
+
 function onChangeUserText( event ) {
   this.set( "resultsVisible", true );
-  this.set( "suggestion", null, { "action" : "sync" } );
-  var query = createQuery( event.value.toLowerCase() );
-  var results = searchItems( this.get( "elements" ), query );
-  this.set( "results", results, { "action" : event.options.action } );
+  search.apply( this, [ event.options ] );
 }
 
 function onChangeResults( event ) {
-  if( this.get( "autoComplete" ) && event.options.action === "typing" ) {
+  var action = event.options.action;
+  if( this.get( "autoComplete" ) && ( action === "typing" || action === "refresh" ) ) {
     var items = this.get( "results" ).items;
     var common = commonText( items );
     if( common && common.length > this.get( "userText" ).length ) {
@@ -100,13 +106,16 @@ function onAcceptSuggestion( event ) {
   this.set( "textSelection", [ text.length, text.length ] );
 }
 
-//function onChangeElementSelection( event ) {
-//  this.set( "resultsVisible", false );
-//}
+function search( options ) {
+  var userText = this.get( "userText" ) || "";
+  this.set( "suggestion", null, { "action" : "sync" } );
+  var query = createQuery( userText.toLowerCase() );
+  var results = searchItems( this.get( "elements" ), query );
+  this.set( "results", results, { "action" : options.action } );
+}
 
 /////////
 // Helper
-
 
 function commonText( items ) {
   var result = null;
