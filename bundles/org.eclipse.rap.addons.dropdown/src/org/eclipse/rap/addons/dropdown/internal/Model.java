@@ -12,6 +12,7 @@ package org.eclipse.rap.addons.dropdown.internal;
 
 import java.util.*;
 
+import org.eclipse.rap.addons.dropdown.internal.resources.ModelResources;
 import org.eclipse.rap.json.JsonObject;
 import org.eclipse.rap.json.JsonValue;
 import org.eclipse.rap.rwt.RWT;
@@ -29,6 +30,7 @@ public class Model {
   private boolean isDisposed;
 
   public Model() {
+    ModelResources.ensure();
     remoteObject = RWT.getUISession().getConnection().createRemoteObject( REMOTE_TYPE );
     remoteObject.setHandler( new AbstractOperationHandler() {
       @Override

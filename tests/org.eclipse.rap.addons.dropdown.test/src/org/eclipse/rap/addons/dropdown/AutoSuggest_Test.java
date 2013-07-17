@@ -21,9 +21,14 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.eclipse.rap.clientscripting.ClientListener;
 import org.eclipse.rap.json.JsonArray;
 import org.eclipse.rap.rwt.RWT;
+import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteList;
+import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteListImpl;
 import org.eclipse.rap.rwt.lifecycle.PhaseId;
 import org.eclipse.rap.rwt.remote.Connection;
 import org.eclipse.rap.rwt.remote.RemoteObject;
@@ -33,7 +38,11 @@ import org.eclipse.swt.widgets.*;
 import org.junit.*;
 
 
+@SuppressWarnings( "restriction" )
 public class AutoSuggest_Test {
+
+  private static final String MODEL_ID_KEY =
+      "org.eclipse.rap.addons.dropdown.viewer.DropDownViewer#viewer";
 
   private Display display;
   private Text text;
@@ -115,6 +124,64 @@ public class AutoSuggest_Test {
 
     DropDown dropDown = autoSuggest.getDropDown();
     verify( remoteObject ).set( "dropDownWidgetId", getId( dropDown ) );
+  }
+
+  @Test
+  public void testConstructor_setModelIdOnDropDown() {
+    AutoSuggest autoSuggest = new AutoSuggest( text );
+
+    DropDown dropDown = autoSuggest.getDropDown();
+    assertEquals( "foo", dropDown.getData( MODEL_ID_KEY ) );
+  }
+
+  @Test
+  public void testConstructor_setModelIdOnText() {
+    new AutoSuggest( text );
+
+    assertEquals( "foo", text.getData( MODEL_ID_KEY ) );
+  }
+
+  @Test
+  public void testConstructor_addKeysToWidgetDataWhiteList() {
+    WidgetDataWhiteListImpl service
+      = ( WidgetDataWhiteListImpl )RWT.getClient().getService( WidgetDataWhiteList.class );
+    service.setKeys( new String[ 0 ] );
+
+    new AutoSuggest( text );
+
+    List<String> list = Arrays.asList( service.getKeys() );
+    assertTrue( list.contains( MODEL_ID_KEY ) );
+  }
+
+  @Test
+  public void testConstructor_addKeysToWidgetDataWhiteListAndKeepExistingKeys() {
+    WidgetDataWhiteListImpl service
+      = ( WidgetDataWhiteListImpl )RWT.getClient().getService( WidgetDataWhiteList.class );
+    service.setKeys( new String[]{ "foo" } );
+
+    new AutoSuggest( text );
+
+    List<String> list = Arrays.asList( service.getKeys() );
+    assertTrue( list.contains( "foo" ) );
+  }
+
+  @Test
+  public void testConstructor_addKeysToWidgetDataWhiteListOnlyOnce() {
+    WidgetDataWhiteListImpl service
+      = ( WidgetDataWhiteListImpl )RWT.getClient().getService( WidgetDataWhiteList.class );
+    service.setKeys( new String[]{ MODEL_ID_KEY } );
+
+    new AutoSuggest( text );
+
+    List<String> list = Arrays.asList( service.getKeys() );
+    assertEquals( list.lastIndexOf( MODEL_ID_KEY ), list.indexOf( MODEL_ID_KEY ) );
+  }
+
+  @Test
+  public void testConstructor_setsEmptyElementsOnRemoteObject() {
+    new AutoSuggest( text );
+
+    verify( remoteObject ).set( eq( "elements" ), eq( new JsonArray() ) );
   }
 
   @Test

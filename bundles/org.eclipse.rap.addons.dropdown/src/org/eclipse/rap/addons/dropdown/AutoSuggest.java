@@ -12,14 +12,23 @@ package org.eclipse.rap.addons.dropdown;
 
 import static org.eclipse.rap.rwt.lifecycle.WidgetUtil.getId;
 
+import org.eclipse.rap.addons.dropdown.internal.ClientModelListener;
 import org.eclipse.rap.addons.dropdown.internal.Model;
+import org.eclipse.rap.addons.dropdown.internal.resources.ResourceLoaderUtil;
 import org.eclipse.rap.clientscripting.ClientListener;
+import org.eclipse.rap.clientscripting.WidgetDataWhiteList;
 import org.eclipse.rap.json.JsonArray;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.*;
 
 
 public class AutoSuggest {
+
+  private final static String LISTENER_PREFIX
+    = "org/eclipse/rap/addons/dropdown/internal/resources/";
+  // TODO [tb] : value no longer reflects usage
+  private static final String MODEL_ID_KEY =
+      "org.eclipse.rap.addons.dropdown.viewer.DropDownViewer#viewer";
 
   private DropDown dropDown;
   private Model model;
@@ -37,14 +46,14 @@ public class AutoSuggest {
     this.text = text;
     dropDown = new DropDown( text );
     model = new Model();
-    model.set( "textWidgetId", getId( text ) );
-    model.set( "dropDownWidgetId", getId( dropDown ) );
+    connectClientObjects();
+    attachClientListeners( );
+    setData( new String[ 0 ] );
     text.addListener( SWT.Dispose, new Listener() {
       public void handleEvent( Event event ) {
         dispose();
       }
     } );
-    attachClientListeners( );
   }
 
   public void setData( String[] data ) {
@@ -79,13 +88,34 @@ public class AutoSuggest {
   }
 
   private void attachClientListeners() {
-    clientListener = new ClientListener( "" );
+    // TODO [tb] : share listener within session
+    clientListener = createClientListener( "DataBinding.js" );
     text.addListener( SWT.Modify, clientListener );
     text.addListener( SWT.Verify, clientListener );
     dropDown.addListener( SWT.Show, clientListener );
     dropDown.addListener( SWT.Hide, clientListener );
     dropDown.addListener( SWT.Selection, clientListener );
     dropDown.addListener( SWT.DefaultSelection, clientListener );
+    model.addListener( "change", createModelListener( "DataBinding.js" ) );
+    ClientModelListener modelListener = createModelListener( "ModelListener.js" );
+    model.addListener( "change", modelListener );
+    model.addListener( "accept", modelListener );
+  }
+
+  private void connectClientObjects() {
+    WidgetDataWhiteList.addKey( MODEL_ID_KEY );
+    model.set( "textWidgetId", getId( text ) );
+    model.set( "dropDownWidgetId", getId( dropDown ) );
+    dropDown.setData( MODEL_ID_KEY, model.getId() );
+    text.setData( MODEL_ID_KEY, model.getId() );
+  }
+
+  private static ClientListener createClientListener( String name ) {
+    return new ClientListener( ResourceLoaderUtil.readTextContent( LISTENER_PREFIX + name ) );
+  }
+
+  private static ClientModelListener createModelListener( String name ) {
+    return new ClientModelListener( ResourceLoaderUtil.readTextContent( LISTENER_PREFIX + name ) );
   }
 
   private static JsonArray createArray( String[] data ) {

@@ -47,7 +47,9 @@ public class DropDownViewer extends ContentViewer {
   private static final String ELEMENTS_KEY = "elements";
   private static final String SELECTION_KEY = "selection";
   private static final boolean USE_NEW_SCRIPTS = true;
-  private final static String PREFIX
+  private final static String DROP_DOWN_PREFIX
+    = "org/eclipse/rap/addons/dropdown/internal/resources/";
+  private final static String VIEWER_PREFIX
     = "org/eclipse/rap/addons/dropdown/viewer/internal/resources/";
 
 
@@ -115,7 +117,7 @@ public class DropDownViewer extends ContentViewer {
   @Override
   protected void handleDispose( DisposeEvent event ) {
     super.handleDispose( event );
-    model.destroy();
+    model.dispose();
   }
 
   ////////////
@@ -192,12 +194,14 @@ public class DropDownViewer extends ContentViewer {
     }
   }
 
-  public ClientListener getClientListener( String name ) {
-    return new ClientListener( ResourceLoaderUtil.readTextContent( PREFIX + name ) );
+  private static ClientListener getClientListener( String name ) {
+    String code = org.eclipse.rap.addons.dropdown.internal.resources.ResourceLoaderUtil.readTextContent( DROP_DOWN_PREFIX + name );
+    return new ClientListener( code );
   }
 
-  public ClientModelListener getModelListener( String name ) {
-    return new ClientModelListener( ResourceLoaderUtil.readTextContent( PREFIX + name ) );
+  private static ClientModelListener getModelListener( String name ) {
+    String code = org.eclipse.rap.addons.dropdown.internal.resources.ResourceLoaderUtil.readTextContent( DROP_DOWN_PREFIX + name );
+    return new ClientModelListener( code );
   }
 
   private void linkClientObjects() {
@@ -301,11 +305,11 @@ public class DropDownViewer extends ContentViewer {
       = createModelListener( "RefreshListener.js" );
 
     private ClientListener createListener( String name ) {
-      return new ClientListener( ResourceLoaderUtil.readTextContent( PREFIX + name ) );
+      return new ClientListener( ResourceLoaderUtil.readTextContent( VIEWER_PREFIX + name ) );
     }
 
     private ClientModelListener createModelListener( String name ) {
-      return new ClientModelListener( ResourceLoaderUtil.readTextContent( PREFIX + name ) );
+      return new ClientModelListener( ResourceLoaderUtil.readTextContent( VIEWER_PREFIX + name ) );
     }
 
     public ClientModelListener getRefreshListener() {

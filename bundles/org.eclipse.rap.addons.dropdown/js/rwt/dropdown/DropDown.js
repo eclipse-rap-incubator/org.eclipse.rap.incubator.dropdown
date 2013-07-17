@@ -150,6 +150,7 @@
     },
 
     show : function() {
+      // TODO [tb] : only set visibility of popup if/when items are set
       checkDisposed( this );
       if( !this._.visibility && !rwt.remote.EventUtil.getSuspended() ) {
         rap.getRemoteObject( this ).set( "visible", true );

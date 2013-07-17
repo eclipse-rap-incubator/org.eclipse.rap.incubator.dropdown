@@ -125,7 +125,7 @@ public class DropDown_Test {
   }
 
   @Test
-  public void testDipose_FiresDispose() {
+  public void testDispose_FiresDispose() {
     Fixture.fakePhase( PhaseId.PROCESS_ACTION );
     Listener listener = mock( Listener.class );
     dropdown.addListener( SWT.Dispose, listener );
