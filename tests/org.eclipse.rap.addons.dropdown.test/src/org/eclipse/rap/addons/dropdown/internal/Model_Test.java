@@ -10,12 +10,15 @@
  ******************************************************************************/
 package org.eclipse.rap.addons.dropdown.internal;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -303,51 +306,6 @@ public class Model_Test {
     handler.handleNotify( "foo", mock( JsonObject.class ) );
 
     verify( listener, times( 1 ) ).handleEvent( any( JsonObject.class ) );
-  }
-
-  @Test
-  public void testNotify_CallServerListenerHandleEvent() {
-    ModelListener listener = mock( ModelListener.class );
-    model.addListener( "foo", listener );
-    JsonObject argument = mock( JsonObject.class );
-
-    model.notify( "foo", argument );
-
-    verify( listener ).handleEvent( eq( argument ) );
-  }
-
-  @Test
-  public void testNotify_CallServerWithourProperties() {
-    ModelListener listener = mock( ModelListener.class );
-    model.addListener( "foo", listener );
-
-    model.notify( "foo" );
-
-    verify( listener ).handleEvent( isNull( JsonObject.class ) );
-  }
-
-  @Test
-  public void testNotify_RenderCallNotify() {
-    JsonObject argument = new JsonObject();
-    argument.add( "arg", "value" );
-
-    model.notify( "foo", argument );
-
-    JsonObject expected = new JsonObject();
-    expected.add( "event", "foo" );
-    expected.add( "properties", argument );
-    expected.add( "nosync", true );
-    verify( remoteObject ).call( eq( "notify" ), eq( expected ) );
-  }
-
-  @Test
-  public void testNotify_RenderCallNotifyWithoutProperties() {
-    model.notify( "foo" );
-
-    JsonObject expected = new JsonObject();
-    expected.add( "event", "foo" );
-    expected.add( "nosync", true );
-    verify( remoteObject ).call( eq( "notify" ), eq( expected ) );
   }
 
 

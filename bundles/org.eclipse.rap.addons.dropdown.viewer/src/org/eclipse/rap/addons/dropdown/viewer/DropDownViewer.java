@@ -156,8 +156,7 @@ public class DropDownViewer extends ContentViewer {
     // TODO : Using a separate client object (e.g. "RemoteList") for the elements might allow
     //        sharing and incremental updates
     model.set( ELEMENTS_KEY, JsonUtil.createJsonArray( elements ) );
-    model.set( SELECTION_KEY, -1 );
-    model.notify( "refresh" );
+    model.set( SELECTION_KEY, -1 ); // TODO : do on client
   }
 
   private void attachClientListener() {

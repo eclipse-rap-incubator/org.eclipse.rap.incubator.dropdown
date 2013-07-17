@@ -48,7 +48,6 @@ import org.eclipse.rap.rwt.testfixture.Fixture;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.*;
 import org.junit.*;
-import org.mockito.ArgumentCaptor;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -239,18 +238,6 @@ public class DropDownViewer_Test {
     viewer.setInput( INTEGER_LIST );
 
     verify( remoteObject ).set( eq( SELECTION_KEY ), eq( -1 ) );
-  }
-
-  @Test
-  public void testSetInput_RendersNotifyRefresh() {
-    createViewer();
-    reset( remoteObject );
-
-    viewer.setInput( INTEGER_LIST );
-
-    ArgumentCaptor<JsonObject> capture = ArgumentCaptor.forClass( JsonObject.class );
-    verify( remoteObject ).call( eq( "notify" ), capture.capture() );
-    assertEquals( "refresh", capture.getValue().get( "event" ).asString() );
   }
 
   @Test
