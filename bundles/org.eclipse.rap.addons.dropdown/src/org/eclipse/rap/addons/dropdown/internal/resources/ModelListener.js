@@ -31,9 +31,9 @@ function handleEvent( event ) {
       case "suggestion":
         onChangeSuggestion.apply( event.source, [ event ] );
       break;
-      case "elementSelection":
-        onChangeElementSelection.apply( event.source, [ event ] );
-      break;
+//      case "elementSelection":
+//        onChangeElementSelection.apply( event.source, [ event ] );
+//      break;
     }
   }
 }
@@ -90,17 +90,19 @@ function onAcceptSuggestion( event ) {
     var index = this.get( "resultSelection" );
     if( typeof index === "number" && index > -1 ) {
       this.set( "elementSelection", results.indicies[ index ] );
+      this.set( "resultsVisible", false );
     } else if( this.get( "autoComplete" ) && results.indicies.length === 1 ) {
       this.set( "elementSelection", results.indicies[ 0 ] );
+      this.set( "resultsVisible", false );
     }
   }
   var text = this.get( "text" ) || "";
   this.set( "textSelection", [ text.length, text.length ] );
 }
 
-function onChangeElementSelection( event ) {
-  this.set( "resultsVisible", false );
-}
+//function onChangeElementSelection( event ) {
+//  this.set( "resultsVisible", false );
+//}
 
 /////////
 // Helper
@@ -116,7 +118,7 @@ function commonText( items ) {
       if( allItemsSplitAt( items, common.length ) ) {
         result = common;
       } else {
-        var splitRegExp = /\W/g
+        var splitRegExp = /\W/g;
         var matches = common.match( splitRegExp );
         if( matches && matches.length > 0 ) {
           var lastSplitCharOffset = common.lastIndexOf( matches.pop() );
@@ -131,7 +133,7 @@ function commonText( items ) {
 function commonChars( items ) {
   var testItem = items[ 0 ];
   var result = "";
-  var matches = true
+  var matches = true;
   for( var offset = 0; ( offset < testItem.length ) && matches; offset++ ) {
     var candidate = result + testItem.charAt( offset );
     for( var i = 0; i < items.length; i++ ) {
@@ -148,7 +150,7 @@ function commonChars( items ) {
 }
 
 function allItemsSplitAt( items, offset ) {
-  var splitRegExp = /\W/ // not a letter/digit/underscore
+  var splitRegExp = /\W/; // not a letter/digit/underscore
   var result = true;
   for( var i = 0; i < items.length; i++ ) {
     if( items[ i ].length !== offset ) {
@@ -184,11 +186,11 @@ function searchItems( items, query, limit ) {
 function createQuery( str, caseSensitive, ignorePosition ) {
   var escapedStr = escapeRegExp( str );
   return new RegExp( ( ignorePosition ? "" : "^" ) + escapedStr, caseSensitive ? "" : "i" );
-};
+}
 
 function escapeRegExp( str ) {
   return str.replace( /[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&" );
-};
+}
 
 function filterArray( arr, func, limit ) {
   var result = [];

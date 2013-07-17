@@ -406,6 +406,7 @@
         model.notify( "accept", { source : model, type : "accept" } );
 
         expect( model.get( "elementSelection" ) ).toBe( 3 );
+        expect( model.get( "resultsVisible" ) ).toBe( false );
       } );
 
       it( "sets elementSelection for single result and autoComplete", function() {
@@ -417,17 +418,35 @@
         model.notify( "accept", { source : model, type : "accept" } );
 
         expect( model.get( "elementSelection" ) ).toBe( 3 );
+        expect( model.get( "resultsVisible" ) ).toBe( false );
       } );
 
-      it( "does nothin for single result without autoComplete", function() {
+      it( "does nothing for single result without autoComplete", function() {
         model.addListener( "accept", createClientListener( "ModelListener" ) );
         model.set( "results", { "items" : [ "banana" ], "indicies" : [ 3 ] } );
         model.set( "resultSelection", -1 );
         model.set( "elementSelection", 0 );
+        model.set( "resultsVisible", true );
+
 
         model.notify( "accept", { source : model, type : "accept" } );
 
         expect( model.get( "elementSelection" ) ).toBe( 0 );
+        expect( model.get( "resultsVisible" ) ).toBe( true );
+      } );
+
+      it( "does nothing for multiple result without resultSelection", function() {
+        model.addListener( "accept", createClientListener( "ModelListener" ) );
+        model.set( "results", { "items" : [ "banana", "banu" ], "indicies" : [ 3 ] } );
+        model.set( "resultSelection", -1 );
+        model.set( "elementSelection", 0 );
+        model.set( "resultsVisible", true );
+
+
+        model.notify( "accept", { source : model, type : "accept" } );
+
+        expect( model.get( "elementSelection" ) ).toBe( 0 );
+        expect( model.get( "resultsVisible" ) ).toBe( true );
       } );
 
       it( "clears text selection", function() {
@@ -441,18 +460,18 @@
 
     } );
 
-    describe( "change:elementSelection", function() {
-
-      it( "hides results", function() {
-        model.addListener( "change:elementSelection", createClientListener( "ModelListener" ) );
-        model.set( "resultsVisible", true );
-
-        model.set( "elementSelection", 22 );
-
-        expect( model.get( "resultsVisible" ) ).toBe( false );
-      } );
-
-    } );
+//    describe( "change:elementSelection", function() {
+//
+//      it( "hides results", function() {
+//        model.addListener( "change:elementSelection", createClientListener( "ModelListener" ) );
+//        model.set( "resultsVisible", true );
+//
+//        model.set( "elementSelection", 22 );
+//
+//        expect( model.get( "resultsVisible" ) ).toBe( false );
+//      } );
+//
+//    } );
 
 
   } );
