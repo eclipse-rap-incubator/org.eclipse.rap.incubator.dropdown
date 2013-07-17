@@ -15,6 +15,8 @@
 var TestUtil = org.eclipse.rwt.test.fixture.TestUtil;
 var DropDown = rwt.dropdown.DropDown;
 
+var ITEM_HEIGHT = 25; // Depends on padding which is currently taken from list theming
+
 var shell;
 var widget;
 var dropdown;
@@ -330,7 +332,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       dropdown.setVisibleItemCount( 7 );
       showDropDown();
 
-      assertEquals( 7 * 23, popup.getInnerHeight() );
+      assertEquals( 7 * ITEM_HEIGHT, popup.getInnerHeight() );
     },
 
     testShow_PopUpInnerHeightUnderVisibleItemCount : function() {
@@ -339,7 +341,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       dropdown.setVisibleItemCount( 7 );
       showDropDown();
 
-      assertEquals( 2 * 23, popup.getInnerHeight() );
+      assertEquals( 2 * ITEM_HEIGHT, popup.getInnerHeight() );
     },
 
     testSetVisibleItemCount_UpdatesScrollbar : function() {
@@ -358,8 +360,8 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       dropdown.setVisibleItemCount( 2 );
       TestUtil.flush();
 
-      assertEquals( 2 * 23, popup.getInnerHeight() );
-      assertEquals( 2 * 23, viewer.getHeight() );
+      assertEquals( 2 * ITEM_HEIGHT, popup.getInnerHeight() );
+      assertEquals( 2 * ITEM_HEIGHT, viewer.getHeight() );
     },
 
     testSetItems_UpdatesScrollbar : function() {
@@ -378,8 +380,8 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       dropdown.setItems( [ "a", "b" ] );
       TestUtil.flush();
 
-      assertEquals( 2 * 23, popup.getInnerHeight() );
-      assertEquals( 2 * 23, viewer.getHeight() );
+      assertEquals( 2 * ITEM_HEIGHT, popup.getInnerHeight() );
+      assertEquals( 2 * ITEM_HEIGHT, viewer.getHeight() );
     },
 
     testShow_LayoutsViewer : function() {
@@ -403,7 +405,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       widget.setFont( font );
       showDropDown();
 
-      assertEquals( 5 + 5 + 13, viewer._itemHeight );
+      assertEquals( 6 + 6 + 13, viewer._itemHeight );
     },
 
     testShow_SetsItemHeightFor12pxFont : function() {
@@ -411,7 +413,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       widget.setFont( font );
       showDropDown();
 
-      assertEquals( 5 + 5 + 15, viewer._itemHeight );
+      assertEquals( 6 + 6 + 15, viewer._itemHeight );
     },
 
     testSetItems_SetsItemsOnViewer : function() {

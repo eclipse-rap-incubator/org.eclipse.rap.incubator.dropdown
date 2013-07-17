@@ -13,11 +13,16 @@
 
   var POPUP_BORDER = new rwt.html.Border( 1, "solid", "#000000" );
   var FRAMEWIDTH = 2;
-  var PADDING = ( function() {
+  var getPadding = function() {
     var manager = rwt.theme.AppearanceManager.getInstance();
     var stylemap = manager.styleFrom( "list-item", {} );
     return stylemap.padding || [ 5, 5, 5, 5 ];
-  }() );
+  };
+  var getShadow = function() {
+    var manager = rwt.theme.AppearanceManager.getInstance();
+    var stylemap = manager.styleFrom( "combo-list", {} );
+    return stylemap.shadow || null;
+  };
 
 
   // Values identical to SWT
@@ -293,7 +298,8 @@
     var yOffset = this._.parent.getHeight();
     var font = this._.viewer.getFont();
     // NOTE: Guessing the lineheight to be 1.3
-    var itemHeight = Math.floor( font.getSize() * 1.3 ) + PADDING[ 0 ] + PADDING[ 2 ];
+    var padding = getPadding();
+    var itemHeight = Math.floor( font.getSize() * 1.3 ) + padding[ 0 ] + padding[ 2 ];
     var visibleItems = Math.min( this._.visibleItemCount, this.getItemCount() );
     var viewerWidth = this._.parent.getWidth() - FRAMEWIDTH;
     var viewerHeight = visibleItems * itemHeight;
@@ -308,8 +314,8 @@
       viewerWidth, // width
       0, // imageLeft
       0, // imageWidth
-      PADDING[ 3 ], // textLeft
-      viewerWidth - PADDING[ 1 ] - PADDING[ 3 ], // textWidth
+      padding[ 3 ], // textLeft
+      viewerWidth - padding[ 1 ] - padding[ 3 ], // textWidth
       0, // checkLeft
       0 // checkWith
     );
@@ -458,6 +464,7 @@
     result.setBorder( POPUP_BORDER );
     result.setBackgroundColor( "#ffffff" );
     result.setVisibility( false );
+    result.setShadow( getShadow() );
     result.setRestrictToPageOnOpen( false );
     result.setAutoHide( false );
     return result;
