@@ -7,6 +7,8 @@ Bundle-Vendor: Eclipse.org - RAP Incubator
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Require-Bundle: org.eclipse.rap.rwt;bundle-version="2.1.0",
  org.eclipse.rap.jface;bundle-version="2.1.0",
- org.eclipse.rap.addons.dropdown;bundle-version="0.1.0",
  org.eclipse.rap.clientscripting;bundle-version="0.1.100"
-Export-Package: org.eclipse.rap.addons.dropdown.viewer
+Export-Package: org.eclipse.rap.addons.dropdown.viewer;version="0.1.0"
+Import-Package: org.eclipse.rap.addons.dropdown;version="0.1.0",
+ org.eclipse.rap.addons.dropdown.internal;version="0.1.0",
+ org.eclipse.rap.addons.dropdown.internal.resources;version="0.1.0"
