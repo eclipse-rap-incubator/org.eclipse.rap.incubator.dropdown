@@ -12,7 +12,6 @@ package org.eclipse.rap.addons.dropdown.viewer;
 
 import static org.eclipse.rap.rwt.internal.protocol.JsonUtil.createJsonArray;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
@@ -57,8 +56,6 @@ import org.mockito.stubbing.Answer;
 @SuppressWarnings("restriction")
 public class DropDownViewer_Test {
 
-  // TODO : test reading scripts and attaching listener when possible
-
   private static final List<Integer> INTEGER_LIST = Arrays.asList(
     Integer.valueOf( 7 ),
     Integer.valueOf( 14 ),
@@ -67,9 +64,8 @@ public class DropDownViewer_Test {
   private static final String REMOTE_TYPE = "rwt.remote.Model";
   private static final String VIEWER_LINK =
       "org.eclipse.rap.addons.dropdown.viewer.DropDownViewer#viewer";
-  private static String DROPDOWN_KEY = "dropDown";
-  private static final String TEXT_KEY = "text";
-  private static final String DECORATOR_KEY = "decorator";
+  private static String DROPDOWN_KEY = "dropDownWidgetId";
+  private static final String TEXT_KEY = "textWidgetId";
   private static String ELEMENTS_KEY = "elements";
   private static String SELECTION_KEY = "selection";
   private Display display;
@@ -112,15 +108,6 @@ public class DropDownViewer_Test {
   }
 
   @Test
-  public void testContructor_CreatesDecorator() {
-    createViewer();
-    assertSame( text, viewer.getDecorator().getControl() );
-    assertEquals( 2, viewer.getDecorator().getMarginWidth() );
-    assertFalse( viewer.getDecorator().isVisible() );
-    assertNotNull( viewer.getDecorator().getImage() );
-  }
-
-  @Test
   public void testConstructor_SetEmptyElements() {
     createViewer();
 
@@ -136,110 +123,33 @@ public class DropDownViewer_Test {
   }
 
   @Test
-  public void testGetDefaultTextModifyListenerTwice_ReturnsSameInstance() {
+  public void testGetWidgetDataBindingListener_DifferentViewerReturnSameInstance() {
     createViewer();
-    ClientListener listener1 = viewer.getTextModifyListener();
-    ClientListener listener2 = viewer.getTextModifyListener();
+    ClientListener listener1 = viewer.getWidgetDataBindingListener();
+    DropDownViewer viewer2 = new DropDownViewer( new Text( shell, SWT.NONE ) );
+    ClientListener listener2 = viewer2.getWidgetDataBindingListener();
 
     assertNotNull( listener1 );
     assertSame( listener1, listener2 );
   }
 
   @Test
-  public void testGetDefaultTextModifyListenerTwice_DifferentViewerReturnSameInstance() {
+  public void testGetModelDataBindingListener_DifferentViewerReturnSameInstance() {
     createViewer();
-    ClientListener listener1 = viewer.getTextModifyListener();
+    ClientModelListener listener1 = viewer.getModelDataBindingListener();
     DropDownViewer viewer2 = new DropDownViewer( new Text( shell, SWT.NONE ) );
-    ClientListener listener2 = viewer2.getTextModifyListener();
+    ClientModelListener listener2 = viewer2.getModelDataBindingListener();
 
     assertNotNull( listener1 );
     assertSame( listener1, listener2 );
   }
 
   @Test
-  public void testGetDefaultTextVerifyListenerTwice_DifferentViewerReturnSameInstance() {
+  public void testGetModelListener_DifferentViewerReturnSameInstance() {
     createViewer();
-    ClientListener listener1 = viewer.getTextVerifyListener();
+    ClientModelListener listener1 = viewer.getModelListener();
     DropDownViewer viewer2 = new DropDownViewer( new Text( shell, SWT.NONE ) );
-    ClientListener listener2 = viewer2.getTextVerifyListener();
-
-
-    assertNotNull( listener1 );
-    assertSame( listener1, listener2 );
-  }
-
-  @Test
-  public void testGetDefaultTextKeyDownListenerTwice_DifferentViewerReturnSameInstance() {
-    createViewer();
-    ClientListener listener1 = viewer.getTextKeyDownListener();
-    DropDownViewer viewer2 = new DropDownViewer( new Text( shell, SWT.NONE ) );
-    ClientListener listener2 = viewer2.getTextKeyDownListener();
-
-    assertNotNull( listener1 );
-    assertSame( listener1, listener2 );
-  }
-
-  @Test
-  public void testGetDefaultTextMouseDownListenerTwice_DifferentViewerReturnSameInstance() {
-    createViewer();
-    ClientListener listener1 = viewer.getTextMouseDownListener();
-    DropDownViewer viewer2 = new DropDownViewer( new Text( shell, SWT.NONE ) );
-    ClientListener listener2 = viewer2.getTextMouseDownListener();
-
-    assertNotNull( listener1 );
-    assertSame( listener1, listener2 );
-  }
-
-  @Test
-  public void testGetDefaultDropDownSelectionListenerTwice_DifferentViewerReturnSameInstance() {
-    createViewer();
-    ClientListener listener1 = viewer.getDropDownSelectionListener();
-    DropDownViewer viewer2 = new DropDownViewer( new Text( shell, SWT.NONE ) );
-    ClientListener listener2 = viewer2.getDropDownSelectionListener();
-
-    assertNotNull( listener1 );
-    assertSame( listener1, listener2 );
-  }
-
-  @Test
-  public void testGetDefaultDropDownDefaultSelectionListenerTwice_DifferentViewerReturnSameInstance() {
-    createViewer();
-    ClientListener listener1 = viewer.getDropDownDefaultSelectionListener();
-    DropDownViewer viewer2 = new DropDownViewer( new Text( shell, SWT.NONE ) );
-    ClientListener listener2 = viewer2.getDropDownDefaultSelectionListener();
-
-    assertNotNull( listener1 );
-    assertSame( listener1, listener2 );
-  }
-
-  @Test
-  public void testGetDefaultDropDownShowListenerTwice_DifferentViewerReturnSameInstance() {
-    createViewer();
-    ClientListener listener1 = viewer.getDropDownShowListener();
-    DropDownViewer viewer2 = new DropDownViewer( new Text( shell, SWT.NONE ) );
-    ClientListener listener2 = viewer2.getDropDownShowListener();
-
-    assertNotNull( listener1 );
-    assertSame( listener1, listener2 );
-  }
-
-  @Test
-  public void testGetDefaultDropDownHideListenerTwice_DifferentViewerReturnSameInstance() {
-    createViewer();
-    ClientListener listener1 = viewer.getDropDownHideListener();
-    DropDownViewer viewer2 = new DropDownViewer( new Text( shell, SWT.NONE ) );
-    ClientListener listener2 = viewer2.getDropDownHideListener();
-
-    assertNotNull( listener1 );
-    assertSame( listener1, listener2 );
-  }
-
-  @Test
-  public void testGetDefaultRefreshListener_DifferentViewerReturnSameInstance() {
-    createViewer();
-    ClientModelListener listener1 = viewer.getRefreshListener();
-    DropDownViewer viewer2 = new DropDownViewer( new Text( shell, SWT.NONE ) );
-    ClientModelListener listener2 = viewer2.getRefreshListener();
+    ClientModelListener listener2 = viewer2.getModelListener();
 
     assertNotNull( listener1 );
     assertSame( listener1, listener2 );
@@ -273,14 +183,6 @@ public class DropDownViewer_Test {
 
     String expected = WidgetUtil.getId( text );
     verify( remoteObject ).set( eq( TEXT_KEY ), eq( expected ) );
-  }
-
-  @Test
-  public void testLinkRemoteObjectToDecorator() {
-    createViewer();
-
-    String expected = WidgetUtil.getId( viewer.getDecorator() );
-    verify( remoteObject ).set( eq( DECORATOR_KEY ), eq( expected ) );
   }
 
   @Test
