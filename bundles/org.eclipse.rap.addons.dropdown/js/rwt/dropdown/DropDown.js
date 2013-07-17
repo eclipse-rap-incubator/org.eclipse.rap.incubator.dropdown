@@ -93,6 +93,11 @@
         renderLayout.call( this );
       }
       updateScrollBars.call( this );
+      if( this._.visibility && items.length > 0 ) {
+        this.show();
+      } else if( this._.visibility && items.length === 0 ) {
+        this._.popup.hide();
+      }
     },
 
     getItemCount : function() {
@@ -151,17 +156,16 @@
     },
 
     getVisible : function() {
-      return this._.popup.getVisibility();
+      return this._.visibility;
     },
 
     show : function() {
-      // TODO [tb] : only set visibility of popup if/when items are set
       checkDisposed( this );
       if( !this._.visibility && !rwt.remote.EventUtil.getSuspended() ) {
         rap.getRemoteObject( this ).set( "visible", true );
       }
       this._.visibility = true;
-      if( this._.parent.isCreated() && !this._.popup.isSeeable() ) {
+      if( this._.items.length > 0 && this._.parent.isCreated() && !this._.popup.isSeeable() ) {
         this._.viewer.setFont( this._.parent.getFont() );
         renderLayout.call( this );
         this._.popup.show();
