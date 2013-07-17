@@ -42,7 +42,8 @@ function handleEvent( event ) {
 // Event Handling
 
 function onChangeElements( event ) {
-  // NOTE: Nothing to do if not visible, but would need to update when it becomes visible.
+  this.set( "elementSelection", -1, { "nosync" : true } );
+  // NOTE: Nothing else to do if not visible, but would need to update when it becomes visible.
   //       Currently only onChangeUserText can set resultsVisible to true, which updates implicitly.
   if( this.get( "resultsVisible" ) ) {
     search.apply( this, [ { "action" : "refresh" } ] );

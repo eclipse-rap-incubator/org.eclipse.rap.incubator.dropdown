@@ -261,6 +261,17 @@
         expect( model.get( "suggestion" ) ).toBeNull();
       } );
 
+      it( "clears elementSelection with nosync", function() {
+        model.addListener( "change:elements", createClientListener( "ModelListener" ) );
+        model.set( "elementSelection", 1 );
+        model.addListener( "change:elementSelection", logger );
+
+        model.set( "elements", [ "foo" ] );
+
+        expect( model.get( "elementSelection" ) ).toBe( -1 );
+        expect( log[ 0 ][ 0 ].options.nosync ).toBe( true );
+      } );
+
       it( "updates results", function() {
         model.addListener( "change:elements", createClientListener( "ModelListener" ) );
         model.set( "userText", "ba" );

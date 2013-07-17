@@ -34,7 +34,6 @@ public class DropDownViewer extends ContentViewer {
   private static final String SELECTION_CHANGED = "change:elementSelection";
   private static final String VIEWER_LINK = DropDownViewer.class.getName() + "#viewer";
   private static final String ELEMENTS_KEY = "elements";
-  private static final String SELECTION_KEY = "selection";
   private final static String LISTENER_PREFIX
     = "org/eclipse/rap/addons/dropdown/internal/resources/";
 
@@ -156,7 +155,6 @@ public class DropDownViewer extends ContentViewer {
     // TODO : Using a separate client object (e.g. "RemoteList") for the elements might allow
     //        sharing and incremental updates
     model.set( ELEMENTS_KEY, JsonUtil.createJsonArray( elements ) );
-    model.set( SELECTION_KEY, -1 ); // TODO : do on client
   }
 
   private void attachClientListener() {

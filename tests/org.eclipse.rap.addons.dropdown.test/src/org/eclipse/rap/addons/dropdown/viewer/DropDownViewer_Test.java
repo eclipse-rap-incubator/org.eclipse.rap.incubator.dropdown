@@ -22,7 +22,6 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.stub;
 import static org.mockito.Mockito.times;
@@ -66,7 +65,6 @@ public class DropDownViewer_Test {
   private static String DROPDOWN_KEY = "dropDownWidgetId";
   private static final String TEXT_KEY = "textWidgetId";
   private static String ELEMENTS_KEY = "elements";
-  private static String SELECTION_KEY = "selection";
   private Display display;
   private Text text;
   private DropDownViewer viewer;
@@ -112,13 +110,6 @@ public class DropDownViewer_Test {
 
     JsonArray expected = new JsonArray();
     verify( remoteObject ).set( eq( ELEMENTS_KEY ), eq( expected ) );
-  }
-
-  @Test
-  public void testConstructor_SetRemoteObjectSelection() {
-    createViewer();
-
-    verify( remoteObject ).set( eq( SELECTION_KEY ), eq( -1 ) );
   }
 
   @Test
@@ -228,16 +219,6 @@ public class DropDownViewer_Test {
 
     JsonArray expected = createJsonArray( "7", "14", "21" );
     verify( remoteObject ).set( eq( ELEMENTS_KEY ), eq( expected ) );
-  }
-
-  @Test
-  public void testSetInput_ResetsSelectionOnRemoteObject() {
-    createViewer();
-    reset( remoteObject );
-
-    viewer.setInput( INTEGER_LIST );
-
-    verify( remoteObject ).set( eq( SELECTION_KEY ), eq( -1 ) );
   }
 
   @Test

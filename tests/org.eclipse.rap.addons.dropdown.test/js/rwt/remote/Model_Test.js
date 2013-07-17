@@ -83,6 +83,14 @@ rwt.qx.Class.define( "rwt.remote.Model_Test", {
       assertEquals( 0, TestUtil.getRequestsSend() );
     },
 
+    testSet_DoNotSendNotifyWithNoSync : function() {
+      TestUtil.protocolListen( "r11", { "change:foo" : true } );
+
+      model.set( "foo", true, { "nosync" : true } );
+
+      assertEquals( 0, TestUtil.getRequestsSend() );
+    },
+
     testDestroy : function() {
       TestUtil.protocolSet( "r11", { "foo" : {} } );
       var internals = model._;

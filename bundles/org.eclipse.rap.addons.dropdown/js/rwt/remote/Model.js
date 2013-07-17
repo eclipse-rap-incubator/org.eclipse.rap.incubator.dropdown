@@ -52,7 +52,11 @@
             "source" : this
           };
           this._.properties[ property ] = value;
-          this.notify( event.type, event );
+          this.notify( {
+            "event" : event.type,
+            "properties" : event,
+            "nosync" : options.nosync === true
+          } );
           event.type = "change";
           this.notify( event.type, event );
         }
