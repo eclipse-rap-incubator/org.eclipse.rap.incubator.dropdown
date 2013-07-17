@@ -9,6 +9,8 @@
  *    EclipseSource - initial API and implementation
  ******************************************************************************/
 
+ //@ sourceURL=TextEventListener.js
+
 var VIEWER_KEY = "org.eclipse.rap.addons.dropdown.viewer.DropDownViewer#viewer";
 var searchItems = rwt.dropdown.DropDown.searchItems;
 var createQuery = rwt.dropdown.DropDown.createQuery;

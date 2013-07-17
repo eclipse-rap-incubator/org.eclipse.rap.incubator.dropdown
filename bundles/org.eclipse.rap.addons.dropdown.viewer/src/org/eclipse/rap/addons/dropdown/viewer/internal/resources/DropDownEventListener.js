@@ -9,6 +9,9 @@
  *    EclipseSource - initial API and implementation
  ******************************************************************************/
 
+
+//@ sourceURL=DropDownEventListener.js
+
 var VIEWER_KEY = "org.eclipse.rap.addons.dropdown.viewer.DropDownViewer#viewer";
 var searchItems = rwt.dropdown.DropDown.searchItems;
 var createQuery = rwt.dropdown.DropDown.createQuery;
@@ -82,6 +85,7 @@ function handleDefaultSelection( event ) {
   var elementIndex = mapping[ selectionIndex ];
   var viewer = rap.getObject( dropdown.getData( VIEWER_KEY ) );
   var text = rap.getObject( viewer.get( "text" ) );
+  dropdown.setData( "userText", text.getText() );
   if( viewer.get( "selection" ) !== elementIndex ) {
     viewer.notify( "SelectionChanged", { "index" : elementIndex } );
     viewer.set( "selection", elementIndex );
