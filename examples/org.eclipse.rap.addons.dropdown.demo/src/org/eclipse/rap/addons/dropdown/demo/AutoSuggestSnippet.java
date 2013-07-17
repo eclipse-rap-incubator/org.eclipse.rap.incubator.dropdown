@@ -1,4 +1,5 @@
 /*******************************************************************************
+
  * Copyright (c) 2013 EclipseSource and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -24,6 +25,7 @@ public class AutoSuggestSnippet extends AbstractEntryPoint {
     Text text = new Text( parent, SWT.BORDER );
     AutoSuggest autoSuggest = new AutoSuggest( text );
     autoSuggest.setData( new String[]{ "foo", "food", "foobar", "bar" } );
+    autoSuggest.setAutoComplete( true );
   }
 
 }

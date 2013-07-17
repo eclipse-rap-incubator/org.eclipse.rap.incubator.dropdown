@@ -15,8 +15,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -280,6 +282,31 @@ public class AutoSuggest_Test {
     autoSuggest.setData( new String[]{ "foo", "bar" } );
 
     verify( remoteObject ).set( eq( "elements" ), eq( new JsonArray().add( "foo" ).add( "bar" ) ) );
+  }
+
+  @Test
+  public void testSetAutoComplete_defaultIsNotSet() {
+    new AutoSuggest( text );
+
+    verify( remoteObject, never() ).set( eq( "autoComplete" ), anyBoolean() );
+  }
+
+  @Test
+  public void testSetAutoComplete_setsAutoCompleteTrueOnRemoteObject() {
+    AutoSuggest autoSuggest = new AutoSuggest( text );
+
+    autoSuggest.setAutoComplete( true );
+
+    verify( remoteObject ).set( eq( "autoComplete" ), eq( true ) );
+  }
+
+  @Test
+  public void testSetAutoComplete_setsAutoCompleteFalseOnRemoteObject() {
+    AutoSuggest autoSuggest = new AutoSuggest( text );
+
+    autoSuggest.setAutoComplete( false );
+
+    verify( remoteObject ).set( eq( "autoComplete" ), eq( false ) );
   }
 
   private void mockRemoteObject() {

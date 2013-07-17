@@ -71,6 +71,10 @@ public class AutoSuggest {
     return dropDown.getVisibleItemCount();
   }
 
+  public void setAutoComplete( boolean value ) {
+    model.set( "autoComplete", value );
+  }
+
   public void dispose() {
     isDisposed = true;
     dropDown.dispose();
