@@ -137,8 +137,10 @@ function commonText( items ) {
 }
 
 function showError( viewer, value ) {
-  var text = rap.getObject( viewer.get( "text" ) );
-  var decorator = rap.getObject( viewer.get( "decorator" ) );
-  text.setBackground( value ? [ 255, 255, 128 ] : null );
-  decorator.setVisible( value );
+  if( viewer.get( "readOnly") ) {
+    var text = rap.getObject( viewer.get( "text" ) );
+    var decorator = rap.getObject( viewer.get( "decorator" ) );
+    text.setBackground( value ? [ 255, 255, 128 ] : null );
+    decorator.setVisible( value );
+  }
 }

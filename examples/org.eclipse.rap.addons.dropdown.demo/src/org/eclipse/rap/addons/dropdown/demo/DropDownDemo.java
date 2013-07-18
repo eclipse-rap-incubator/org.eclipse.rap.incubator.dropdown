@@ -131,6 +131,7 @@ public class DropDownDemo extends AbstractEntryPoint {
     createKFZExample_Location( group, viewer );
     createKFZExample_Log( group, viewer );
     createDisposeButton( group, text );
+    viewer.setReadOnly( true );
   }
 
   private void createDisposeButton( Group group, final Text text ) {

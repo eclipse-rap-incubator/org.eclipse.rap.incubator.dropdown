@@ -19,6 +19,7 @@ import org.eclipse.rap.addons.dropdown.viewer.internal.resources.ResourceLoaderU
 import org.eclipse.rap.clientscripting.ClientListener;
 import org.eclipse.rap.clientscripting.WidgetDataWhiteList;
 import org.eclipse.rap.json.JsonObject;
+import org.eclipse.rap.json.JsonValue;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.client.service.JavaScriptLoader;
 import org.eclipse.rap.rwt.internal.protocol.JsonUtil;
@@ -105,6 +106,10 @@ public class DropDownViewer extends ContentViewer {
   protected void handleDispose( DisposeEvent event ) {
     super.handleDispose( event );
     model.destroy();
+  }
+
+  public void setReadOnly( boolean value ) {
+    model.set( "readOnly", JsonValue.valueOf( value ) );
   }
 
   ////////////
