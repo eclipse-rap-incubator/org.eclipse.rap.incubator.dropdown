@@ -229,6 +229,15 @@
         expect( model.get( "resultsVisible" ) ).toBe( true );
       } );
 
+      it( "hides results if text length is zero", function() {
+        model.addListener( "change:userText", createClientListener( "ModelListener" ) );
+        model.set( "resultsVisible", true );
+
+        model.set( "userText", "" );
+
+        expect( model.get( "resultsVisible" ) ).toBe( false );
+      } );
+
       it( "updates results", function() {
         model.addListener( "change:userText", createClientListener( "ModelListener" ) );
 

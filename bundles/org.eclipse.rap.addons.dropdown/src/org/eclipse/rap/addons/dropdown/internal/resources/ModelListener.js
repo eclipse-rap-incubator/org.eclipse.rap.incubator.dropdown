@@ -51,7 +51,7 @@ function onChangeElements( event ) {
 }
 
 function onChangeUserText( event ) {
-  this.set( "resultsVisible", true );
+  this.set( "resultsVisible", event.value != null && event.value.length > 0  );
   search.apply( this, [ event.options ] );
 }
 
