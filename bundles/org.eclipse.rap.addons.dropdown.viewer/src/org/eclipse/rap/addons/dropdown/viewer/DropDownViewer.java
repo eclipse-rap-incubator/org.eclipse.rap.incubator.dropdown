@@ -202,7 +202,7 @@ public class DropDownViewer extends ContentViewer {
 
   private static class ClientListenerHolder {
 
-    private final ClientModelListener modelListener = createModelListener( "ModelListener.js" );
+    private final ClientModelListener modelListener = createModelListener( "AutoSuggest.js" );
     private final ClientListener widgetDataBinding = createListener( "DataBinding.js" );
     private final ClientModelListener modelDataBinding = createModelListener( "DataBinding.js" );
 

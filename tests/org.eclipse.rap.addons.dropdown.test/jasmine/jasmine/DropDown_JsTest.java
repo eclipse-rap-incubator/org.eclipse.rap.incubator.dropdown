@@ -19,8 +19,8 @@ import org.junit.*;
 
 public class DropDown_JsTest {
 
-  private static final String MODEL_LISTENER_JS
-    = "org/eclipse/rap/addons/dropdown/internal/resources/ModelListener.js";
+  private static final String AUTO_SUGGEST_JS
+    = "org/eclipse/rap/addons/dropdown/internal/resources/AutoSuggest.js";
   private static final ClassLoader LOCAL_LOADER = DropDown_Test.class.getClassLoader();
   private static final ClassLoader DROPDOWN_LOADER = DropDown.class.getClassLoader();
   private static final ClassLoader SCRIPTING_LOADER = ClientListener.class.getClassLoader();
@@ -43,10 +43,10 @@ public class DropDown_JsTest {
 
   @Test
   public void testListenerSpec() {
-    jasmine.parseScript( LOCAL_LOADER, "jasmine/specs/ModelListenerSpec.js" );
+    jasmine.parseScript( LOCAL_LOADER, "jasmine/specs/AutoSuggestSpec.js" );
     jasmine.parseScript( SCRIPTING_LOADER, "org/eclipse/rap/clientscripting/SWT.js" );
     jasmine.parseScript( SCRIPTING_LOADER, "org/eclipse/rap/clientscripting/Function.js" );
-    jasmine.addResource( "ModelListener", DROPDOWN_LOADER, MODEL_LISTENER_JS );
+    jasmine.addResource( "AutoSuggest", DROPDOWN_LOADER, AUTO_SUGGEST_JS );
     jasmine.execute();
   }
 

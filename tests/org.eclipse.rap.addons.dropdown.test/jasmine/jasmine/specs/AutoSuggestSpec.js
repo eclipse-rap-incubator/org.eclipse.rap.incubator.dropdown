@@ -9,7 +9,7 @@
  *    EclipseSource - initial API and implementation
  ******************************************************************************/
 
- describe( "ModelListener", function() {
+ describe( "AutoSuggest", function() {
 
   var createClientListener = function( name ) {
     // NOTE : Using + "" to convert Java string to JavaScript string. Alternatives?
@@ -37,7 +37,7 @@
 
     beforeEach( function() {
       if( !createQuery ) {
-        createQuery = getVarFromScript( "ModelListener", "createQuery" );
+        createQuery = getVarFromScript( "AutoSuggest", "createQuery" );
       }
     } );
 
@@ -82,7 +82,7 @@
 
     beforeEach( function() {
       if( !commonText ) {
-        commonText = getVarFromScript( "ModelListener", "commonText" );
+        commonText = getVarFromScript( "AutoSuggest", "commonText" );
       }
     } );
 
@@ -139,7 +139,7 @@
 
     beforeEach( function() {
       if( !searchItems ) {
-        searchItems = getVarFromScript( "ModelListener", "searchItems" );
+        searchItems = getVarFromScript( "AutoSuggest", "searchItems" );
       }
     } );
 
@@ -212,7 +212,7 @@
     describe( "change:userText", function() {
 
       it( "clears suggestion", function() {
-        model.addListener( "change:userText", createClientListener( "ModelListener" ) );
+        model.addListener( "change:userText", createClientListener( "AutoSuggest" ) );
         model.set( "suggestion", "banana" );
         model.addListener( "change:suggestion", logger );
 
@@ -222,7 +222,7 @@
       } );
 
       it( "shows results", function() {
-        model.addListener( "change:userText", createClientListener( "ModelListener" ) );
+        model.addListener( "change:userText", createClientListener( "AutoSuggest" ) );
 
         model.set( "userText", "ba" );
 
@@ -230,7 +230,7 @@
       } );
 
       it( "hides results if text length is zero", function() {
-        model.addListener( "change:userText", createClientListener( "ModelListener" ) );
+        model.addListener( "change:userText", createClientListener( "AutoSuggest" ) );
         model.set( "resultsVisible", true );
 
         model.set( "userText", "" );
@@ -239,7 +239,7 @@
       } );
 
       it( "updates results", function() {
-        model.addListener( "change:userText", createClientListener( "ModelListener" ) );
+        model.addListener( "change:userText", createClientListener( "AutoSuggest" ) );
 
         model.set( "userText", "ba" );
 
@@ -247,7 +247,7 @@
       } );
 
       it( "forwards action option", function() {
-        model.addListener( "change:userText", createClientListener( "ModelListener" ) );
+        model.addListener( "change:userText", createClientListener( "AutoSuggest" ) );
         model.addListener( "change:results", logger );
 
         model.set( "userText", "ba", { "action" : "foo" } );
@@ -260,7 +260,7 @@
     describe( "change:elements", function() {
 
       it( "clears suggestion", function() {
-        model.addListener( "change:elements", createClientListener( "ModelListener" ) );
+        model.addListener( "change:elements", createClientListener( "AutoSuggest" ) );
         model.set( "suggestion", "banana" );
         model.set( "resultsVisible", true );
         model.addListener( "change:suggestion", logger );
@@ -271,7 +271,7 @@
       } );
 
       it( "clears elementSelection with nosync", function() {
-        model.addListener( "change:elements", createClientListener( "ModelListener" ) );
+        model.addListener( "change:elements", createClientListener( "AutoSuggest" ) );
         model.set( "elementSelection", 1 );
         model.addListener( "change:elementSelection", logger );
 
@@ -282,7 +282,7 @@
       } );
 
       it( "updates results", function() {
-        model.addListener( "change:elements", createClientListener( "ModelListener" ) );
+        model.addListener( "change:elements", createClientListener( "AutoSuggest" ) );
         model.set( "userText", "ba" );
         model.set( "resultsVisible", true );
 
@@ -292,7 +292,7 @@
       } );
 
       it( "does not update results if not visible", function() {
-        model.addListener( "change:elements", createClientListener( "ModelListener" ) );
+        model.addListener( "change:elements", createClientListener( "AutoSuggest" ) );
         model.set( "resultsVisible", false );
         model.addListener( "change:results", logger );
 
@@ -302,7 +302,7 @@
       } );
 
       it( "sets results with refresh option", function() {
-        model.addListener( "change:elements", createClientListener( "ModelListener" ) );
+        model.addListener( "change:elements", createClientListener( "AutoSuggest" ) );
         model.addListener( "change:results", logger );
         model.set( "resultsVisible", true );
         model.set( "userText", "ba" );
@@ -317,7 +317,7 @@
     describe( "change:resultSelection", function() {
 
       it( "sets suggestion to selected result", function() {
-        model.addListener( "change:resultSelection", createClientListener( "ModelListener" ) );
+        model.addListener( "change:resultSelection", createClientListener( "AutoSuggest" ) );
         model.set( "results", { "items" : [ "bar", "banana" ] } );
 
         model.set( "resultSelection", 1 );
@@ -326,7 +326,7 @@
       } );
 
       it( "resets suggestion when selection index is -1", function() {
-        model.addListener( "change:resultSelection", createClientListener( "ModelListener" ) );
+        model.addListener( "change:resultSelection", createClientListener( "AutoSuggest" ) );
         model.set( "results", { "items" : [ "bar", "banana" ] } );
         model.set( "suggestion", "banana" );
 
@@ -336,7 +336,7 @@
       } );
 
       it( "sets action option", function() {
-        model.addListener( "change:resultSelection", createClientListener( "ModelListener" ) );
+        model.addListener( "change:resultSelection", createClientListener( "AutoSuggest" ) );
         model.addListener( "change:suggestion", logger );
         model.set( "results", { "items" : [ "bar", "banana" ] } );
 
@@ -350,7 +350,7 @@
     describe( "change:suggestion", function() {
 
       it( "ignores events from change:userText", function() {
-        model.addListener( "change:suggestion", createClientListener( "ModelListener" ) );
+        model.addListener( "change:suggestion", createClientListener( "AutoSuggest" ) );
         model.set( "text", "bar" );
         model.set( "textSelection", [ 0, 0 ] );
 
@@ -361,7 +361,7 @@
       } );
 
       it( "sets text to suggestion", function() {
-        model.addListener( "change:suggestion", createClientListener( "ModelListener" ) );
+        model.addListener( "change:suggestion", createClientListener( "AutoSuggest" ) );
 
         model.set( "suggestion", "foo" );
 
@@ -369,7 +369,7 @@
       } );
 
       it( "sets textSelection for result selection", function() {
-        model.addListener( "change:suggestion", createClientListener( "ModelListener" ) );
+        model.addListener( "change:suggestion", createClientListener( "AutoSuggest" ) );
 
         model.set( "suggestion", "foo", { "action" : "selection" } );
 
@@ -377,7 +377,7 @@
       } );
 
       it( "sets textSelection for auto complete", function() {
-        model.addListener( "change:suggestion", createClientListener( "ModelListener" ) );
+        model.addListener( "change:suggestion", createClientListener( "AutoSuggest" ) );
         model.set( "userText", "foo" );
 
         model.set( "suggestion", "foobar" );
@@ -386,7 +386,7 @@
       } );
 
       it( "resets text to userText", function() {
-        model.addListener( "change:suggestion", createClientListener( "ModelListener" ) );
+        model.addListener( "change:suggestion", createClientListener( "AutoSuggest" ) );
         model.set( "userText", "bar" );
 
         model.set( "suggestion", null, { "action" : "selection" } );
@@ -395,7 +395,7 @@
       } );
 
       it( "resets selection to userText end", function() {
-        model.addListener( "change:suggestion", createClientListener( "ModelListener" ) );
+        model.addListener( "change:suggestion", createClientListener( "AutoSuggest" ) );
         model.set( "userText", "bar" );
 
         model.set( "suggestion", null, { "action" : "selection" } );
@@ -409,7 +409,7 @@
 
       it( "does nothing without autocomplete", function() {
         model.set( "suggestion", "ban" );
-        model.addListener( "change:results", createClientListener( "ModelListener" ) );
+        model.addListener( "change:results", createClientListener( "AutoSuggest" ) );
 
         model.set( "results", { "items" : [ "banana" ] } );
 
@@ -418,7 +418,7 @@
 
       it( "does nothing if not typing", function() {
         model.set( "suggestion", "ban" );
-        model.addListener( "change:results", createClientListener( "ModelListener" ) );
+        model.addListener( "change:results", createClientListener( "AutoSuggest" ) );
         model.set( "autoComplete", true );
 
         model.set( "results", { "items" : [ "banana" ] } );
@@ -430,7 +430,7 @@
         model.set( "suggestion", "ban" );
         model.set( "userText", "b" );
         model.set( "autoComplete", true );
-        model.addListener( "change:results", createClientListener( "ModelListener" ) );
+        model.addListener( "change:results", createClientListener( "AutoSuggest" ) );
 
         model.set( "results", { "items" : [ "banana" ] }, { "action" : "typing" } );
 
@@ -441,7 +441,7 @@
         model.set( "suggestion", "ban" );
         model.set( "userText", "b" );
         model.set( "autoComplete", true );
-        model.addListener( "change:results", createClientListener( "ModelListener" ) );
+        model.addListener( "change:results", createClientListener( "AutoSuggest" ) );
 
         model.set( "results", { "items" : [ "banana" ] }, { "action" : "refresh" } );
 
@@ -451,7 +451,7 @@
       it( "partially autocompletes suggestion for common text", function() {
         model.set( "autoComplete", true );
         model.set( "userText", "b" );
-        model.addListener( "change:results", createClientListener( "ModelListener" ) );
+        model.addListener( "change:results", createClientListener( "AutoSuggest" ) );
 
         var items = [ "banana foo", "banana bar" ];
         model.set( "results", { "items" : items }, { "action" : "typing" } );
@@ -463,7 +463,7 @@
         model.set( "suggestion", null );
         model.set( "autoComplete", true );
         model.set( "userText", "banana xxx" );
-        model.addListener( "change:results", createClientListener( "ModelListener" ) );
+        model.addListener( "change:results", createClientListener( "AutoSuggest" ) );
 
         var items = [ "banana foo", "banana bar" ];
         model.set( "results", { "items" : items }, { "action" : "typing" } );
@@ -476,7 +476,7 @@
     describe( "accept", function() {
 
       it( "sets elementSelection for resultSelection", function() {
-        model.addListener( "accept", createClientListener( "ModelListener" ) );
+        model.addListener( "accept", createClientListener( "AutoSuggest" ) );
         model.set( "results", { "items" : [ "bar", "banana" ], "indicies" : [ 1, 3 ] } );
         model.set( "resultSelection", 1 );
 
@@ -487,7 +487,7 @@
       } );
 
       it( "sets elementSelection for single result and autoComplete", function() {
-        model.addListener( "accept", createClientListener( "ModelListener" ) );
+        model.addListener( "accept", createClientListener( "AutoSuggest" ) );
         model.set( "results", { "items" : [ "banana" ], "indicies" : [ 3 ] } );
         model.set( "resultSelection", -1 );
         model.set( "autoComplete", true );
@@ -499,7 +499,7 @@
       } );
 
       it( "does nothing for single result without autoComplete", function() {
-        model.addListener( "accept", createClientListener( "ModelListener" ) );
+        model.addListener( "accept", createClientListener( "AutoSuggest" ) );
         model.set( "results", { "items" : [ "banana" ], "indicies" : [ 3 ] } );
         model.set( "resultSelection", -1 );
         model.set( "elementSelection", 0 );
@@ -513,7 +513,7 @@
       } );
 
       it( "does nothing for multiple result without resultSelection", function() {
-        model.addListener( "accept", createClientListener( "ModelListener" ) );
+        model.addListener( "accept", createClientListener( "AutoSuggest" ) );
         model.set( "results", { "items" : [ "banana", "banu" ], "indicies" : [ 3 ] } );
         model.set( "resultSelection", -1 );
         model.set( "elementSelection", 0 );
@@ -527,7 +527,7 @@
       } );
 
       it( "clears text selection", function() {
-        model.addListener( "accept", createClientListener( "ModelListener" ) );
+        model.addListener( "accept", createClientListener( "AutoSuggest" ) );
         model.set( "text", "foobar" );
 
         model.notify( "accept", { source : model, type : "accept" } );

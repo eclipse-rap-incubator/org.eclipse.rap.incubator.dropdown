@@ -101,7 +101,7 @@ public class AutoSuggest {
     dropDown.addListener( SWT.Selection, clientListener );
     dropDown.addListener( SWT.DefaultSelection, clientListener );
     model.addListener( "change", createModelListener( "DataBinding.js" ) );
-    ClientModelListener modelListener = createModelListener( "ModelListener.js" );
+    ClientModelListener modelListener = createModelListener( "AutoSuggest.js" );
     model.addListener( "change", modelListener );
     model.addListener( "accept", modelListener );
   }

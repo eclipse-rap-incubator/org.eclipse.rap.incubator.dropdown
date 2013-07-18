@@ -9,7 +9,7 @@
  *    EclipseSource - initial API and implementation
  ******************************************************************************/
 
-//@ sourceURL=ModelListener.js
+//@ sourceURL=AutoSuggest.js
 
 ///////////////////
 // Event Delegation
@@ -46,13 +46,13 @@ function onChangeElements( event ) {
   // NOTE: Nothing else to do if not visible, but would need to update when it becomes visible.
   //       Currently only onChangeUserText can set resultsVisible to true, which updates implicitly.
   if( this.get( "resultsVisible" ) ) {
-    search.apply( this, [ { "action" : "refresh" } ] );
+    filter.apply( this, [ { "action" : "refresh" } ] );
   }
 }
 
 function onChangeUserText( event ) {
   this.set( "resultsVisible", event.value != null && event.value.length > 0  );
-  search.apply( this, [ event.options ] );
+  filter.apply( this, [ event.options ] );
 }
 
 function onChangeResults( event ) {
@@ -107,7 +107,7 @@ function onAcceptSuggestion( event ) {
   this.set( "textSelection", [ text.length, text.length ] );
 }
 
-function search( options ) {
+function filter( options ) {
   var userText = this.get( "userText" ) || "";
   this.set( "suggestion", null, { "action" : "sync" } );
   var query = createQuery( userText.toLowerCase() );
