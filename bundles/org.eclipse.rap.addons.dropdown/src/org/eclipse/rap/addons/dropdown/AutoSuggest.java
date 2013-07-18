@@ -17,7 +17,6 @@ import org.eclipse.rap.addons.dropdown.internal.Model;
 import org.eclipse.rap.addons.dropdown.internal.resources.ResourceLoaderUtil;
 import org.eclipse.rap.clientscripting.ClientListener;
 import org.eclipse.rap.clientscripting.WidgetDataWhiteList;
-import org.eclipse.rap.json.JsonArray;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.*;
 
@@ -48,7 +47,6 @@ public class AutoSuggest {
     model = new Model();
     connectClientObjects();
     attachClientListeners( );
-    setData( new String[ 0 ] );
     text.addListener( SWT.Dispose, new Listener() {
       public void handleEvent( Event event ) {
         dispose();
@@ -56,11 +54,11 @@ public class AutoSuggest {
     } );
   }
 
-  public void setData( String[] data ) {
-    if( data == null ) {
+  public void setDataProvider( SimpleDataProvider dataProvider ) {
+    if( dataProvider == null ) {
       throw new NullPointerException( "Data must not be null" );
     }
-    model.set( "elements", createArray( data ) );
+    model.set( "dataProvider", dataProvider.getId() );
   }
 
   public void setVisibleItemCount( int itemCount ) {
@@ -120,14 +118,6 @@ public class AutoSuggest {
 
   private static ClientModelListener createModelListener( String name ) {
     return new ClientModelListener( ResourceLoaderUtil.readTextContent( LISTENER_PREFIX + name ) );
-  }
-
-  private static JsonArray createArray( String[] data ) {
-    JsonArray array = new JsonArray();
-    for( int i = 0; i < data.length; i++ ) {
-      array.add( data[ i ] );
-    }
-    return array;
   }
 
 }

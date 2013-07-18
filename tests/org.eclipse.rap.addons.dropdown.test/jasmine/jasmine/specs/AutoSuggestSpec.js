@@ -191,13 +191,12 @@
   describe( "listener", function() {
 
     var model;
-    var rap;
     var logger;
     var log;
 
     beforeEach( function() {
       rap = new RapMock();
-      model = rap.typeHandler[ "rwt.remote.Model" ].factory();
+      model = rap.typeHandler[ "rwt.remote.Model" ].factory(); // make model "public"
       model.set( "elements", [ "foo", "bar", "foobar", "banana", "apple", "cherry" ] );
       log = [];
       logger = function() {
@@ -207,6 +206,22 @@
 
     afterEach( function() {
       model.destroy();
+    } );
+
+    describe( "change:dataProvider", function() {
+
+      it( "sets elements", function() {
+        model.addListener( "change:dataProvider", createClientListener( "AutoSuggest" ) );
+        var dataProvider = rap.typeHandler[ "rwt.remote.Model" ].factory();
+        dataProvider.set( "data", [ "foo", "bar" ] );
+        spyOn( rap, "getObject" ).andReturn( dataProvider );
+
+        model.set( "dataProvider", "fooId" );
+
+        expect( rap.getObject ).toHaveBeenCalledWith( "fooId" );
+        expect( model.get( "elements" ) ).toEqual( [ "foo", "bar" ] );
+      } );
+
     } );
 
     describe( "change:userText", function() {

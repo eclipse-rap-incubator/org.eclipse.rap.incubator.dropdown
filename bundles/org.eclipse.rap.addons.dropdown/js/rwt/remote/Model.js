@@ -52,13 +52,15 @@
             "source" : this
           };
           this._.properties[ property ] = value;
-          this.notify( {
+          var args = {
             "event" : event.type,
             "properties" : event,
             "nosync" : options.nosync === true
-          } );
+          };
+          this.notify( args );
           event.type = "change";
-          this.notify( event.type, event );
+          args.event = event.type;
+          this.notify( args );
         }
       }
     },

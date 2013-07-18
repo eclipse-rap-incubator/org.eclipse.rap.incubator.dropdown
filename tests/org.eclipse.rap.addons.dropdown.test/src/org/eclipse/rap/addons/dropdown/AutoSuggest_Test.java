@@ -27,7 +27,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.rap.clientscripting.ClientListener;
-import org.eclipse.rap.json.JsonArray;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteList;
 import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteListImpl;
@@ -180,13 +179,6 @@ public class AutoSuggest_Test {
   }
 
   @Test
-  public void testConstructor_setsEmptyElementsOnRemoteObject() {
-    new AutoSuggest( text );
-
-    verify( remoteObject ).set( eq( "elements" ), eq( new JsonArray() ) );
-  }
-
-  @Test
   public void testIsDisposed_returnsFalse() {
     AutoSuggest autoSuggest = new AutoSuggest( text );
 
@@ -269,19 +261,21 @@ public class AutoSuggest_Test {
   }
 
   @Test( expected = NullPointerException.class )
-  public void testSetData_failsWithNullArgument() {
+  public void testSetDataProvider_failsWithNullArgument() {
     AutoSuggest autoSuggest = new AutoSuggest( text );
 
-    autoSuggest.setData( null );
+    autoSuggest.setDataProvider( null );
   }
 
   @Test
-  public void testSetData_setsElementsOnRemoteObject() {
+  public void testSetDataProvider_setsElementsOnRemoteObject() {
     AutoSuggest autoSuggest = new AutoSuggest( text );
+    SimpleDataProvider dataProvider = mock( SimpleDataProvider.class );
+    when( dataProvider.getId() ).thenReturn( "providerId" );
 
-    autoSuggest.setData( new String[]{ "foo", "bar" } );
+    autoSuggest.setDataProvider( dataProvider );
 
-    verify( remoteObject ).set( eq( "elements" ), eq( new JsonArray().add( "foo" ).add( "bar" ) ) );
+    verify( remoteObject ).set( eq( "dataProvider" ), eq( "providerId" ) );
   }
 
   @Test

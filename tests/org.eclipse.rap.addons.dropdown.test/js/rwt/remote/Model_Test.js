@@ -85,6 +85,7 @@ rwt.qx.Class.define( "rwt.remote.Model_Test", {
 
     testSet_DoNotSendNotifyWithNoSync : function() {
       TestUtil.protocolListen( "r11", { "change:foo" : true } );
+      TestUtil.protocolListen( "r11", { "change" : true } );
 
       model.set( "foo", true, { "nosync" : true } );
 

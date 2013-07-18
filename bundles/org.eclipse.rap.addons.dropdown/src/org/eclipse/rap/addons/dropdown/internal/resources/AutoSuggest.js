@@ -19,6 +19,9 @@ function handleEvent( event ) {
     onAcceptSuggestion.apply( event.source, [ event ] );
   } else {
     switch( event.property ) {
+      case "dataProvider":
+        onChangeDataProvider.apply( event.source, [ event ] );
+      break;
       case "elements":
         onChangeElements.apply( event.source, [ event ] );
       break;
@@ -40,6 +43,11 @@ function handleEvent( event ) {
 
 //////////////////
 // Event Handling
+
+function onChangeDataProvider( event ) {
+  var dataProvider = rap.getObject( this.get( "dataProvider" ) );
+  this.set( "elements", dataProvider.get( "data" ) );
+}
 
 function onChangeElements( event ) {
   this.set( "elementSelection", -1, { "nosync" : true } );

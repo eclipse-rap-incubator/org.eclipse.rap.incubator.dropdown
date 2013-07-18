@@ -33,7 +33,7 @@ RapMock.prototype = {
   },
 
   getObject : function() {
-    return this.fakeComposite;
+    return null;
   },
 
   getRemoteObject : function() {
