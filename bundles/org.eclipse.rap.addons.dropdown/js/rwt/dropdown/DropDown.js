@@ -61,17 +61,17 @@
     this._.hideTimer = new rwt.client.Timer( 0 );
     this._.hideTimer.addEventListener( "interval", checkFocus, this );
     this._.popup = createPopup();
-    this._.viewer = createViewer( this._.popup, markupEnabled );
+    this._.grid = createGrid( this._.popup, markupEnabled );
     this._.visibleItemCount = 5;
     this._.parent = parent;
     this._.items = [];
     this._.inMouseSelection = false;
     this._.events = createEventsMap();
     this._.parent.addEventListener( "keypress", onTextKeyEvent, this );
-    this._.viewer._sendSelectionChange = bind( this, onSelection );
-    this._.viewer.addEventListener( "keypress", onKeyEvent, this );
-    this._.viewer.addEventListener( "mousedown", onMouseDown, this );
-    this._.viewer.addEventListener( "mouseup", onMouseUp, this );
+    this._.grid._sendSelectionChange = bind( this, onSelection );
+    this._.grid.addEventListener( "keypress", onKeyEvent, this );
+    this._.grid.addEventListener( "mousedown", onMouseDown, this );
+    this._.grid.addEventListener( "mouseup", onMouseUp, this );
     this._.popup.addEventListener( "appear", onAppear, this );
     this._.popup.addEventListener( "disappear", onDisappear, this );
     this._.popup.getFocusRoot().addEventListener( "changeFocusedChild", onFocusChange, this );
@@ -101,7 +101,7 @@
     },
 
     getItemCount : function() {
-      return this._.viewer.getRootItem().getChildrenLength();
+      return this._.grid.getRootItem().getChildrenLength();
     },
 
     /**
@@ -123,26 +123,26 @@
         return;
       }
       // This is more than optimization, it prevents too early rendering that can crash the client:
-      this._.viewer._inServerResponse = rwt.util.Functions.returnTrue;
-      this._.viewer.deselectAll();
+      this._.grid._inServerResponse = rwt.util.Functions.returnTrue;
+      this._.grid.deselectAll();
       if( index > -1 ) {
-        var item = this._.viewer.getRootItem().getChild( index );
-        this._.viewer.selectItem( item );
-        this._.viewer.setFocusItem( item );
-        this._.viewer._scrollIntoView( index, item );
+        var item = this._.grid.getRootItem().getChild( index );
+        this._.grid.selectItem( item );
+        this._.grid.setFocusItem( item );
+        this._.grid._scrollIntoView( index, item );
       } else {
-        this._.viewer.setFocusItem( null );
-        this._.viewer.setTopItemIndex( 0 );
+        this._.grid.setFocusItem( null );
+        this._.grid.setTopItemIndex( 0 );
       }
-      delete this._.viewer._inServerResponse;
-      this._.viewer._sendSelectionChange(); // Not called for selection changes by API/Server
+      delete this._.grid._inServerResponse;
+      this._.grid._sendSelectionChange(); // Not called for selection changes by API/Server
     },
 
     getSelectionIndex : function() {
-      var selection = this._.viewer._selection;
+      var selection = this._.grid._selection;
       var result = -1;
       if( selection[ 0 ] ) {
-        result = this._.viewer.getRootItem().indexOf( selection[ 0 ] );
+        result = this._.grid.getRootItem().indexOf( selection[ 0 ] );
       }
       return result;
     },
@@ -166,11 +166,11 @@
       }
       this._.visibility = true;
       if( this._.items.length > 0 && this._.parent.isCreated() && !this._.popup.isSeeable() ) {
-        this._.viewer.setFont( this._.parent.getFont() );
+        this._.grid.setFont( this._.parent.getFont() );
         renderLayout.call( this );
         this._.popup.show();
         if( !hasFocus( this._.parent ) ) {
-          this._.viewer.getFocusRoot().setFocusedChild( this._.viewer );
+          this._.grid.getFocusRoot().setFocusedChild( this._.grid );
         }
       }
     },
@@ -233,7 +233,7 @@
         if( popupFocusRoot && !popupFocusRoot.isDisposed() ) {
           popupFocusRoot.removeEventListener( "changeFocusedChild", onFocusChange, this );
         }
-        this._.viewer.getRootItem().setItemCount( 0 );
+        this._.grid.getRootItem().setItemCount( 0 );
         if( !this._.parent.isDisposed() ) {
           this._.parent.removeEventListener( "appear", onTextAppear, this );
           this._.parent.removeEventListener( "keydown", onTextKeyEvent, this );
@@ -300,42 +300,42 @@
 
   var renderLayout = function() {
     var yOffset = this._.parent.getHeight();
-    var font = this._.viewer.getFont();
+    var font = this._.grid.getFont();
     // NOTE: Guessing the lineheight to be 1.3
     var padding = getPadding();
     var itemHeight = Math.floor( font.getSize() * 1.3 ) + padding[ 0 ] + padding[ 2 ];
     var visibleItems = Math.min( this._.visibleItemCount, this.getItemCount() );
-    var viewerWidth = this._.parent.getWidth() - FRAMEWIDTH;
-    var viewerHeight = visibleItems * itemHeight;
+    var gridWidth = this._.parent.getWidth() - FRAMEWIDTH;
+    var gridHeight = visibleItems * itemHeight;
     this._.popup.positionRelativeTo( this._.parent, 0, yOffset );
     this._.popup.setWidth( this._.parent.getWidth() );
-    this._.popup.setHeight( viewerHeight + FRAMEWIDTH );
-    this._.viewer.setDimension( viewerWidth, viewerHeight );
-    this._.viewer.setItemHeight( itemHeight );
-    this._.viewer.setItemMetrics(
+    this._.popup.setHeight( gridHeight + FRAMEWIDTH );
+    this._.grid.setDimension( gridWidth, gridHeight );
+    this._.grid.setItemHeight( itemHeight );
+    this._.grid.setItemMetrics(
       0,  // column
       0, // left
-      viewerWidth, // width
+      gridWidth, // width
       0, // imageLeft
       0, // imageWidth
       padding[ 3 ], // textLeft
-      viewerWidth - padding[ 1 ] - padding[ 3 ], // textWidth
+      gridWidth - padding[ 1 ] - padding[ 3 ], // textWidth
       0, // checkLeft
       0 // checkWith
     );
   };
 
   var renderGridItems = function() {
-    var rootItem = this._.viewer.getRootItem();
+    var rootItem = this._.grid.getRootItem();
     var items = this._.items;
-    this._.viewer._inServerResponse = rwt.util.Functions.returnTrue;
+    this._.grid._inServerResponse = rwt.util.Functions.returnTrue;
     rootItem.setItemCount( 0 );
     rootItem.setItemCount( items.length );
     for( var i = 0; i < items.length; i++ ) {
       var gridItem = new rwt.widgets.GridItem( rootItem, i, false );
       gridItem.setTexts( [ items[ i ] ] );
     }
-    delete this._.viewer._inServerResponse;
+    delete this._.grid._inServerResponse;
   };
 
   var onTextAppear = function() {
@@ -357,7 +357,7 @@
       } else if( key === "Up" && this.getSelectionIndex() === -1 && this.getItemCount() > 0 ) {
         this.setSelectionIndex( this.getItemCount() - 1 );
       } else {
-        this._.viewer.dispatchEvent( event );
+        this._.grid.dispatchEvent( event );
       }
     }
   };
@@ -369,7 +369,7 @@
           // NOTE : This async call ensures that the key events is processed before the
           //        DefaultSelection event. A better solution would be to do this for all forwarded
           //        key events, but this would be complicated since the event is disposed by the
-          //        time dispatch would be called on the viewer.
+          //        time dispatch would be called on the grid.
           fireEvent.call( this, "DefaultSelection" );
         }, this, 0 );
       break;
@@ -420,7 +420,7 @@
       "index" : -1
     };
     if( type === "Selection" || type === "DefaultSelection" ) {
-      var selection = this._.viewer._selection;
+      var selection = this._.grid._selection;
       if( selection.length > 0 ) {
         event.index = this.getSelectionIndex();
         event.text = this._.items[ event.index ];
@@ -448,7 +448,7 @@
   var updateScrollBars = function() {
     var scrollable = this._.visibleItemCount < this.getItemCount();
     // TODO [tb] : Horizontal scrolling would require measuring all items preferred width
-    this._.viewer.setScrollBarsVisible( false, scrollable );
+    this._.grid.setScrollBarsVisible( false, scrollable );
   };
 
   var notify = function( type, event ) {
@@ -474,7 +474,7 @@
     return result;
   };
 
-  var createViewer = function( parent, markupEnabled ) {
+  var createGrid = function( parent, markupEnabled ) {
     var result = new rwt.widgets.Grid( {
       "fullSelection" : true,
       "appearance" : "table",
