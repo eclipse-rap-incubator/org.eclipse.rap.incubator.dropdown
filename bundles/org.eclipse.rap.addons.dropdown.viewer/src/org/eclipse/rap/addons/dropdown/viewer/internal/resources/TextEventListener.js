@@ -16,19 +16,21 @@ var searchItems = rwt.dropdown.DropDown.searchItems;
 var createQuery = rwt.dropdown.DropDown.createQuery;
 
 function handleEvent( event ) {
-  switch( event.type ) {
-    case SWT.Modify:
-      handleModify( event );
-    break;
-    case SWT.Verify:
-      handleVerify( event );
-    break;
-    case SWT.KeyDown:
-      handleKeyDown( event );
-    break;
-    case SWT.MouseDown:
-      handleMouseDown( event );
-    break;
+  if( event.widget.getEditable() ) {
+    switch( event.type ) {
+      case SWT.Modify:
+        handleModify( event );
+      break;
+      case SWT.Verify:
+        handleVerify( event );
+      break;
+      case SWT.KeyDown:
+        handleKeyDown( event );
+      break;
+      case SWT.MouseDown:
+        handleMouseDown( event );
+      break;
+    }
   }
 }
 
