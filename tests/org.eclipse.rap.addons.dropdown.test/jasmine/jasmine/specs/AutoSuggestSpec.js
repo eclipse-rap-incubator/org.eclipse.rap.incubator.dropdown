@@ -261,6 +261,19 @@
         expect( model.get( "results" ).items ).toEqual( [ "bar", "banana" ] );
       } );
 
+      it( "updates results from data provider if no elements are set", function() {
+        model.addListener( "change:userText", createClientListener( "AutoSuggest" ) );
+        model.set( "elements", null );
+        var dataProvider = rap.typeHandler[ "rwt.remote.Model" ].factory();
+        dataProvider.set( "data", [ "foo", "bar", "foobar", "banana", "apple", "cherry" ] );
+        spyOn( rap, "getObject" ).andReturn( dataProvider );
+        model.set( "dataProvider", "fooId" );
+
+        model.set( "userText", "ba" );
+
+        expect( model.get( "results" ).items ).toEqual( [ "bar", "banana" ] );
+      } );
+
       it( "forwards action option", function() {
         model.addListener( "change:userText", createClientListener( "AutoSuggest" ) );
         model.addListener( "change:results", logger );

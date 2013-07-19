@@ -45,8 +45,7 @@ function handleEvent( event ) {
 // Event Handling
 
 function onChangeDataProvider( event ) {
-  var dataProvider = rap.getObject( this.get( "dataProvider" ) );
-  this.set( "elements", dataProvider.get( "data" ) );
+  processDataProvider.apply( this );
 }
 
 function onChangeElements( event ) {
@@ -84,7 +83,7 @@ function onChangeResultSelection( event ) {
 
 function onChangeSuggestion( event ) {
   if( event.options.action !== "sync" ) {
-    var userText = this.get( "userText" ) || "";
+    var userText = this.get( "userText" ) || ""; // TODO : could overwrite server set text?
     var text = event.value || userText;
     this.set( "text", text );
     if( event.options.action === "selection" ) {
@@ -116,12 +115,23 @@ function onAcceptSuggestion( event ) {
 }
 
 function filter( options ) {
+  if( this.get( "elements" ) == null ) {
+    processDataProvider.apply( this );
+  }
   var userText = this.get( "userText" ) || "";
   this.set( "suggestion", null, { "action" : "sync" } );
   var query = createQuery( userText.toLowerCase() );
   var results = searchItems( this.get( "elements" ), query );
   this.set( "results", results, { "action" : options.action } );
 }
+
+function processDataProvider() {
+  if( this.get( "dataProvider" ) != null ) {
+    var dataProvider = rap.getObject( this.get( "dataProvider" ) );
+    this.set( "elements", dataProvider.get( "data" ) );
+  }
+}
+
 
 /////////
 // Helper
