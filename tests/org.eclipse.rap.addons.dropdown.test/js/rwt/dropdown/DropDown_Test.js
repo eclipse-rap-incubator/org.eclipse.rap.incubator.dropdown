@@ -483,6 +483,20 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       assertEquals( 40 - PADDING_RIGHT - PADDING_LEFT, config.itemTextWidth[ 1 ] );
     },
 
+    testSetColumns_setsPopUpWidth : function() {
+      dropdown.setColumns( [ 100, 200, 100 ] );
+      showDropDown();
+
+      assertEquals( 400, popup.getInnerWidth() );
+    },
+
+    testSetColumns_setsDoesNotSetPopUpWidthIfSmaller : function() {
+      dropdown.setColumns( [ 30 ] );
+      showDropDown();
+
+      assertEquals( 100, popup.getWidth() );
+    },
+
     testSetColumns_separatesItemsByTabulator : function() {
       dropdown.setColumns( [ 30, 40 ] );
       var tab = String.fromCharCode( 9 );

@@ -119,7 +119,7 @@ public class DropDownDemo extends AbstractEntryPoint {
         dropdown.hide();
       }
     } );
-    dropdown.setData( "columns", new int[] { 130, 60 } );
+    dropdown.setData( "columns", new int[] { 300, 60 } );
   }
 
   private void createKFZExample( Composite parent ) {

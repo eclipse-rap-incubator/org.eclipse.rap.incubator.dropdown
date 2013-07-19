@@ -315,13 +315,27 @@
     var padding = getPadding();
     var itemHeight = Math.floor( font.getSize() * 1.3 ) + padding[ 0 ] + padding[ 2 ];
     var visibleItems = Math.min( this._.visibleItemCount, this.getItemCount() );
-    var gridWidth = this._.parent.getWidth() - FRAMEWIDTH;
+    var gridWidth = calcGridWidth.apply( this );
     var gridHeight = visibleItems * itemHeight;
     this._.popup.positionRelativeTo( this._.parent, 0, yOffset );
-    this._.popup.setWidth( this._.parent.getWidth() );
+    this._.popup.setWidth( gridWidth + FRAMEWIDTH );
     this._.popup.setHeight( gridHeight + FRAMEWIDTH );
     this._.grid.setDimension( gridWidth, gridHeight );
     renderItemMetrics.apply( this, [ itemHeight, gridWidth, padding ] );
+  };
+
+  var calcGridWidth = function() {
+    var result = this._.parent.getWidth() - FRAMEWIDTH;
+    if( this._.columns ) {
+      var columnsSum = 0;
+      for( var i = 0; i < this._.columns.length; i++ ) {
+        columnsSum += this._.columns[ i ];
+      }
+      if( columnsSum > result ) {
+        result = columnsSum;
+      }
+    }
+    return result;
   };
 
   var renderItemMetrics = function( itemHeight, itemWidth, padding ) {
