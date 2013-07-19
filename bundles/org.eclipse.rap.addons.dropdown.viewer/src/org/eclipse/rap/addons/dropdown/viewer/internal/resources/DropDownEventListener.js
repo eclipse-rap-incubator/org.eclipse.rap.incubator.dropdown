@@ -70,9 +70,10 @@ function handleSelection( event ) {
       }
     } else if( !text.getData( "typing" ) && !text.getData( "deleting" ) ) {
       var userText = dropdown.getData( "userText" );
-      userText = userText ? userText : "";
-      text.setText( userText );
-      text.setSelection( [ userText.length, userText.length ] );
+      if( userText !== null && userText !== undefined ) {
+        text.setText( userText );
+        text.setSelection( [ userText.length, userText.length ] );
+      }
     }
     text.setData( "selecting", false );
   }
