@@ -65,6 +65,7 @@
     this._.visibleItemCount = 5;
     this._.parent = parent;
     this._.items = [];
+    this._.columns = null;
     this._.inMouseSelection = false;
     this._.events = createEventsMap();
     this._.parent.addEventListener( "keypress", onTextKeyEvent, this );
@@ -221,6 +222,14 @@
     },
 
     /**
+     * Experimental!
+     */
+    setColumns : function( columns ) {
+      this._.columns = columns;
+      this._.grid.setColumnCount( columns.length );
+    },
+
+    /**
      * Not intended to be called by ClientScripting
      */
     destroy : function() {
@@ -311,18 +320,41 @@
     this._.popup.setWidth( this._.parent.getWidth() );
     this._.popup.setHeight( gridHeight + FRAMEWIDTH );
     this._.grid.setDimension( gridWidth, gridHeight );
+    renderItemMetrics.apply( this, [ itemHeight, gridWidth, padding ] );
+  };
+
+  var renderItemMetrics = function( itemHeight, itemWidth, padding ) {
     this._.grid.setItemHeight( itemHeight );
-    this._.grid.setItemMetrics(
-      0,  // column
-      0, // left
-      gridWidth, // width
-      0, // imageLeft
-      0, // imageWidth
-      padding[ 3 ], // textLeft
-      gridWidth - padding[ 1 ] - padding[ 3 ], // textWidth
-      0, // checkLeft
-      0 // checkWith
-    );
+    if( this._.columns != null ) {
+      var left = 0;
+      for( var i = 0; i < this._.columns.length; i++ ) {
+        var column = this._.columns[ i ];
+        this._.grid.setItemMetrics(
+          i,  // column
+          left, // left
+          column, // width
+          0, // imageLeft
+          0, // imageWidth
+          left + padding[ 3 ], // textLeft
+          column - padding[ 1 ] - padding[ 3 ], // textWidth
+          0, // checkLeft
+          0 // checkWith
+        );
+        left += column;
+      }
+    } else {
+      this._.grid.setItemMetrics(
+        0,  // column
+        0, // left
+        itemWidth, // width
+        0, // imageLeft
+        0, // imageWidth
+        padding[ 3 ], // textLeft
+        itemWidth - padding[ 1 ] - padding[ 3 ], // textWidth
+        0, // checkLeft
+        0 // checkWith
+      );
+    }
   };
 
   var renderGridItems = function() {

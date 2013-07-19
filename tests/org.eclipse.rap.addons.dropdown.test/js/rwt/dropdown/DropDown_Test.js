@@ -16,6 +16,8 @@ var TestUtil = org.eclipse.rwt.test.fixture.TestUtil;
 var DropDown = rwt.dropdown.DropDown;
 
 var ITEM_HEIGHT = 25; // Depends on padding which is currently taken from list theming
+var PADDING_LEFT = 10;
+var PADDING_RIGHT = 10;
 
 var shell;
 var widget;
@@ -416,6 +418,16 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       assertEquals( popup.getInnerHeight(), grid.getHeight() );
     },
 
+    testShow_setsItemMetrics: function() {
+      showDropDown();
+
+      var config = grid.getRenderConfig();
+      assertEquals( 0, config.itemLeft[ 0 ] );
+      assertEquals( grid.getWidth(), config.itemWidth[ 0 ] );
+      assertEquals( PADDING_LEFT, config.itemTextLeft[ 0 ] );
+      assertEquals( grid.getWidth() - PADDING_RIGHT - PADDING_LEFT, config.itemTextWidth[ 0 ] );
+    },
+
     testShow_SetsGridFont : function() {
       var font = rwt.html.Font.fromString( "Arial 12px" );
       shell.setFont( font );
@@ -447,6 +459,28 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       dropdown.setItems( [ "a", "b", "c" ] );
 
       assertEquals( [ "a", "b", "c" ], getGridItems() );
+    },
+
+    testSetColumns_setsColumnCount : function() {
+      dropdown.setColumns( [ 30, 40 ] );
+
+      var config = grid.getRenderConfig();
+      assertEquals( 2, config.columnCount );
+    },
+
+    testSetColumns_setsItemMetrics : function() {
+      dropdown.setColumns( [ 30, 40 ] );
+      showDropDown();
+
+      var config = grid.getRenderConfig();
+      assertEquals( 0, config.itemLeft[ 0 ] );
+      assertEquals( 30, config.itemWidth[ 0 ] );
+      assertEquals( 30, config.itemLeft[ 1 ] );
+      assertEquals( 40, config.itemWidth[ 1 ] );
+      assertEquals( PADDING_LEFT, config.itemTextLeft[ 0 ] );
+      assertEquals( 30 - PADDING_RIGHT - PADDING_LEFT, config.itemTextWidth[ 0 ] );
+      assertEquals( 30 + PADDING_LEFT, config.itemTextLeft[ 1 ] );
+      assertEquals( 40 - PADDING_RIGHT - PADDING_LEFT, config.itemTextWidth[ 1 ] );
     },
 
     testGetItemCount : function() {

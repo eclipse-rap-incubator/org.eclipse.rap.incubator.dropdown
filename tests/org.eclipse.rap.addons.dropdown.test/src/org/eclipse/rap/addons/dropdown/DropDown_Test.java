@@ -366,7 +366,25 @@ public class DropDown_Test {
 
     dropdown.setData( RWT.MARKUP_ENABLED, Boolean.TRUE );
 
-    verify( remoteObject ).set( "markupEnabled", true );
+    verify( remoteObject ).set( eq( "markupEnabled" ), eq( true ) );
+  }
+
+  @Test
+  public void testSetData_RendersColumns() {
+    Fixture.fakePhase( PhaseId.PROCESS_ACTION );
+
+    dropdown.setData( "columns", new int[]{ 10, 20 } );
+
+    verify( remoteObject ).set( eq( "columns" ), eq( new JsonArray().add( 10 ).add( 20 ) ) );
+  }
+
+  @Test
+  public void testSetData_RendersIncorrectTypeAsNull() {
+    Fixture.fakePhase( PhaseId.PROCESS_ACTION );
+
+    dropdown.setData( "columns", Boolean.TRUE );
+
+    verify( remoteObject ).set( eq( "columns" ), eq( JsonObject.NULL ) );
   }
 
   @Test
