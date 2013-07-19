@@ -483,6 +483,18 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       assertEquals( 40 - PADDING_RIGHT - PADDING_LEFT, config.itemTextWidth[ 1 ] );
     },
 
+    testSetColumns_separatesItemsByTabulator : function() {
+      dropdown.setColumns( [ 30, 40 ] );
+      var tab = String.fromCharCode( 9 );
+
+      dropdown.setItems( [ "foo" + tab + "bar" ] );
+      showDropDown();
+
+      var gridItem = grid.getRootItem().getChild( 0 );
+      assertEquals( "foo", gridItem.getText( 0 ) );
+      assertEquals( "bar", gridItem.getText( 1 ) );
+    },
+
     testGetItemCount : function() {
       showDropDown();
 

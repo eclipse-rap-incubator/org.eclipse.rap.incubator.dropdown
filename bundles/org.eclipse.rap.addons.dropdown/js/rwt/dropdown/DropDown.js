@@ -13,6 +13,7 @@
 
   var POPUP_BORDER = new rwt.html.Border( 1, "solid", "#000000" );
   var FRAMEWIDTH = 2;
+  var TAB = String.fromCharCode( 9 );
   var getPadding = function() {
     var manager = rwt.theme.AppearanceManager.getInstance();
     var stylemap = manager.styleFrom( "list-item", {} );
@@ -365,7 +366,11 @@
     rootItem.setItemCount( items.length );
     for( var i = 0; i < items.length; i++ ) {
       var gridItem = new rwt.widgets.GridItem( rootItem, i, false );
-      gridItem.setTexts( [ items[ i ] ] );
+      if( this._.columns ) {
+        gridItem.setTexts( items[ i ].split( TAB ) );
+      } else {
+        gridItem.setTexts( [ items[ i ] ] );
+      }
     }
     delete this._.grid._inServerResponse;
   };

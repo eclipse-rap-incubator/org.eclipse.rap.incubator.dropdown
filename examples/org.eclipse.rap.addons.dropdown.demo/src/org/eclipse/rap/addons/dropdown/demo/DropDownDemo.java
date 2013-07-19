@@ -119,7 +119,7 @@ public class DropDownDemo extends AbstractEntryPoint {
         dropdown.hide();
       }
     } );
-    dropdown.setData( "columns", new int[] { 90, 50 } );
+    dropdown.setData( "columns", new int[] { 130, 60 } );
   }
 
   private void createKFZExample( Composite parent ) {
@@ -312,7 +312,10 @@ public class DropDownDemo extends AbstractEntryPoint {
       String item = values[ i ];
       if( item.toLowerCase().startsWith( text ) ) {
         int length = text.length();
-        result.add( "<b>" + item.substring( 0, length ) + "</b>" + item.substring( length ) );
+        int rating = ( int )( Math.random() * 10 );
+        result.add(
+          "<b>" + item.substring( 0, length ) + "</b>" + item.substring( length ) + "\t" + rating + "/10"
+        );
       }
     }
     return result.toArray( new String[ result.size() ] );
