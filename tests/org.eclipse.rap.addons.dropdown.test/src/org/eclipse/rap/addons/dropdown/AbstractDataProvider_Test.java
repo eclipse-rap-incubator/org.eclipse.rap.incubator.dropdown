@@ -12,10 +12,10 @@ package org.eclipse.rap.addons.dropdown;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.rap.json.JsonArray;
 import org.eclipse.rap.rwt.remote.Connection;
@@ -24,9 +24,12 @@ import org.eclipse.rap.rwt.testfixture.Fixture;
 import org.junit.*;
 
 
-public class SimpleDataProvider_Test {
+public class AbstractDataProvider_Test {
+
+  private static final String REMOTE_TYPE = "rwt.remote.Model";
 
   private Connection connection;
+
   private RemoteObject remoteObject;
 
   @Before
@@ -44,22 +47,34 @@ public class SimpleDataProvider_Test {
     Fixture.tearDown();
   }
 
-  @Test ( expected = NullPointerException.class )
-  public void testConstructor_failsWithNullArgument() {
-    new SimpleDataProvider( null );
+  @Test
+  public void testConstructor_createsRemoteObject() {
+    new AbstractDataProvider(){};
+
+    verify( connection ).createRemoteObject( eq( REMOTE_TYPE ) );
   }
 
   @Test
-  public void testConstructor_setsData() {
-    final AtomicReference<JsonArray> captor = new AtomicReference<JsonArray>();
-    new SimpleDataProvider( new String[]{ "foo", "bar" } ) {
-      @Override
-      protected void setData( JsonArray array ) {
-        captor.set( array );
-      }
-    };
+  public void testGetId() {
+    AbstractDataProvider dataProvider = new AbstractDataProvider(){};
+    assertEquals( "idFoo", dataProvider.getId() );
+  }
 
-    assertEquals( new JsonArray().add( "foo" ).add( "bar" ), captor.get() );
+  @Test ( expected = NullPointerException.class )
+  public void testSetData_failsWithNullArgument() {
+    AbstractDataProvider dataProvider = new AbstractDataProvider(){};
+
+    dataProvider.setData( null );
+  }
+
+  @Test
+  public void testSetData_setsDataOnRemoteObject() {
+    JsonArray array = new JsonArray().add( "foo" ).add( "bar" );
+    AbstractDataProvider dataProvider = new AbstractDataProvider(){};
+
+    dataProvider.setData( array );
+
+    verify( remoteObject ).set( eq( "data" ), eq( array ) );
   }
 
 }

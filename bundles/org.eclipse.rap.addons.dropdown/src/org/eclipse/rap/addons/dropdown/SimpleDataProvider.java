@@ -11,28 +11,12 @@
 package org.eclipse.rap.addons.dropdown;
 
 import org.eclipse.rap.json.JsonArray;
-import org.eclipse.rap.rwt.RWT;
-import org.eclipse.rap.rwt.remote.Connection;
-import org.eclipse.rap.rwt.remote.RemoteObject;
 
 
-public class SimpleDataProvider {
-
-  private static final String REMOTE_TYPE = "rwt.remote.Model";
-  private RemoteObject remoteObject;
+public class SimpleDataProvider extends AbstractDataProvider {
 
   public SimpleDataProvider( String[] data ) {
-    if( data == null ) {
-      throw new NullPointerException( "Data must not be null" );
-    }
-    Connection connection = RWT.getUISession().getConnection();
-    remoteObject = connection.createRemoteObject( REMOTE_TYPE );
-    JsonArray array = createJsonArray( data );
-    remoteObject.set( "data", array );
-  }
-
-  public String getId() {
-    return remoteObject.getId();
+    setData( createJsonArray( data ) );
   }
 
   private static JsonArray createJsonArray( String[] data ) {

@@ -54,7 +54,7 @@ public class AutoSuggest {
     } );
   }
 
-  public void setDataProvider( SimpleDataProvider dataProvider ) {
+  public void setDataProvider( AbstractDataProvider dataProvider ) {
     if( dataProvider == null ) {
       throw new NullPointerException( "Data must not be null" );
     }
