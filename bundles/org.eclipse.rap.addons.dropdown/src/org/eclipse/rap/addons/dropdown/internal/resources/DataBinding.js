@@ -118,7 +118,7 @@ function onModelChangeResults( dropDown, model, event ) {
 
 function onModelChangeResultsVisible( dropDown, model, event ) {
   if( event.options.action !== "sync" ) {
-    dropDown.setVisible( event.value )
+    dropDown.setVisible( event.value );
   }
 }
 
@@ -131,4 +131,3 @@ function onModelChangeText( textWidget, model, event ) {
 function onModelChangeTextSelection( textWidget, model, event ) {
   textWidget.setSelection( event.value );
 }
-
