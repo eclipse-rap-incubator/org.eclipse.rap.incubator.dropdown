@@ -272,7 +272,7 @@ public class AutoSuggest_Test {
   @Test
   public void testSetDataSource_setsElementsOnRemoteObject() {
     AutoSuggest autoSuggest = new AutoSuggest( text );
-    DataSource dataSource = mock( SimpleDataSource.class );
+    DataSource dataSource = mock( DataSource.class );
     when( dataSource.getId() ).thenReturn( "providerId" );
 
     autoSuggest.setDataSource( dataSource );

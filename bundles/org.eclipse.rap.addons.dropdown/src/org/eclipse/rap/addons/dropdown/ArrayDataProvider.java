@@ -10,21 +10,24 @@
  ******************************************************************************/
 package org.eclipse.rap.addons.dropdown;
 
-import org.eclipse.rap.json.JsonArray;
+import java.util.Arrays;
+import java.util.List;
 
 
-public class SimpleDataSource extends DataSource {
+public class ArrayDataProvider implements DataProvider {
 
-  public SimpleDataSource( String[] data ) {
-    setData( createJsonArray( data ) );
+  private final List<String> elements;
+
+  public ArrayDataProvider( String... elements ) {
+    this.elements = Arrays.asList( elements );
   }
 
-  private static JsonArray createJsonArray( String[] data ) {
-    JsonArray array = new JsonArray();
-    for( int i = 0; i < data.length; i++ ) {
-      array.add( data[ i ] );
-    }
-    return array;
+  public Iterable<?> getSuggestions() {
+    return elements;
+  }
+
+  public String getValue( Object element ) {
+    return ( String )element;
   }
 
 }

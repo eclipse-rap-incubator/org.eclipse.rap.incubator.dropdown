@@ -63,19 +63,19 @@ public class DataSource_Test {
   }
 
   @Test ( expected = NullPointerException.class )
-  public void testSetData_failsWithNullArgument() {
+  public void testSetDataProvider_failsWithNullArgument() {
     DataSource dataSource = new DataSource();
 
-    dataSource.setData( null );
+    dataSource.setDataProvider( null );
   }
 
   @Test
-  public void testSetData_setsDataOnRemoteObject() {
-    JsonArray array = new JsonArray().add( "foo" ).add( "bar" );
+  public void testSetDataProvider_setsDataOnRemoteObject() {
     DataSource dataSource = new DataSource();
 
-    dataSource.setData( array );
+    dataSource.setDataProvider( new ArrayDataProvider( "foo", "bar" ) );
 
+    JsonArray array = new JsonArray().add( "foo" ).add( "bar" );
     verify( remoteObject ).set( eq( "data" ), eq( array ) );
   }
 
