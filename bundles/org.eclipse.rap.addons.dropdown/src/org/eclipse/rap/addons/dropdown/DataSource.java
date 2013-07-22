@@ -16,13 +16,13 @@ import org.eclipse.rap.rwt.remote.Connection;
 import org.eclipse.rap.rwt.remote.RemoteObject;
 
 
-public abstract class AbstractDataProvider {
+public class DataSource {
 
   private static final String REMOTE_TYPE = "rwt.remote.Model";
 
-  private RemoteObject remoteObject;
+  private final RemoteObject remoteObject;
 
-  public AbstractDataProvider() {
+  public DataSource() {
     Connection connection = RWT.getUISession().getConnection();
     remoteObject = connection.createRemoteObject( REMOTE_TYPE );
   }

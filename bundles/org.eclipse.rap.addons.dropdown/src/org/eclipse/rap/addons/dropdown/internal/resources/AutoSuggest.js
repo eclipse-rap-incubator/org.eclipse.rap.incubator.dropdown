@@ -19,8 +19,8 @@ function handleEvent( event ) {
     onAcceptSuggestion.apply( event.source, [ event ] );
   } else {
     switch( event.property ) {
-      case "dataProvider":
-        onChangeDataProvider.apply( event.source, [ event ] );
+      case "dataSource":
+        onChangeDataSource.apply( event.source, [ event ] );
       break;
       case "elements":
         onChangeElements.apply( event.source, [ event ] );
@@ -44,8 +44,8 @@ function handleEvent( event ) {
 //////////////////
 // Event Handling
 
-function onChangeDataProvider( event ) {
-  processDataProvider.apply( this );
+function onChangeDataSource( event ) {
+  processDataSource.apply( this );
 }
 
 function onChangeElements( event ) {
@@ -116,7 +116,7 @@ function onAcceptSuggestion( event ) {
 
 function filter( options ) {
   if( this.get( "elements" ) == null ) {
-    processDataProvider.apply( this );
+    processDataSource.apply( this );
   }
   var userText = this.get( "userText" ) || "";
   this.set( "suggestion", null, { "action" : "sync" } );
@@ -125,10 +125,10 @@ function filter( options ) {
   this.set( "results", results, { "action" : options.action } );
 }
 
-function processDataProvider() {
-  if( this.get( "dataProvider" ) != null ) {
-    var dataProvider = rap.getObject( this.get( "dataProvider" ) );
-    this.set( "elements", dataProvider.get( "data" ) );
+function processDataSource() {
+  if( this.get( "dataSource" ) != null ) {
+    var dataSource = rap.getObject( this.get( "dataSource" ) );
+    this.set( "elements", dataSource.get( "data" ) );
   }
 }
 

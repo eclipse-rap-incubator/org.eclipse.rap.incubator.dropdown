@@ -32,18 +32,27 @@ import java.util.List;
 import org.eclipse.rap.clientscripting.ClientListener;
 import org.eclipse.rap.json.JsonArray;
 import org.eclipse.rap.json.JsonObject;
+import org.eclipse.rap.json.JsonValue;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.client.Client;
 import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteList;
 import org.eclipse.rap.rwt.internal.protocol.JsonUtil;
 import org.eclipse.rap.rwt.lifecycle.PhaseId;
 import org.eclipse.rap.rwt.lifecycle.WidgetUtil;
-import org.eclipse.rap.rwt.remote.*;
+import org.eclipse.rap.rwt.remote.Connection;
+import org.eclipse.rap.rwt.remote.OperationHandler;
+import org.eclipse.rap.rwt.remote.RemoteObject;
 import org.eclipse.rap.rwt.testfixture.Fixture;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
-import org.eclipse.swt.widgets.*;
-import org.junit.*;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -52,7 +61,6 @@ import org.mockito.stubbing.Answer;
 @SuppressWarnings("restriction")
 public class DropDown_Test {
 
-  private Display display;
   private Text text;
   private DropDown dropdown;
   private RemoteObject remoteObject;
@@ -62,7 +70,7 @@ public class DropDown_Test {
   @Before
   public void setUp() {
     Fixture.setUp();
-    display = new Display();
+    Display display = new Display();
     Shell shell = new Shell( display );
     text = new Text( shell, SWT.NONE );
     Fixture.fakeNewRequest();
@@ -353,7 +361,6 @@ public class DropDown_Test {
     fakeWidgetDataWhiteList( new String[]{ "foo", "bar" } );
     dropdown.setData( "foo", "bar" );
 
-    @SuppressWarnings("rawtypes")
     ArgumentCaptor<JsonObject> argument = ArgumentCaptor.forClass( JsonObject.class );
     verify( remoteObject ).call( eq( "setData" ), argument.capture() );
 
@@ -384,7 +391,7 @@ public class DropDown_Test {
 
     dropdown.setData( "columns", Boolean.TRUE );
 
-    verify( remoteObject ).set( eq( "columns" ), eq( JsonObject.NULL ) );
+    verify( remoteObject ).set( eq( "columns" ), eq( JsonValue.NULL ) );
   }
 
   @Test

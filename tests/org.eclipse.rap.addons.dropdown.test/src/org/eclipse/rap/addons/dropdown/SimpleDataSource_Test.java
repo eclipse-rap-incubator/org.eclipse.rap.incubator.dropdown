@@ -21,10 +21,12 @@ import org.eclipse.rap.json.JsonArray;
 import org.eclipse.rap.rwt.remote.Connection;
 import org.eclipse.rap.rwt.remote.RemoteObject;
 import org.eclipse.rap.rwt.testfixture.Fixture;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 
-public class SimpleDataProvider_Test {
+public class SimpleDataSource_Test {
 
   private Connection connection;
   private RemoteObject remoteObject;
@@ -46,13 +48,13 @@ public class SimpleDataProvider_Test {
 
   @Test ( expected = NullPointerException.class )
   public void testConstructor_failsWithNullArgument() {
-    new SimpleDataProvider( null );
+    new SimpleDataSource( null );
   }
 
   @Test
   public void testConstructor_setsData() {
     final AtomicReference<JsonArray> captor = new AtomicReference<JsonArray>();
-    new SimpleDataProvider( new String[]{ "foo", "bar" } ) {
+    new SimpleDataSource( new String[]{ "foo", "bar" } ) {
       @Override
       protected void setData( JsonArray array ) {
         captor.set( array );

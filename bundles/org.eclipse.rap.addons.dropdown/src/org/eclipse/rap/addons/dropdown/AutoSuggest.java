@@ -18,7 +18,9 @@ import org.eclipse.rap.addons.dropdown.internal.resources.ResourceLoaderUtil;
 import org.eclipse.rap.clientscripting.ClientListener;
 import org.eclipse.rap.clientscripting.WidgetDataWhiteList;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Text;
 
 
 public class AutoSuggest {
@@ -26,9 +28,8 @@ public class AutoSuggest {
   private final static String LISTENER_PREFIX
     = "org/eclipse/rap/addons/dropdown/internal/resources/";
   // TODO [tb] : value no longer reflects usage
-  private static final String MODEL_ID_KEY =
-      "org.eclipse.rap.addons.dropdown.viewer.DropDownViewer#viewer";
-
+  private static final String MODEL_ID_KEY
+    = "org.eclipse.rap.addons.dropdown.viewer.DropDownViewer#viewer";
   private final Text text;
   private final DropDown dropDown;
   private final Model model;
@@ -46,7 +47,7 @@ public class AutoSuggest {
     dropDown = new DropDown( text );
     model = new Model();
     connectClientObjects();
-    attachClientListeners( );
+    attachClientListeners();
     text.addListener( SWT.Dispose, new Listener() {
       public void handleEvent( Event event ) {
         dispose();
@@ -54,11 +55,11 @@ public class AutoSuggest {
     } );
   }
 
-  public void setDataProvider( AbstractDataProvider dataProvider ) {
-    if( dataProvider == null ) {
+  public void setDataSource( DataSource dataSource ) {
+    if( dataSource == null ) {
       throw new NullPointerException( "Data must not be null" );
     }
-    model.set( "dataProvider", dataProvider.getId() );
+    model.set( "dataSource", dataSource.getId() );
   }
 
   public void setVisibleItemCount( int itemCount ) {

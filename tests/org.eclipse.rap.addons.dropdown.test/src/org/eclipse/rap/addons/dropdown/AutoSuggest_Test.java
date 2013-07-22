@@ -35,28 +35,30 @@ import org.eclipse.rap.rwt.remote.Connection;
 import org.eclipse.rap.rwt.remote.RemoteObject;
 import org.eclipse.rap.rwt.testfixture.Fixture;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.*;
-import org.junit.*;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 
 @SuppressWarnings( "restriction" )
 public class AutoSuggest_Test {
 
+  private static final String REMOTE_TYPE = "rwt.remote.Model";
   private static final String MODEL_ID_KEY =
       "org.eclipse.rap.addons.dropdown.viewer.DropDownViewer#viewer";
 
-  private Display display;
   private Text text;
   private RemoteObject remoteObject;
-
-  private static final String REMOTE_TYPE = "rwt.remote.Model";
   private Connection connection;
 
   @Before
   public void setUp() {
     Fixture.setUp();
     Fixture.fakePhase( PhaseId.PROCESS_ACTION );
-    display = new Display();
+    Display display = new Display();
     Shell shell = new Shell( display );
     text = new Text( shell, SWT.NONE );
     mockRemoteObject();
@@ -90,7 +92,7 @@ public class AutoSuggest_Test {
   public void testConstructor_createsRemoteObject() {
     new AutoSuggest( text );
 
-    verify( connection ).createRemoteObject( eq( REMOTE_TYPE  ) );
+    verify( connection ).createRemoteObject( eq( REMOTE_TYPE ) );
   }
 
   @Test
@@ -158,7 +160,7 @@ public class AutoSuggest_Test {
   public void testConstructor_addKeysToWidgetDataWhiteListAndKeepExistingKeys() {
     WidgetDataWhiteListImpl service
       = ( WidgetDataWhiteListImpl )RWT.getClient().getService( WidgetDataWhiteList.class );
-    service.setKeys( new String[]{ "foo" } );
+    service.setKeys( new String[] { "foo" } );
 
     new AutoSuggest( text );
 
@@ -170,7 +172,7 @@ public class AutoSuggest_Test {
   public void testConstructor_addKeysToWidgetDataWhiteListOnlyOnce() {
     WidgetDataWhiteListImpl service
       = ( WidgetDataWhiteListImpl )RWT.getClient().getService( WidgetDataWhiteList.class );
-    service.setKeys( new String[]{ MODEL_ID_KEY } );
+    service.setKeys( new String[] { MODEL_ID_KEY } );
 
     new AutoSuggest( text );
 
@@ -261,21 +263,21 @@ public class AutoSuggest_Test {
   }
 
   @Test( expected = NullPointerException.class )
-  public void testSetDataProvider_failsWithNullArgument() {
+  public void testSetDataSource_failsWithNullArgument() {
     AutoSuggest autoSuggest = new AutoSuggest( text );
 
-    autoSuggest.setDataProvider( null );
+    autoSuggest.setDataSource( null );
   }
 
   @Test
-  public void testSetDataProvider_setsElementsOnRemoteObject() {
+  public void testSetDataSource_setsElementsOnRemoteObject() {
     AutoSuggest autoSuggest = new AutoSuggest( text );
-    SimpleDataProvider dataProvider = mock( SimpleDataProvider.class );
-    when( dataProvider.getId() ).thenReturn( "providerId" );
+    DataSource dataSource = mock( SimpleDataSource.class );
+    when( dataSource.getId() ).thenReturn( "providerId" );
 
-    autoSuggest.setDataProvider( dataProvider );
+    autoSuggest.setDataSource( dataSource );
 
-    verify( remoteObject ).set( eq( "dataProvider" ), eq( "providerId" ) );
+    verify( remoteObject ).set( eq( "dataSource" ), eq( "providerId" ) );
   }
 
   @Test

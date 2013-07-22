@@ -13,9 +13,9 @@ package org.eclipse.rap.addons.dropdown;
 import org.eclipse.rap.json.JsonArray;
 
 
-public class SimpleDataProvider extends AbstractDataProvider {
+public class SimpleDataSource extends DataSource {
 
-  public SimpleDataProvider( String[] data ) {
+  public SimpleDataSource( String[] data ) {
     setData( createJsonArray( data ) );
   }
 

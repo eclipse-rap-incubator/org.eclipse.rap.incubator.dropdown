@@ -21,10 +21,12 @@ import org.eclipse.rap.json.JsonArray;
 import org.eclipse.rap.rwt.remote.Connection;
 import org.eclipse.rap.rwt.remote.RemoteObject;
 import org.eclipse.rap.rwt.testfixture.Fixture;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 
-public class AbstractDataProvider_Test {
+public class DataSource_Test {
 
   private static final String REMOTE_TYPE = "rwt.remote.Model";
 
@@ -49,30 +51,30 @@ public class AbstractDataProvider_Test {
 
   @Test
   public void testConstructor_createsRemoteObject() {
-    new AbstractDataProvider(){};
+    new DataSource();
 
     verify( connection ).createRemoteObject( eq( REMOTE_TYPE ) );
   }
 
   @Test
   public void testGetId() {
-    AbstractDataProvider dataProvider = new AbstractDataProvider(){};
-    assertEquals( "idFoo", dataProvider.getId() );
+    DataSource dataSource = new DataSource();
+    assertEquals( "idFoo", dataSource.getId() );
   }
 
   @Test ( expected = NullPointerException.class )
   public void testSetData_failsWithNullArgument() {
-    AbstractDataProvider dataProvider = new AbstractDataProvider(){};
+    DataSource dataSource = new DataSource();
 
-    dataProvider.setData( null );
+    dataSource.setData( null );
   }
 
   @Test
   public void testSetData_setsDataOnRemoteObject() {
     JsonArray array = new JsonArray().add( "foo" ).add( "bar" );
-    AbstractDataProvider dataProvider = new AbstractDataProvider(){};
+    DataSource dataSource = new DataSource();
 
-    dataProvider.setData( array );
+    dataSource.setData( array );
 
     verify( remoteObject ).set( eq( "data" ), eq( array ) );
   }

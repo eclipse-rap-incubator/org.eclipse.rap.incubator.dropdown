@@ -208,15 +208,15 @@
       model.destroy();
     } );
 
-    describe( "change:dataProvider", function() {
+    describe( "change:dataSource", function() {
 
       it( "sets elements", function() {
-        model.addListener( "change:dataProvider", createClientListener( "AutoSuggest" ) );
-        var dataProvider = rap.typeHandler[ "rwt.remote.Model" ].factory();
-        dataProvider.set( "data", [ "foo", "bar" ] );
-        spyOn( rap, "getObject" ).andReturn( dataProvider );
+        model.addListener( "change:dataSource", createClientListener( "AutoSuggest" ) );
+        var dataSource = rap.typeHandler[ "rwt.remote.Model" ].factory();
+        dataSource.set( "data", [ "foo", "bar" ] );
+        spyOn( rap, "getObject" ).andReturn( dataSource );
 
-        model.set( "dataProvider", "fooId" );
+        model.set( "dataSource", "fooId" );
 
         expect( rap.getObject ).toHaveBeenCalledWith( "fooId" );
         expect( model.get( "elements" ) ).toEqual( [ "foo", "bar" ] );
@@ -264,10 +264,10 @@
       it( "updates results from data provider if no elements are set", function() {
         model.addListener( "change:userText", createClientListener( "AutoSuggest" ) );
         model.set( "elements", null );
-        var dataProvider = rap.typeHandler[ "rwt.remote.Model" ].factory();
-        dataProvider.set( "data", [ "foo", "bar", "foobar", "banana", "apple", "cherry" ] );
-        spyOn( rap, "getObject" ).andReturn( dataProvider );
-        model.set( "dataProvider", "fooId" );
+        var dataSource = rap.typeHandler[ "rwt.remote.Model" ].factory();
+        dataSource.set( "data", [ "foo", "bar", "foobar", "banana", "apple", "cherry" ] );
+        spyOn( rap, "getObject" ).andReturn( dataSource );
+        model.set( "dataSource", "fooId" );
 
         model.set( "userText", "ba" );
 

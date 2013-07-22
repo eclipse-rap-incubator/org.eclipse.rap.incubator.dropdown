@@ -15,6 +15,7 @@ import java.util.Arrays;
 import org.eclipse.rap.addons.dropdown.internal.resources.DropDownResources;
 import org.eclipse.rap.json.JsonArray;
 import org.eclipse.rap.json.JsonObject;
+import org.eclipse.rap.json.JsonValue;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteList;
 import org.eclipse.rap.rwt.internal.protocol.JsonUtil;
@@ -26,7 +27,11 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.internal.events.EventLCAUtil;
 import org.eclipse.swt.internal.widgets.WidgetAdapterImpl;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Widget;
 
 
 /**
@@ -159,7 +164,7 @@ public class DropDown extends Widget {
   /**
    * Sets the maximum number of items that are visible in the receiver's list.
    *
-   * @param count the new number of items to be visible
+   * @param itemCount the new number of items to be visible
    *
    * @exception SWTException <ul>
    *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -208,11 +213,11 @@ public class DropDown extends Widget {
    *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
    * </ul>
    */
-  public void setVisible( boolean value ) {
+  public void setVisible( boolean visible ) {
     checkWidget();
-    if( visibility != value ) {
-      setVisibleImpl( value );
-      remoteObject.set( "visible", value );
+    if( visibility != visible ) {
+      setVisibleImpl( visible );
+      remoteObject.set( "visible", visible );
     }
   }
 
@@ -270,7 +275,7 @@ public class DropDown extends Widget {
         int arr[] = ( int[] )value;
         remoteObject.set( COLUMNS, createJsonArray( arr ) );
       } else {
-        remoteObject.set( COLUMNS, JsonObject.NULL );
+        remoteObject.set( COLUMNS, JsonValue.NULL );
       }
     }
   }
