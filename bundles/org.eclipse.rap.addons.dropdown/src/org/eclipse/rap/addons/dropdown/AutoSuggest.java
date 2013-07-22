@@ -29,10 +29,10 @@ public class AutoSuggest {
   private static final String MODEL_ID_KEY =
       "org.eclipse.rap.addons.dropdown.viewer.DropDownViewer#viewer";
 
-  private DropDown dropDown;
-  private Model model;
+  private final Text text;
+  private final DropDown dropDown;
+  private final Model model;
   private ClientListener clientListener;
-  private Text text;
   private boolean isDisposed;
 
   public AutoSuggest( Text text ) {
@@ -40,7 +40,7 @@ public class AutoSuggest {
       throw new NullPointerException( "Text must not be null" );
     }
     if( text.isDisposed() ) {
-      throw new IllegalArgumentException( "Text mus not be disposed" );
+      throw new IllegalArgumentException( "Text must not be disposed" );
     }
     this.text = text;
     dropDown = new DropDown( text );
