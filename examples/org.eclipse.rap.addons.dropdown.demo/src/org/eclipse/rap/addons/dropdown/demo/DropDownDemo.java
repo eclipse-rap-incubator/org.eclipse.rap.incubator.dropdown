@@ -13,9 +13,7 @@ package org.eclipse.rap.addons.dropdown.demo;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.jface.viewers.*;
 import org.eclipse.rap.addons.dropdown.DropDown;
-import org.eclipse.rap.addons.dropdown.viewer.DropDownViewer;
 import org.eclipse.rap.clientscripting.ClientListener;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.application.AbstractEntryPoint;
@@ -28,7 +26,12 @@ import org.eclipse.rap.rwt.service.ResourceManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Text;
 
 
 @SuppressWarnings("restriction")
@@ -42,7 +45,6 @@ public class DropDownDemo extends AbstractEntryPoint {
     WidgetDataWhiteListImpl list
       = ( WidgetDataWhiteListImpl )RWT.getClient().getService( WidgetDataWhiteList.class );
     list.setKeys( new String[]{ "dropdown", "text", "data" } );
-    createKFZExample( parent );
     createNationsExample( parent );
     create90sMoviesExample( parent );
     create80sMoviesExample( parent );
@@ -63,7 +65,7 @@ public class DropDownDemo extends AbstractEntryPoint {
     Button open = new Button( textBox, SWT.ARROW | SWT.DOWN );
     open.setLayoutData( new GridData( SWT.RIGHT, SWT.FILL, false, true ) );
     addButtonClientListener( open );
-    final DropDown dropdown = createDropDown( text, textBox );
+    final DropDown dropdown = createDropDown( text );
     open.setData( "dropdown", WidgetUtil.getId( dropdown ) );
     dropdown.setVisibleItemCount( 3 );
     dropdown.setData( "data", getClientData( "Nations" ) );
@@ -75,11 +77,11 @@ public class DropDownDemo extends AbstractEntryPoint {
     group.setLayout( new GridLayout( 1, true ) );
     Text text = createText( group, SWT.BORDER );
     text.setMessage( "90's Movies" );
-    DropDown dropdown = createDropDown( text, text );
+    DropDown dropdown = createDropDown( text );
     dropdown.setData( "data", getClientData( "Movies" ) );
   }
 
-  private void create80sMoviesExample( Composite parent ) {
+  private static void create80sMoviesExample( Composite parent ) {
     Group group = new Group( parent, SWT.NONE );
     group.setText( "DropDown only, 760 entries, no ClientScripting, markup" );
     group.setLayout( new GridLayout( 1, true ) );
@@ -122,136 +124,6 @@ public class DropDownDemo extends AbstractEntryPoint {
     dropdown.setData( "columns", new int[] { 300, 60 } );
   }
 
-  private void createKFZExample( Composite parent ) {
-    Group group = new Group( parent, SWT.NONE );
-    group.setText( "DropDownViewer + server-side expand button, dynamic input (586 entries max)" );
-    group.setLayout( new GridLayout( 3, false ) );
-    final Text text = createKFZExample_Text( group );
-    final DropDownViewer viewer = createKFZExample_Viewer( text );
-    createKFZExample_Location( group, viewer );
-    createKFZExample_Config( group, viewer );
-    createKFZExample_Log( group, viewer );
-    createDisposeButton( group, text );
-  }
-
-  private void createDisposeButton( Group group, final Text text ) {
-    Button button = new Button( group, SWT.PUSH );
-    button.setText( "Dispose!" );
-    button.addListener( SWT.Selection, new Listener() {
-      public void handleEvent( Event event ) {
-        text.dispose();
-      }
-    } );
-  }
-
-  private void createKFZExample_Location( Group group, final DropDownViewer viewer ) {
-    Group location = new Group( group, SWT.NONE );
-    location.setText( "Location" );
-    GridData layoutData = new GridData( SWT.CENTER, SWT.FILL, false, true );
-    location.setLayoutData( layoutData );
-    layoutData.verticalSpan = 2;
-    location.setLayout( new GridLayout( 1, true ) );
-    final Button germany = new Button( location, SWT.RADIO );
-    germany.setText( "Germany" );
-    germany.addListener( SWT.Selection, new Listener() {
-      public void handleEvent( Event event ) {
-        if( germany.getSelection() ) {
-          viewer.setInput( KFZ.DE );
-        }
-      }
-    } );
-    final Button austria = new Button( location, SWT.RADIO );
-    austria.setText( "Austria" );
-    austria.addListener( SWT.Selection, new Listener() {
-      public void handleEvent( Event event ) {
-        if( austria.getSelection() ) {
-          viewer.setInput( KFZ.AT );
-        }
-      }
-    } );
-    final Text text = ( Text )viewer.getControl();
-    text.addListener( SWT.Modify, new Listener() {
-      public void handleEvent( Event event ) {
-        if( viewer.getInput() == null && text.getText().length() >= 3 ) {
-          germany.setSelection( true );
-          germany.notifyListeners( SWT.Selection, new Event() );
-        }
-      }
-    } );
-  }
-
-  private void createKFZExample_Config( Group group, final DropDownViewer viewer ) {
-    Group location = new Group( group, SWT.NONE );
-    location.setText( "Config" );
-    GridData layoutData = new GridData( SWT.CENTER, SWT.FILL, false, true );
-    location.setLayoutData( layoutData );
-    layoutData.verticalSpan = 2;
-    location.setLayout( new GridLayout( 1, true ) );
-    final Button autoComplete = new Button( location, SWT.CHECK );
-    autoComplete.setText( "AutoComplete" );
-    autoComplete.addListener( SWT.Selection, new Listener() {
-      public void handleEvent( Event event ) {
-        viewer.setAutoComplete( autoComplete.getSelection() );
-      }
-    } );
-  }
-
-  private DropDownViewer createKFZExample_Viewer( final Text text ) {
-    DropDownViewer viewer = new DropDownViewer( text );
-    viewer.setLabelProvider( new LabelProvider() {
-      @Override
-      public String getText( Object object ) {
-        String[] entry = ( ( String[] )object );
-        if( entry.length == 4 ) {
-          return entry[ 2 ]; // germany
-        }
-        return entry[ 1 ]; // austria
-      }
-    } );
-    viewer.setContentProvider( new IStructuredContentProvider() {
-      public void inputChanged( Viewer viewer, Object oldInput, Object newInput ) {
-      }
-
-      public void dispose() {
-      }
-
-      public Object[] getElements( Object inputElement ) {
-        return ( Object[] )inputElement;
-      }
-    } );
-    return viewer;
-  }
-
-  private Text createKFZExample_Text( Group group ) {
-    final Text text = new Text( group, SWT.BORDER );
-    text.setData( RWT.CUSTOM_VARIANT, "dropdown" );
-    text.setCursor( text.getDisplay().getSystemCursor( SWT.CURSOR_ARROW ) );
-    GridData gridData = new GridData( 200, 23 );
-    gridData.verticalAlignment = SWT.TOP;
-    text.setLayoutData( gridData );
-    text.setMessage( "City" );
-    return text;
-  }
-
-  private void createKFZExample_Log( Group group, DropDownViewer viewer ) {
-    final Table table = new Table( group, SWT.BORDER | SWT.HIDE_SELECTION );
-    ( new TableColumn( table, SWT.NONE ) ).setText( "KFZ" );
-    ( new TableColumn( table, SWT.NONE ) ).setText( "Area" );
-    table.getColumn( 0 ).setWidth( 40 );
-    table.getColumn( 1 ).setWidth( 200 );
-    GridData gridData = new GridData( 250, 60 );
-    table.setLayoutData( gridData );
-    viewer.addSelectionChangedListener( new ISelectionChangedListener() {
-      public void selectionChanged( SelectionChangedEvent event ) {
-        IStructuredSelection selection = ( IStructuredSelection )event.getSelection();
-        String[] city = ( String[] )selection.getFirstElement();
-        TableItem item = new TableItem( table, SWT.NONE );
-        item.setText( city );
-        table.setTopIndex( table.indexOf( item ) );
-      }
-    } );
-  }
-
   private Text createText( Composite parent, int style ) {
     Text text = new Text( parent, style );
     GridData gridData = new GridData( 200, 23 );
@@ -261,7 +133,7 @@ public class DropDownDemo extends AbstractEntryPoint {
     return text;
   }
 
-  private DropDown createDropDown( Text text, Control parent ) {
+  private DropDown createDropDown( Text text ) {
     DropDown dropdown = new DropDown( text );
     dropdown.setData( "text", WidgetUtil.getId( text ) );
     text.setData( "dropdown", WidgetUtil.getId( dropdown ) );
@@ -306,7 +178,7 @@ public class DropDownDemo extends AbstractEntryPoint {
     return remoteObject.getId();
   }
 
-  private String[] filter( String[] values, String text, int limit ) {
+  private static String[] filter( String[] values, String text, int limit ) {
     List<String> result = new ArrayList<String>( limit );
     for( int i = 0; result.size() < limit && i < values.length; i++ ) {
       String item = values[ i ];
