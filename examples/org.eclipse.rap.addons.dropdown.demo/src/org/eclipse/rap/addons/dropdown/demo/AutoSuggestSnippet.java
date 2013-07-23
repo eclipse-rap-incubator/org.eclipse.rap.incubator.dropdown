@@ -12,6 +12,7 @@ package org.eclipse.rap.addons.dropdown.demo;
 
 import org.eclipse.rap.addons.dropdown.ArrayDataProvider;
 import org.eclipse.rap.addons.dropdown.AutoSuggest;
+import org.eclipse.rap.addons.dropdown.SuggestionSelectedListener;
 import org.eclipse.rap.addons.dropdown.DataSource;
 import org.eclipse.rap.rwt.application.AbstractEntryPoint;
 import org.eclipse.swt.SWT;
@@ -23,12 +24,17 @@ public class AutoSuggestSnippet extends AbstractEntryPoint {
 
   @Override
   protected void createContents( Composite parent ) {
-    Text text = new Text( parent, SWT.BORDER );
+    final Text text = new Text( parent, SWT.BORDER );
     AutoSuggest autoSuggest = new AutoSuggest( text );
     autoSuggest.setAutoComplete( true );
     DataSource dataSource = new DataSource();
     dataSource.setDataProvider( new ArrayDataProvider( "foo", "food", "foobar", "bar" ) );
     autoSuggest.setDataSource( dataSource );
+    autoSuggest.addSelectionListener( new SuggestionSelectedListener() {
+      public void suggestionSelected() {
+        System.out.println( "selected: " + text.getText() );
+      }
+    } );
   }
 
 }

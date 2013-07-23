@@ -15,16 +15,20 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.rap.clientscripting.ClientListener;
 import org.eclipse.rap.rwt.RWT;
@@ -32,6 +36,7 @@ import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteList;
 import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteListImpl;
 import org.eclipse.rap.rwt.lifecycle.PhaseId;
 import org.eclipse.rap.rwt.remote.Connection;
+import org.eclipse.rap.rwt.remote.OperationHandler;
 import org.eclipse.rap.rwt.remote.RemoteObject;
 import org.eclipse.rap.rwt.testfixture.Fixture;
 import org.eclipse.swt.SWT;
@@ -41,6 +46,8 @@ import org.eclipse.swt.widgets.Text;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 
 @SuppressWarnings( "restriction" )
@@ -252,6 +259,14 @@ public class AutoSuggest_Test {
     assertEquals( 23, dropDown.getVisibleItemCount() );
   }
 
+  @Test( expected = IllegalStateException.class )
+  public void testSetVisibleItemCount_failsIfDisposed() {
+    AutoSuggest autoSuggest = new AutoSuggest( text );
+    autoSuggest.dispose();
+
+    autoSuggest.setVisibleItemCount( 23 );
+  }
+
   @Test
   public void testGetVisibleItemCount_getsDropDownVisibleItemCount() {
     AutoSuggest autoSuggest = new AutoSuggest( text );
@@ -262,11 +277,27 @@ public class AutoSuggest_Test {
     assertEquals( 23, autoSuggest.getVisibleItemCount() );
   }
 
+  @Test( expected = IllegalStateException.class )
+  public void testGetVisibleItemCount_failsIfDisposed() {
+    AutoSuggest autoSuggest = new AutoSuggest( text );
+    autoSuggest.dispose();
+
+    autoSuggest.getVisibleItemCount();
+  }
+
   @Test( expected = NullPointerException.class )
   public void testSetDataSource_failsWithNullArgument() {
     AutoSuggest autoSuggest = new AutoSuggest( text );
 
     autoSuggest.setDataSource( null );
+  }
+
+  @Test( expected = IllegalStateException.class )
+  public void testSetDataSource_failsIfDisposed() {
+    AutoSuggest autoSuggest = new AutoSuggest( text );
+    autoSuggest.dispose();
+
+    autoSuggest.setDataSource( mock( DataSource.class ) );
   }
 
   @Test
@@ -287,6 +318,14 @@ public class AutoSuggest_Test {
     verify( remoteObject, never() ).set( eq( "autoComplete" ), anyBoolean() );
   }
 
+  @Test( expected = IllegalStateException.class )
+  public void testSetAutoComplete_failsIfDisposed() {
+    AutoSuggest autoSuggest = new AutoSuggest( text );
+    autoSuggest.dispose();
+
+    autoSuggest.setAutoComplete( true );
+  }
+
   @Test
   public void testSetAutoComplete_setsAutoCompleteTrueOnRemoteObject() {
     AutoSuggest autoSuggest = new AutoSuggest( text );
@@ -303,6 +342,158 @@ public class AutoSuggest_Test {
     autoSuggest.setAutoComplete( false );
 
     verify( remoteObject ).set( eq( "autoComplete" ), eq( false ) );
+  }
+
+  @Test( expected = NullPointerException.class )
+  public void testAddSelectionListener_failsWithNull() {
+    AutoSuggest autoSuggest = new AutoSuggest( text );
+
+    autoSuggest.addSelectionListener( null );
+  }
+
+  @Test( expected = IllegalStateException.class )
+  public void testAddSelectionListener_failsIfDisposed() {
+    AutoSuggest autoSuggest = new AutoSuggest( text );
+    autoSuggest.dispose();
+
+    autoSuggest.addSelectionListener( mock( SuggestionSelectedListener.class ) );
+  }
+
+  @Test
+  public void testAddSelectionListener_doesNotAddListenerTwice() {
+    AutoSuggest autoSuggest = new AutoSuggest( text );
+    SuggestionSelectedListener listener = mock( SuggestionSelectedListener.class );
+
+    autoSuggest.addSelectionListener( listener );
+    autoSuggest.addSelectionListener( listener );
+
+    autoSuggest.notifySelectionListeners();
+    verify( listener, times( 1 ) ).suggestionSelected();
+  }
+
+  @Test
+  public void testAddSelectionListener_callsListenOnRemoteObject() {
+    AutoSuggest autoSuggest = new AutoSuggest( text );
+
+    autoSuggest.addSelectionListener( mock( SuggestionSelectedListener.class ) );
+
+    verify( remoteObject ).listen( "change:elementSelection", true );
+  }
+
+  @Test
+  public void testAddSelectionListener_callsListenOnRemoteObjectOnlyOnce() {
+    AutoSuggest autoSuggest = new AutoSuggest( text );
+
+    autoSuggest.addSelectionListener( mock( SuggestionSelectedListener.class ) );
+    autoSuggest.addSelectionListener( mock( SuggestionSelectedListener.class ) );
+
+    verify( remoteObject, times( 1 ) ).listen( "change:elementSelection", true );
+  }
+
+  @Test
+  public void testRemoveSelectionListener() {
+    AutoSuggest autoSuggest = new AutoSuggest( text );
+    SuggestionSelectedListener listener = mock( SuggestionSelectedListener.class );
+    autoSuggest.addSelectionListener( listener );
+
+    autoSuggest.removeSelectionListener( listener );
+
+    autoSuggest.notifySelectionListeners();
+    verify( listener, never() ).suggestionSelected();
+  }
+
+  @Test( expected = NullPointerException.class )
+  public void testRemoveSelectionListener_failsWithNull() {
+    AutoSuggest autoSuggest = new AutoSuggest( text );
+
+    autoSuggest.removeSelectionListener( null );
+  }
+
+  @Test( expected = IllegalStateException.class )
+  public void testRemoveSelectionListener_failsIfDispose() {
+    AutoSuggest autoSuggest = new AutoSuggest( text );
+    autoSuggest.dispose();
+
+    autoSuggest.removeSelectionListener( mock( SuggestionSelectedListener.class ) );
+  }
+
+  @Test
+  public void testRemoveSelectionListener_doesNotFailWithUnknownListener() {
+    AutoSuggest autoSuggest = new AutoSuggest( text );
+    SuggestionSelectedListener listener = mock( SuggestionSelectedListener.class );
+
+    autoSuggest.removeSelectionListener( listener );
+  }
+
+  @Test
+  public void testRemoveSelectionListener_callsListenOnRemoteObject() {
+    AutoSuggest autoSuggest = new AutoSuggest( text );
+    SuggestionSelectedListener listener = mock( SuggestionSelectedListener.class );
+    autoSuggest.addSelectionListener( listener );
+
+    autoSuggest.removeSelectionListener( listener );
+
+    verify( remoteObject ).listen( "change:elementSelection", false );
+  }
+
+  @Test
+  public void testRemoveSelectionListener_callsListenOnRemoteObjectOnlyForLastListener() {
+    AutoSuggest autoSuggest = new AutoSuggest( text );
+    SuggestionSelectedListener listener = mock( SuggestionSelectedListener.class );
+    autoSuggest.addSelectionListener( mock( SuggestionSelectedListener.class ) );
+    autoSuggest.addSelectionListener( listener );
+
+    autoSuggest.removeSelectionListener( listener );
+
+    verify( remoteObject, never() ).listen( "change:elementSelection", false );
+  }
+
+  @Test
+  public void testNotifySelectionListeners_notifiesSelectionListener() {
+    AutoSuggest autoSuggest = new AutoSuggest( text );
+    SuggestionSelectedListener listener = mock( SuggestionSelectedListener.class );
+
+    autoSuggest.addSelectionListener( listener );
+
+    autoSuggest.notifySelectionListeners();
+    verify( listener ).suggestionSelected();
+  }
+
+  @Test
+  public void testNotifySelectionListeners_notifiesMultipleSelectionListener() {
+    AutoSuggest autoSuggest = new AutoSuggest( text );
+    SuggestionSelectedListener listener1 = mock( SuggestionSelectedListener.class );
+    SuggestionSelectedListener listener2 = mock( SuggestionSelectedListener.class );
+
+    autoSuggest.addSelectionListener( listener1 );
+    autoSuggest.addSelectionListener( listener2 );
+
+    autoSuggest.notifySelectionListeners();
+    verify( listener1 ).suggestionSelected();
+    verify( listener2 ).suggestionSelected();
+  }
+
+  @Test
+  public void testNotifySelectionListeners_calledOnNotifyOperation() {
+    AtomicReference<OperationHandler> operationHandlerCaptor = captureOperationHandler();
+    AutoSuggest autoSuggest = new AutoSuggest( text );
+    SuggestionSelectedListener listener = mock( SuggestionSelectedListener.class );
+    autoSuggest.addSelectionListener( listener );
+
+    operationHandlerCaptor.get().handleNotify( "change:elementSelection", null );
+
+    verify( listener ).suggestionSelected();
+  }
+
+  private AtomicReference<OperationHandler> captureOperationHandler() {
+    final AtomicReference<OperationHandler> captor = new AtomicReference<OperationHandler>();
+    doAnswer( new Answer<Object>() {
+      public Object answer( InvocationOnMock invocation ) throws Throwable {
+        captor.set( ( OperationHandler )invocation.getArguments()[ 0 ] );
+        return null;
+      }
+    } ).when( remoteObject ).setHandler( any( OperationHandler.class ) );
+    return captor;
   }
 
   private void mockRemoteObject() {

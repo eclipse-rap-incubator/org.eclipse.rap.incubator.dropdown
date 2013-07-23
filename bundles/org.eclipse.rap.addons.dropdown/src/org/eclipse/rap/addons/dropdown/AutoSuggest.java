@@ -12,11 +12,16 @@ package org.eclipse.rap.addons.dropdown;
 
 import static org.eclipse.rap.rwt.lifecycle.WidgetUtil.getId;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.rap.addons.dropdown.internal.ClientModelListener;
 import org.eclipse.rap.addons.dropdown.internal.Model;
+import org.eclipse.rap.addons.dropdown.internal.ModelListener;
 import org.eclipse.rap.addons.dropdown.internal.resources.ResourceLoaderUtil;
 import org.eclipse.rap.clientscripting.ClientListener;
 import org.eclipse.rap.clientscripting.WidgetDataWhiteList;
+import org.eclipse.rap.json.JsonObject;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -25,14 +30,18 @@ import org.eclipse.swt.widgets.Text;
 
 public class AutoSuggest {
 
+  private static final String EVENT_TYPE_SELECTION = "change:elementSelection";
   private final static String LISTENER_PREFIX
     = "org/eclipse/rap/addons/dropdown/internal/resources/";
   // TODO [tb] : value no longer reflects usage
   private static final String MODEL_ID_KEY
     = "org.eclipse.rap.addons.dropdown.viewer.DropDownViewer#viewer";
+
   private final Text text;
   private final DropDown dropDown;
   private final Model model;
+  private final List<SuggestionSelectedListener> selectionListeners;
+  private final ModelListener modelListener;
   private ClientListener clientListener;
   private boolean isDisposed;
 
@@ -46,6 +55,12 @@ public class AutoSuggest {
     this.text = text;
     dropDown = new DropDown( text );
     model = new Model();
+    selectionListeners = new ArrayList<SuggestionSelectedListener>( 1 );
+    modelListener = new ModelListener() {
+      public void handleEvent( JsonObject argument ) {
+        notifySelectionListeners();
+      }
+    };
     connectClientObjects();
     attachClientListeners();
     text.addListener( SWT.Dispose, new Listener() {
@@ -56,6 +71,7 @@ public class AutoSuggest {
   }
 
   public void setDataSource( DataSource dataSource ) {
+    checkDisposed();
     if( dataSource == null ) {
       throw new NullPointerException( "Data must not be null" );
     }
@@ -63,15 +79,42 @@ public class AutoSuggest {
   }
 
   public void setVisibleItemCount( int itemCount ) {
+    checkDisposed();
     dropDown.setVisibleItemCount( itemCount );
   }
 
   public int getVisibleItemCount() {
+    checkDisposed();
     return dropDown.getVisibleItemCount();
   }
 
   public void setAutoComplete( boolean value ) {
+    checkDisposed();
     model.set( "autoComplete", value );
+  }
+
+  public void addSelectionListener( SuggestionSelectedListener listener ) {
+    checkDisposed();
+    if( listener == null ) {
+      throw new NullPointerException( "Parameter was null: listener" );
+    }
+    if( !selectionListeners.contains( listener ) ) {
+      selectionListeners.add( listener );
+    }
+    if( selectionListeners.size() == 1 ) {
+      model.addListener( EVENT_TYPE_SELECTION, modelListener );
+    }
+  }
+
+  public void removeSelectionListener( SuggestionSelectedListener listener ) {
+    checkDisposed();
+    if( listener == null ) {
+      throw new NullPointerException( "Parameter was null: listener" );
+    }
+    selectionListeners.remove( listener );
+    if( selectionListeners.isEmpty() ) {
+      model.removeListener( EVENT_TYPE_SELECTION, modelListener );
+    }
   }
 
   public void dispose() {
@@ -88,6 +131,18 @@ public class AutoSuggest {
 
   DropDown getDropDown() {
     return dropDown;
+  }
+
+  void notifySelectionListeners() {
+    for( SuggestionSelectedListener listener : selectionListeners ) {
+      listener.suggestionSelected();
+    }
+  }
+
+  private void checkDisposed() {
+    if( isDisposed ) {
+      throw new IllegalStateException( "AutoSuggest is disposed" );
+    }
   }
 
   private void attachClientListeners() {
