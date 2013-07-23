@@ -205,9 +205,7 @@ function searchItems( items, query, limit ) {
   var resultItems = filterArray( items, filter, resultLimit );
   return {
     "items" : resultItems,
-    "indicies" : resultIndicies,
-    "query" : query,
-    "limit" : resultLimit
+    "indicies" : resultIndicies
   };
 }
 

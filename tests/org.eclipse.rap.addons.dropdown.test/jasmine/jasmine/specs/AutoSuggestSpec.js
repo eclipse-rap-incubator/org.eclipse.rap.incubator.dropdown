@@ -150,7 +150,6 @@
     it( "returns empty result for empty array", function() {
       var results = searchItems( [], /foo/ );
 
-      expect( results.query.toString() ).toEqual( "/foo/" );
       expect( results.items ).toEqual( [] );
       expect( results.indicies ).toEqual( [] );
     } );
@@ -160,10 +159,8 @@
 
       var results = searchItems( items, /foo/ );
 
-      expect( results.query.toString() ).toBe( "/foo/" );
       expect( results.items ).toEqual( [ "afoo", "food" ] );
       expect( results.indicies ).toEqual( [ 0, 2 ] );
-      expect( results.limit ).toBe( 0 );
     } );
 
     it( "returns multiple items with limit", function() {
@@ -171,17 +168,14 @@
 
       var results = searchItems( items, /foo/, 3 );
 
-      expect( results.query.toString() ).toBe( "/foo/" );
       expect( [ "afoo", "bfoo", "cfoo" ], results.items );
       expect( [ 0, 1, 3 ], results.indicies );
-      expect( 3, results.limit );
     } );
 
     it( "returns only items starting with string", function() {
       var items = [ "afoo", "bar", "food", "abc" ];
       var results = searchItems( items, /^foo/ );
 
-      expect( results.query.toString() ).toBe( "/^foo/" );
       expect( results.items ).toEqual( [ "food" ] );
       expect( results.indicies ).toEqual( [ 2 ] );
     } );
