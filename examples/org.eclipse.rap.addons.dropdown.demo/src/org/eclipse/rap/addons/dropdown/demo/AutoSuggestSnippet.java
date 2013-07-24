@@ -10,10 +10,10 @@
  ******************************************************************************/
 package org.eclipse.rap.addons.dropdown.demo;
 
-import org.eclipse.rap.addons.dropdown.ArrayDataProvider;
-import org.eclipse.rap.addons.dropdown.AutoSuggest;
-import org.eclipse.rap.addons.dropdown.SuggestionSelectedListener;
-import org.eclipse.rap.addons.dropdown.DataSource;
+import org.eclipse.rap.addons.autosuggest.ArrayDataProvider;
+import org.eclipse.rap.addons.autosuggest.AutoSuggest;
+import org.eclipse.rap.addons.autosuggest.DataSource;
+import org.eclipse.rap.addons.autosuggest.SuggestionSelectedListener;
 import org.eclipse.rap.rwt.application.AbstractEntryPoint;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;

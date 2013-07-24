@@ -12,10 +12,10 @@ package org.eclipse.rap.addons.dropdown.demo.examples;
 
 import java.util.Arrays;
 
-import org.eclipse.rap.addons.dropdown.AutoSuggest;
-import org.eclipse.rap.addons.dropdown.DataProvider;
-import org.eclipse.rap.addons.dropdown.DataSource;
-import org.eclipse.rap.addons.dropdown.SuggestionSelectedListener;
+import org.eclipse.rap.addons.autosuggest.AutoSuggest;
+import org.eclipse.rap.addons.autosuggest.DataProvider;
+import org.eclipse.rap.addons.autosuggest.DataSource;
+import org.eclipse.rap.addons.autosuggest.SuggestionSelectedListener;
 import org.eclipse.rap.addons.dropdown.demo.examples.CountryInfo.City;
 import org.eclipse.rap.addons.dropdown.demo.examples.CountryInfo.Country;
 import org.eclipse.rap.examples.ExampleUtil;

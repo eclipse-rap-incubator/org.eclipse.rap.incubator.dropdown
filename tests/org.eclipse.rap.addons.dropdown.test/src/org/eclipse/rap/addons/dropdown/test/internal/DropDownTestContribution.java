@@ -22,8 +22,7 @@ public class DropDownTestContribution implements TestContribution {
   private static final ClassLoader CLASSLOADER = DropDownTestContribution.class.getClassLoader();
 
   private static final String[] ALL_TEST_RESOURCES = new String[] {
-    "/rwt/dropdown/DropDown_Test.js",
-    "/rwt/remote/Model_Test.js",
+    "/rwt/dropdown/DropDown_Test.js"
   };
 
   public String getName() {

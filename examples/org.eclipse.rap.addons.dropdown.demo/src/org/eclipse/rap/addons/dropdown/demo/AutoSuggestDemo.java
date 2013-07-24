@@ -12,10 +12,10 @@ package org.eclipse.rap.addons.dropdown.demo;
 
 import java.util.Arrays;
 
-import org.eclipse.rap.addons.dropdown.AutoSuggest;
-import org.eclipse.rap.addons.dropdown.DataProvider;
-import org.eclipse.rap.addons.dropdown.DataSource;
-import org.eclipse.rap.addons.dropdown.SuggestionSelectedListener;
+import org.eclipse.rap.addons.autosuggest.AutoSuggest;
+import org.eclipse.rap.addons.autosuggest.DataProvider;
+import org.eclipse.rap.addons.autosuggest.DataSource;
+import org.eclipse.rap.addons.autosuggest.SuggestionSelectedListener;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.application.AbstractEntryPoint;
 import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteList;
