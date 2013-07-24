@@ -204,16 +204,13 @@
 
     describe( "change:dataSource", function() {
 
-      it( "sets elements", function() {
+      it( "sets elements to null", function() {
         model.addListener( "change:dataSource", createClientListener( "AutoSuggest" ) );
-        var dataSource = rap.typeHandler[ "rwt.remote.Model" ].factory();
-        dataSource.set( "data", [ "foo", "bar" ] );
-        spyOn( rap, "getObject" ).andReturn( dataSource );
+        model.set( "elements", [] );
 
         model.set( "dataSource", "fooId" );
 
-        expect( rap.getObject ).toHaveBeenCalledWith( "fooId" );
-        expect( model.get( "elements" ) ).toEqual( [ "foo", "bar" ] );
+        expect( model.get( "elements" ) ).toBeNull();
       } );
 
     } );

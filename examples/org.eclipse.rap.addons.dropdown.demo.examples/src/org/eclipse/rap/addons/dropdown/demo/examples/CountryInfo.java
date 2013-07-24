@@ -36,6 +36,15 @@ public class CountryInfo {
     return countries;
   }
 
+  public Country findCountry( String name ) {
+    for( Country country : countries ) {
+      if( country.name.equals( name ) ) {
+        return country;
+      }
+    }
+    return null;
+  }
+
   private CountryInfo() {
     try {
       countries = readCountries();
@@ -114,6 +123,15 @@ public class CountryInfo {
         }
       }
       return cities;
+    }
+
+    public City findCity( String name ) {
+      for( City city : cities ) {
+        if( city.name.equals( name ) ) {
+          return city;
+        }
+      }
+      return null;
     }
 
   }

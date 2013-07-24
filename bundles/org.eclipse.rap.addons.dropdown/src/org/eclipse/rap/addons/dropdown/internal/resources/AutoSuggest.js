@@ -45,7 +45,7 @@ function handleEvent( event ) {
 // Event Handling
 
 function onChangeDataSource( event ) {
-  processDataSource.apply( this );
+  this.set( "elements", null );
 }
 
 function onChangeElements( event ) {
