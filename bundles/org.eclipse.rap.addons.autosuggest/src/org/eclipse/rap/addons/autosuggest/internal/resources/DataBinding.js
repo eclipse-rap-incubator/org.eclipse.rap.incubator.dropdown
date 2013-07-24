@@ -65,11 +65,11 @@ function handleModelEvent( event ) {
     case "textSelection":
       onModelChangeTextSelection( textWidget, model, event );
     break;
-    case "results":
-      onModelChangeResults( dropDown, model, event );
+    case "currentSuggestions":
+      onModelChangeCurrentSuggestions( dropDown, model, event );
     break;
-    case "resultsVisible":
-      onModelChangeResultsVisible( dropDown, model, event );
+    case "suggestionsVisible":
+      onModelChangeSuggestionsVisible( dropDown, model, event );
     break;
   }
 }
@@ -100,23 +100,23 @@ function onTextModify( model, event, userAction ) {
 }
 
 function onDropDownChangeVisible( model, event ) {
-  model.set( "resultsVisible", event.widget.getVisible(), { "action" : "sync" }  );
+  model.set( "suggestionsVisible", event.widget.getVisible(), { "action" : "sync" }  );
 }
 
 function onDropDownSelection( model, event ) {
-  model.set( "resultSelection", event.index, { "action" : "sync" }  );
+  model.set( "selectedSuggestionIndex", event.index, { "action" : "sync" }  );
 }
 
 function onDropDownDefaultSelection( model, event ) {
   model.notify( "accept", { type : "accept", "source" : model }  );
 }
 
-function onModelChangeResults( dropDown, model, event ) {
-  var results = model.get( "results" );
+function onModelChangeCurrentSuggestions( dropDown, model, event ) {
+  var results = model.get( "currentSuggestions" );
   dropDown.setItems( results.items );
 }
 
-function onModelChangeResultsVisible( dropDown, model, event ) {
+function onModelChangeSuggestionsVisible( dropDown, model, event ) {
   if( event.options.action !== "sync" ) {
     dropDown.setVisible( event.value );
   }

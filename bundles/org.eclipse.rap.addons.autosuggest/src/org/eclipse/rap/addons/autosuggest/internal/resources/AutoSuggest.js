@@ -19,22 +19,22 @@ function handleEvent( event ) {
     onAcceptSuggestion.apply( event.source, [ event ] );
   } else {
     switch( event.property ) {
-      case "dataSource":
-        onChangeDataSource.apply( event.source, [ event ] );
+      case "dataSourceId":
+        onChangeDataSourceId.apply( event.source, [ event ] );
       break;
-      case "elements":
-        onChangeElements.apply( event.source, [ event ] );
+      case "suggestions":
+        onChangeSuggestions.apply( event.source, [ event ] );
       break;
       case "userText":
         onChangeUserText.apply( event.source, [ event ] );
       break;
-      case "results":
+      case "currentSuggestions":
         onChangeResults.apply( event.source, [ event ] );
       break;
-      case "resultSelection":
+      case "selectedSuggestionIndex":
         onChangeResultSelection.apply( event.source, [ event ] );
       break;
-      case "suggestion":
+      case "replacementText":
         onChangeSuggestion.apply( event.source, [ event ] );
       break;
     }
@@ -44,31 +44,31 @@ function handleEvent( event ) {
 //////////////////
 // Event Handling
 
-function onChangeDataSource( event ) {
-  this.set( "elements", null );
+function onChangeDataSourceId( event ) {
+  this.set( "suggestions", null );
 }
 
-function onChangeElements( event ) {
+function onChangeSuggestions( event ) {
   this.set( "elementSelection", -1, { "nosync" : true } );
   // NOTE: Nothing else to do if not visible, but would need to update when it becomes visible.
   //       Currently only onChangeUserText can set resultsVisible to true, which updates implicitly.
-  if( this.get( "resultsVisible" ) ) {
+  if( this.get( "suggestionsVisible" ) ) {
     filter.apply( this, [ { "action" : "refresh" } ] );
   }
 }
 
 function onChangeUserText( event ) {
-  this.set( "resultsVisible", event.value != null && event.value.length > 0  );
+  this.set( "suggestionsVisible", event.value != null && event.value.length > 0  );
   filter.apply( this, [ event.options ] );
 }
 
 function onChangeResults( event ) {
   var action = event.options.action;
   if( this.get( "autoComplete" ) && ( action === "typing" || action === "refresh" ) ) {
-    var items = this.get( "results" ).items;
+    var items = this.get( "currentSuggestions" ).items;
     var common = commonText( items );
     if( common && common.length > this.get( "userText" ).length ) {
-      this.set( "suggestion", common );
+      this.set( "replacementText", common );
     }
   }
 }
@@ -76,9 +76,9 @@ function onChangeResults( event ) {
 function onChangeResultSelection( event ) {
   var suggestion = null;
   if( event.value !== -1 ) {
-    suggestion = this.get( "results" ).items[ event.value ] || "";
+    suggestion = this.get( "currentSuggestions" ).items[ event.value ] || "";
   }
-  this.set( "suggestion", suggestion, { "action" : "selection" } );
+  this.set( "replacementText", suggestion, { "action" : "selection" } );
 }
 
 function onChangeSuggestion( event ) {
@@ -99,15 +99,15 @@ function onChangeSuggestion( event ) {
 }
 
 function onAcceptSuggestion( event ) {
-  var results = this.get( "results" );
+  var results = this.get( "currentSuggestions" );
   if( results ) {
-    var index = this.get( "resultSelection" );
+    var index = this.get( "selectedSuggestionIndex" );
     if( typeof index === "number" && index > -1 ) {
       this.set( "elementSelection", results.indicies[ index ] );
-      this.set( "resultsVisible", false );
+      this.set( "suggestionsVisible", false );
     } else if( this.get( "autoComplete" ) && results.indicies.length === 1 ) {
       this.set( "elementSelection", results.indicies[ 0 ] );
-      this.set( "resultsVisible", false );
+      this.set( "suggestionsVisible", false );
     }
   }
   var text = this.get( "text" ) || "";
@@ -115,20 +115,20 @@ function onAcceptSuggestion( event ) {
 }
 
 function filter( options ) {
-  if( this.get( "elements" ) == null ) {
+  if( this.get( "suggestions" ) == null ) {
     processDataSource.apply( this );
   }
   var userText = this.get( "userText" ) || "";
-  this.set( "suggestion", null, { "action" : "sync" } );
+  this.set( "replacementText", null, { "action" : "sync" } );
   var query = createQuery( userText.toLowerCase() );
-  var results = searchItems( this.get( "elements" ), query );
-  this.set( "results", results, { "action" : options.action } );
+  var results = searchItems( this.get( "suggestions" ), query );
+  this.set( "currentSuggestions", results, { "action" : options.action } );
 }
 
 function processDataSource() {
-  if( this.get( "dataSource" ) != null ) {
-    var dataSource = rap.getObject( this.get( "dataSource" ) );
-    this.set( "elements", dataSource.get( "data" ) );
+  if( this.get( "dataSourceId" ) != null ) {
+    var dataSource = rap.getObject( this.get( "dataSourceId" ) );
+    this.set( "suggestions", dataSource.get( "data" ) );
   }
 }
 

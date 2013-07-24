@@ -75,7 +75,7 @@ public class AutoSuggest {
     if( dataSource == null ) {
       throw new NullPointerException( "Data must not be null" );
     }
-    model.set( "dataSource", dataSource.getId() );
+    model.set( "dataSourceId", dataSource.getId() );
   }
 
   public void setVisibleItemCount( int itemCount ) {

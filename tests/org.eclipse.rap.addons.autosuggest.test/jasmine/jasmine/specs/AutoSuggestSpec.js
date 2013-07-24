@@ -191,7 +191,7 @@
     beforeEach( function() {
       rap = new RapMock();
       model = rap.typeHandler[ "rwt.remote.Model" ].factory(); // make model "public"
-      model.set( "elements", [ "foo", "bar", "foobar", "banana", "apple", "cherry" ] );
+      model.set( "suggestions", [ "foo", "bar", "foobar", "banana", "apple", "cherry" ] );
       log = [];
       logger = function() {
         log.push( arguments );
@@ -202,72 +202,71 @@
       model.destroy();
     } );
 
-    describe( "change:dataSource", function() {
+    describe( "change:dataSourceId", function() {
 
-      it( "sets elements to null", function() {
-        model.addListener( "change:dataSource", createClientListener( "AutoSuggest" ) );
-        model.set( "elements", [] );
+      it( "sets suggestions to null", function() {
+        model.addListener( "change:dataSourceId", createClientListener( "AutoSuggest" ) );
+        model.set( "suggestions", [] );
 
-        model.set( "dataSource", "fooId" );
+        model.set( "dataSourceId", "fooId" );
 
-        expect( model.get( "elements" ) ).toBeNull();
+        expect( model.get( "suggestions" ) ).toBeNull();
       } );
 
     } );
 
     describe( "change:userText", function() {
 
-      it( "clears suggestion", function() {
+      it( "clears replacementText", function() {
         model.addListener( "change:userText", createClientListener( "AutoSuggest" ) );
-        model.set( "suggestion", "banana" );
-        model.addListener( "change:suggestion", logger );
+        model.set( "replacementText", "banana" );
 
         model.set( "userText", "ba" );
 
-        expect( model.get( "suggestion" ) ).toBeNull();
+        expect( model.get( "replacementText" ) ).toBeNull();
       } );
 
-      it( "shows results", function() {
+      it( "shows suggestions", function() {
         model.addListener( "change:userText", createClientListener( "AutoSuggest" ) );
 
         model.set( "userText", "ba" );
 
-        expect( model.get( "resultsVisible" ) ).toBe( true );
+        expect( model.get( "suggestionsVisible" ) ).toBe( true );
       } );
 
       it( "hides results if text length is zero", function() {
         model.addListener( "change:userText", createClientListener( "AutoSuggest" ) );
-        model.set( "resultsVisible", true );
+        model.set( "suggestionsVisible", true );
 
         model.set( "userText", "" );
 
-        expect( model.get( "resultsVisible" ) ).toBe( false );
+        expect( model.get( "suggestionsVisible" ) ).toBe( false );
       } );
 
-      it( "updates results", function() {
+      it( "updates currentSuggestions", function() {
         model.addListener( "change:userText", createClientListener( "AutoSuggest" ) );
 
         model.set( "userText", "ba" );
 
-        expect( model.get( "results" ).items ).toEqual( [ "bar", "banana" ] );
+        expect( model.get( "currentSuggestions" ).items ).toEqual( [ "bar", "banana" ] );
       } );
 
-      it( "updates results from data provider if no elements are set", function() {
+      it( "updates results from data provider if suggestions is not set", function() {
         model.addListener( "change:userText", createClientListener( "AutoSuggest" ) );
-        model.set( "elements", null );
+        model.set( "suggestions", null );
         var dataSource = rap.typeHandler[ "rwt.remote.Model" ].factory();
         dataSource.set( "data", [ "foo", "bar", "foobar", "banana", "apple", "cherry" ] );
         spyOn( rap, "getObject" ).andReturn( dataSource );
-        model.set( "dataSource", "fooId" );
+        model.set( "dataSourceId", "fooId" );
 
         model.set( "userText", "ba" );
 
-        expect( model.get( "results" ).items ).toEqual( [ "bar", "banana" ] );
+        expect( model.get( "currentSuggestions" ).items ).toEqual( [ "bar", "banana" ] );
       } );
 
       it( "forwards action option", function() {
         model.addListener( "change:userText", createClientListener( "AutoSuggest" ) );
-        model.addListener( "change:results", logger );
+        model.addListener( "change:currentSuggestions", logger );
 
         model.set( "userText", "ba", { "action" : "foo" } );
 
@@ -276,273 +275,273 @@
 
     } );
 
-    describe( "change:elements", function() {
+    describe( "change:suggestions", function() {
 
       it( "clears suggestion", function() {
-        model.addListener( "change:elements", createClientListener( "AutoSuggest" ) );
-        model.set( "suggestion", "banana" );
-        model.set( "resultsVisible", true );
-        model.addListener( "change:suggestion", logger );
+        model.addListener( "change:suggestions", createClientListener( "AutoSuggest" ) );
+        model.set( "replacementText", "banana" );
+        model.set( "suggestionsVisible", true );
+        model.addListener( "change:replacementText", logger );
 
-        model.set( "elements", [] );
+        model.set( "suggestions", [] );
 
-        expect( model.get( "suggestion" ) ).toBeNull();
+        expect( model.get( "replacementText" ) ).toBeNull();
       } );
 
       it( "clears elementSelection with nosync", function() {
-        model.addListener( "change:elements", createClientListener( "AutoSuggest" ) );
+        model.addListener( "change:suggestions", createClientListener( "AutoSuggest" ) );
         model.set( "elementSelection", 1 );
         model.addListener( "change:elementSelection", logger );
 
-        model.set( "elements", [ "foo" ] );
+        model.set( "suggestions", [ "foo" ] );
 
         expect( model.get( "elementSelection" ) ).toBe( -1 );
         expect( log[ 0 ][ 0 ].options.nosync ).toBe( true );
       } );
 
-      it( "updates results", function() {
-        model.addListener( "change:elements", createClientListener( "AutoSuggest" ) );
+      it( "updates suggestions", function() {
+        model.addListener( "change:suggestions", createClientListener( "AutoSuggest" ) );
         model.set( "userText", "ba" );
-        model.set( "resultsVisible", true );
+        model.set( "suggestionsVisible", true );
 
-        model.set( "elements", [ "foo", "bar" ] );
+        model.set( "suggestions", [ "foo", "bar" ] );
 
-        expect( model.get( "results" ).items ).toEqual( [ "bar" ] );
+        expect( model.get( "currentSuggestions" ).items ).toEqual( [ "bar" ] );
       } );
 
-      it( "does not update results if not visible", function() {
-        model.addListener( "change:elements", createClientListener( "AutoSuggest" ) );
-        model.set( "resultsVisible", false );
-        model.addListener( "change:results", logger );
+      it( "does not update suggestions if not visible", function() {
+        model.addListener( "change:suggestions", createClientListener( "AutoSuggest" ) );
+        model.set( "suggestionsVisible", false );
+        model.addListener( "change:currentSuggestions", logger );
 
-        model.set( "elements", [ "foo", "bar" ] );
+        model.set( "suggestions", [ "foo", "bar" ] );
 
         expect( log.length ).toBe( 0 );
       } );
 
-      it( "sets results with refresh option", function() {
-        model.addListener( "change:elements", createClientListener( "AutoSuggest" ) );
-        model.addListener( "change:results", logger );
-        model.set( "resultsVisible", true );
+      it( "sets suggestions with refresh option", function() {
+        model.addListener( "change:suggestions", createClientListener( "AutoSuggest" ) );
+        model.addListener( "change:currentSuggestions", logger );
+        model.set( "suggestionsVisible", true );
         model.set( "userText", "ba" );
 
-        model.set( "elements", [ "foo", "bar" ] );
+        model.set( "suggestions", [ "foo", "bar" ] );
 
         expect( log[ 0 ][ 0 ].options.action ).toBe( "refresh" );
       } );
 
     } );
 
-    describe( "change:resultSelection", function() {
+    describe( "change:selectedSuggestionIndex", function() {
 
-      it( "sets suggestion to selected result", function() {
-        model.addListener( "change:resultSelection", createClientListener( "AutoSuggest" ) );
-        model.set( "results", { "items" : [ "bar", "banana" ] } );
+      it( "sets replacementText to selected suggestion", function() {
+        model.addListener( "change:selectedSuggestionIndex", createClientListener( "AutoSuggest" ) );
+        model.set( "currentSuggestions", { "items" : [ "bar", "banana" ] } );
 
-        model.set( "resultSelection", 1 );
+        model.set( "selectedSuggestionIndex", 1 );
 
-        expect( model.get( "suggestion" ) ).toEqual( "banana" );
+        expect( model.get( "replacementText" ) ).toEqual( "banana" );
       } );
 
       it( "resets suggestion when selection index is -1", function() {
-        model.addListener( "change:resultSelection", createClientListener( "AutoSuggest" ) );
-        model.set( "results", { "items" : [ "bar", "banana" ] } );
-        model.set( "suggestion", "banana" );
+        model.addListener( "change:selectedSuggestionIndex", createClientListener( "AutoSuggest" ) );
+        model.set( "currentSuggestions", { "items" : [ "bar", "banana" ] } );
+        model.set( "replacementText", "banana" );
 
-        model.set( "resultSelection", -1 );
+        model.set( "selectedSuggestionIndex", -1 );
 
-        expect( model.get( "suggestion" ) ).toBeNull();
+        expect( model.get( "replacementText" ) ).toBeNull();
       } );
 
       it( "sets action option", function() {
-        model.addListener( "change:resultSelection", createClientListener( "AutoSuggest" ) );
-        model.addListener( "change:suggestion", logger );
-        model.set( "results", { "items" : [ "bar", "banana" ] } );
+        model.addListener( "change:selectedSuggestionIndex", createClientListener( "AutoSuggest" ) );
+        model.addListener( "change:replacementText", logger );
+        model.set( "currentSuggestions", { "items" : [ "bar", "banana" ] } );
 
-        model.set( "resultSelection", 1 );
+        model.set( "selectedSuggestionIndex", 1 );
 
         expect( log[ 0 ][ 0 ].options.action ).toBe( "selection" );
       } );
 
     } );
 
-    describe( "change:suggestion", function() {
+    describe( "change:replacementText", function() {
 
       it( "ignores events from change:userText", function() {
-        model.addListener( "change:suggestion", createClientListener( "AutoSuggest" ) );
+        model.addListener( "change:replacementText", createClientListener( "AutoSuggest" ) );
         model.set( "text", "bar" );
         model.set( "textSelection", [ 0, 0 ] );
 
-        model.set( "suggestion", "foo", { "action" : "sync" } );
+        model.set( "replacementText", "foo", { "action" : "sync" } );
 
         expect( model.get( "text" ) ).toEqual( "bar" );
         expect( model.get( "textSelection" ) ).toEqual( [ 0, 0 ] );
       } );
 
       it( "sets text to suggestion", function() {
-        model.addListener( "change:suggestion", createClientListener( "AutoSuggest" ) );
+        model.addListener( "change:replacementText", createClientListener( "AutoSuggest" ) );
 
-        model.set( "suggestion", "foo" );
+        model.set( "replacementText", "foo" );
 
         expect( model.get( "text" ) ).toEqual( "foo" );
       } );
 
-      it( "sets textSelection for result selection", function() {
-        model.addListener( "change:suggestion", createClientListener( "AutoSuggest" ) );
+      it( "sets textSelection for replacementText", function() {
+        model.addListener( "change:replacementText", createClientListener( "AutoSuggest" ) );
 
-        model.set( "suggestion", "foo", { "action" : "selection" } );
+        model.set( "replacementText", "foo", { "action" : "selection" } );
 
         expect( model.get( "textSelection" ) ).toEqual( [ 0, 3 ] );
       } );
 
       it( "sets textSelection for auto complete", function() {
-        model.addListener( "change:suggestion", createClientListener( "AutoSuggest" ) );
+        model.addListener( "change:replacementText", createClientListener( "AutoSuggest" ) );
         model.set( "userText", "foo" );
 
-        model.set( "suggestion", "foobar" );
+        model.set( "replacementText", "foobar" );
 
         expect( model.get( "textSelection" ) ).toEqual( [ 3, 6 ] );
       } );
 
       it( "resets text to userText", function() {
-        model.addListener( "change:suggestion", createClientListener( "AutoSuggest" ) );
+        model.addListener( "change:replacementText", createClientListener( "AutoSuggest" ) );
         model.set( "userText", "bar" );
 
-        model.set( "suggestion", null, { "action" : "selection" } );
+        model.set( "replacementText", null, { "action" : "selection" } );
 
         expect( model.get( "text" ) ).toEqual( "bar" );
       } );
 
       it( "resets selection to userText end", function() {
-        model.addListener( "change:suggestion", createClientListener( "AutoSuggest" ) );
+        model.addListener( "change:replacementText", createClientListener( "AutoSuggest" ) );
         model.set( "userText", "bar" );
 
-        model.set( "suggestion", null, { "action" : "selection" } );
+        model.set( "replacementText", null, { "action" : "selection" } );
 
         expect( model.get( "textSelection" ) ).toEqual( [ 3, 3 ] );
       } );
 
     } );
 
-    describe( "change:results", function() {
+    describe( "change:currentSuggestions", function() {
 
       it( "does nothing without autocomplete", function() {
-        model.set( "suggestion", "ban" );
-        model.addListener( "change:results", createClientListener( "AutoSuggest" ) );
+        model.set( "replacementText", "ban" );
+        model.addListener( "change:currentSuggestions", createClientListener( "AutoSuggest" ) );
 
-        model.set( "results", { "items" : [ "banana" ] } );
+        model.set( "currentSuggestions", { "items" : [ "banana" ] } );
 
-        expect( model.get( "suggestion" ) ).toEqual( "ban" );
+        expect( model.get( "replacementText" ) ).toEqual( "ban" );
       } );
 
       it( "does nothing if not typing", function() {
-        model.set( "suggestion", "ban" );
-        model.addListener( "change:results", createClientListener( "AutoSuggest" ) );
+        model.set( "replacementText", "ban" );
+        model.addListener( "change:currentSuggestions", createClientListener( "AutoSuggest" ) );
         model.set( "autoComplete", true );
 
-        model.set( "results", { "items" : [ "banana" ] } );
+        model.set( "currentSuggestions", { "items" : [ "banana" ] } );
 
-        expect( model.get( "suggestion" ) ).toEqual( "ban" );
+        expect( model.get( "replacementText" ) ).toEqual( "ban" );
       } );
 
-      it( "autocompletes suggestion while typing on single result", function() {
-        model.set( "suggestion", "ban" );
+      it( "autocompletes text while typing on single currentSuggestion", function() {
+        model.set( "replacementText", "ban" );
         model.set( "userText", "b" );
         model.set( "autoComplete", true );
-        model.addListener( "change:results", createClientListener( "AutoSuggest" ) );
+        model.addListener( "change:currentSuggestions", createClientListener( "AutoSuggest" ) );
 
-        model.set( "results", { "items" : [ "banana" ] }, { "action" : "typing" } );
+        model.set( "currentSuggestions", { "items" : [ "banana" ] }, { "action" : "typing" } );
 
-        expect( model.get( "suggestion" ) ).toEqual( "banana" );
+        expect( model.get( "replacementText" ) ).toEqual( "banana" );
       } );
 
-      it( "autocompletes suggestion while refreshing on single result", function() {
-        model.set( "suggestion", "ban" );
+      it( "autocompletes suggestion while refreshing on single currentSuggestion", function() {
+        model.set( "replacementText", "ban" );
         model.set( "userText", "b" );
         model.set( "autoComplete", true );
-        model.addListener( "change:results", createClientListener( "AutoSuggest" ) );
+        model.addListener( "change:currentSuggestions", createClientListener( "AutoSuggest" ) );
 
-        model.set( "results", { "items" : [ "banana" ] }, { "action" : "refresh" } );
+        model.set( "currentSuggestions", { "items" : [ "banana" ] }, { "action" : "refresh" } );
 
-        expect( model.get( "suggestion" ) ).toEqual( "banana" );
+        expect( model.get( "replacementText" ) ).toEqual( "banana" );
       } );
 
       it( "partially autocompletes suggestion for common text", function() {
         model.set( "autoComplete", true );
         model.set( "userText", "b" );
-        model.addListener( "change:results", createClientListener( "AutoSuggest" ) );
+        model.addListener( "change:currentSuggestions", createClientListener( "AutoSuggest" ) );
 
         var items = [ "banana foo", "banana bar" ];
-        model.set( "results", { "items" : items }, { "action" : "typing" } );
+        model.set( "currentSuggestions", { "items" : items }, { "action" : "typing" } );
 
-        expect( model.get( "suggestion" ) ).toEqual( "banana " );
+        expect( model.get( "replacementText" ) ).toEqual( "banana " );
       } );
 
       it( "does not autocomplete if common text is shorter than userText", function() {
-        model.set( "suggestion", null );
+        model.set( "replacementText", null );
         model.set( "autoComplete", true );
         model.set( "userText", "banana xxx" );
-        model.addListener( "change:results", createClientListener( "AutoSuggest" ) );
+        model.addListener( "change:currentSuggestions", createClientListener( "AutoSuggest" ) );
 
         var items = [ "banana foo", "banana bar" ];
-        model.set( "results", { "items" : items }, { "action" : "typing" } );
+        model.set( "currentSuggestions", { "items" : items }, { "action" : "typing" } );
 
-        expect( model.get( "suggestion" ) ).toBe( null );
+        expect( model.get( "replacementText" ) ).toBe( null );
       } );
 
     } );
 
     describe( "accept", function() {
 
-      it( "sets elementSelection for resultSelection", function() {
+      it( "sets elementSelection for selectedSuggestionIndex", function() {
         model.addListener( "accept", createClientListener( "AutoSuggest" ) );
-        model.set( "results", { "items" : [ "bar", "banana" ], "indicies" : [ 1, 3 ] } );
-        model.set( "resultSelection", 1 );
+        model.set( "currentSuggestions", { "items" : [ "bar", "banana" ], "indicies" : [ 1, 3 ] } );
+        model.set( "selectedSuggestionIndex", 1 );
 
         model.notify( "accept", { source : model, type : "accept" } );
 
         expect( model.get( "elementSelection" ) ).toBe( 3 );
-        expect( model.get( "resultsVisible" ) ).toBe( false );
+        expect( model.get( "suggestionsVisible" ) ).toBe( false );
       } );
 
-      it( "sets elementSelection for single result and autoComplete", function() {
+      it( "sets elementSelection for single currentSuggestion and autoComplete", function() {
         model.addListener( "accept", createClientListener( "AutoSuggest" ) );
-        model.set( "results", { "items" : [ "banana" ], "indicies" : [ 3 ] } );
-        model.set( "resultSelection", -1 );
+        model.set( "currentSuggestions", { "items" : [ "banana" ], "indicies" : [ 3 ] } );
+        model.set( "selectedSuggestionIndex", -1 );
         model.set( "autoComplete", true );
 
         model.notify( "accept", { source : model, type : "accept" } );
 
         expect( model.get( "elementSelection" ) ).toBe( 3 );
-        expect( model.get( "resultsVisible" ) ).toBe( false );
+        expect( model.get( "suggestionsVisible" ) ).toBe( false );
       } );
 
-      it( "does nothing for single result without autoComplete", function() {
+      it( "does nothing for single currentSuggestion without autoComplete", function() {
         model.addListener( "accept", createClientListener( "AutoSuggest" ) );
-        model.set( "results", { "items" : [ "banana" ], "indicies" : [ 3 ] } );
-        model.set( "resultSelection", -1 );
+        model.set( "currentSuggestions", { "items" : [ "banana" ], "indicies" : [ 3 ] } );
+        model.set( "selectedSuggestionIndex", -1 );
         model.set( "elementSelection", 0 );
-        model.set( "resultsVisible", true );
+        model.set( "suggestionsVisible", true );
 
 
         model.notify( "accept", { source : model, type : "accept" } );
 
         expect( model.get( "elementSelection" ) ).toBe( 0 );
-        expect( model.get( "resultsVisible" ) ).toBe( true );
+        expect( model.get( "suggestionsVisible" ) ).toBe( true );
       } );
 
-      it( "does nothing for multiple result without resultSelection", function() {
+      it( "does nothing for multiple result without selectedSuggestionIndex", function() {
         model.addListener( "accept", createClientListener( "AutoSuggest" ) );
-        model.set( "results", { "items" : [ "banana", "banu" ], "indicies" : [ 3 ] } );
-        model.set( "resultSelection", -1 );
+        model.set( "currentSuggestions", { "items" : [ "banana", "banu" ], "indicies" : [ 3 ] } );
+        model.set( "selectedSuggestionIndex", -1 );
         model.set( "elementSelection", 0 );
-        model.set( "resultsVisible", true );
+        model.set( "suggestionsVisible", true );
 
 
         model.notify( "accept", { source : model, type : "accept" } );
 
         expect( model.get( "elementSelection" ) ).toBe( 0 );
-        expect( model.get( "resultsVisible" ) ).toBe( true );
+        expect( model.get( "suggestionsVisible" ) ).toBe( true );
       } );
 
       it( "clears text selection", function() {

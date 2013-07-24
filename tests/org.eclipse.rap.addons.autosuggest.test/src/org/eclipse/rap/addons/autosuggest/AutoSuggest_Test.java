@@ -55,8 +55,7 @@ import org.mockito.stubbing.Answer;
 public class AutoSuggest_Test {
 
   private static final String REMOTE_TYPE = "rwt.remote.Model";
-  private static final String MODEL_ID_KEY =
-      "org.eclipse.rap.addons.dropdown.viewer.DropDownViewer#viewer";
+  private static final String MODEL_ID_KEY = "org.eclipse.rap.addons.autosuggest#Model";
 
   private Text text;
   private RemoteObject remoteObject;
@@ -309,7 +308,7 @@ public class AutoSuggest_Test {
 
     autoSuggest.setDataSource( dataSource );
 
-    verify( remoteObject ).set( eq( "dataSource" ), eq( "providerId" ) );
+    verify( remoteObject ).set( eq( "dataSourceId" ), eq( "providerId" ) );
   }
 
   @Test
