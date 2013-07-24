@@ -288,17 +288,6 @@
         expect( model.get( "replacementText" ) ).toBeNull();
       } );
 
-      it( "clears elementSelection with nosync", function() {
-        model.addListener( "change:suggestions", createClientListener( "AutoSuggest" ) );
-        model.set( "elementSelection", 1 );
-        model.addListener( "change:elementSelection", logger );
-
-        model.set( "suggestions", [ "foo" ] );
-
-        expect( model.get( "elementSelection" ) ).toBe( -1 );
-        expect( log[ 0 ][ 0 ].options.nosync ).toBe( true );
-      } );
-
       it( "updates suggestions", function() {
         model.addListener( "change:suggestions", createClientListener( "AutoSuggest" ) );
         model.set( "userText", "ba" );
@@ -493,54 +482,41 @@
 
     describe( "accept", function() {
 
-      it( "sets elementSelection for selectedSuggestionIndex", function() {
+      it( "fires suggestionSelected for selectedSuggestionIndex", function() {
         model.addListener( "accept", createClientListener( "AutoSuggest" ) );
         model.set( "currentSuggestions", { "items" : [ "bar", "banana" ], "indicies" : [ 1, 3 ] } );
         model.set( "selectedSuggestionIndex", 1 );
+        model.addListener( "suggestionSelected", logger );
 
         model.notify( "accept", { source : model, type : "accept" } );
 
-        expect( model.get( "elementSelection" ) ).toBe( 3 );
+        expect( log.length ).toBe( 1 );
         expect( model.get( "suggestionsVisible" ) ).toBe( false );
       } );
 
-      it( "sets elementSelection for single currentSuggestion and autoComplete", function() {
+      it( "fires suggestionSelected when full auto complete is accepted", function() {
         model.addListener( "accept", createClientListener( "AutoSuggest" ) );
         model.set( "currentSuggestions", { "items" : [ "banana" ], "indicies" : [ 3 ] } );
         model.set( "selectedSuggestionIndex", -1 );
         model.set( "autoComplete", true );
+        model.addListener( "suggestionSelected", logger );
 
         model.notify( "accept", { source : model, type : "accept" } );
 
-        expect( model.get( "elementSelection" ) ).toBe( 3 );
+        expect( log.length ).toBe( 1 );
         expect( model.get( "suggestionsVisible" ) ).toBe( false );
       } );
 
-      it( "does nothing for single currentSuggestion without autoComplete", function() {
+      it( "does nothing when attempting accepting without selected suggestion or auto complete", function() {
         model.addListener( "accept", createClientListener( "AutoSuggest" ) );
         model.set( "currentSuggestions", { "items" : [ "banana" ], "indicies" : [ 3 ] } );
         model.set( "selectedSuggestionIndex", -1 );
-        model.set( "elementSelection", 0 );
         model.set( "suggestionsVisible", true );
-
+        model.addListener( "suggestionSelected", logger );
 
         model.notify( "accept", { source : model, type : "accept" } );
 
-        expect( model.get( "elementSelection" ) ).toBe( 0 );
-        expect( model.get( "suggestionsVisible" ) ).toBe( true );
-      } );
-
-      it( "does nothing for multiple result without selectedSuggestionIndex", function() {
-        model.addListener( "accept", createClientListener( "AutoSuggest" ) );
-        model.set( "currentSuggestions", { "items" : [ "banana", "banu" ], "indicies" : [ 3 ] } );
-        model.set( "selectedSuggestionIndex", -1 );
-        model.set( "elementSelection", 0 );
-        model.set( "suggestionsVisible", true );
-
-
-        model.notify( "accept", { source : model, type : "accept" } );
-
-        expect( model.get( "elementSelection" ) ).toBe( 0 );
+        expect( log.length ).toBe( 0 );
         expect( model.get( "suggestionsVisible" ) ).toBe( true );
       } );
 

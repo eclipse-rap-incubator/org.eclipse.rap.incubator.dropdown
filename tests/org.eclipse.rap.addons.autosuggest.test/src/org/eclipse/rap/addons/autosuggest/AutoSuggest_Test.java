@@ -54,6 +54,7 @@ import org.mockito.stubbing.Answer;
 @SuppressWarnings( "restriction" )
 public class AutoSuggest_Test {
 
+  private static final String REMOTE_SELECTION_EVENT = "suggestionSelected";
   private static final String REMOTE_TYPE = "rwt.remote.Model";
   private static final String MODEL_ID_KEY = "org.eclipse.rap.addons.autosuggest#Model";
 
@@ -377,7 +378,7 @@ public class AutoSuggest_Test {
 
     autoSuggest.addSelectionListener( mock( SuggestionSelectedListener.class ) );
 
-    verify( remoteObject ).listen( "change:elementSelection", true );
+    verify( remoteObject ).listen( REMOTE_SELECTION_EVENT, true );
   }
 
   @Test
@@ -387,7 +388,7 @@ public class AutoSuggest_Test {
     autoSuggest.addSelectionListener( mock( SuggestionSelectedListener.class ) );
     autoSuggest.addSelectionListener( mock( SuggestionSelectedListener.class ) );
 
-    verify( remoteObject, times( 1 ) ).listen( "change:elementSelection", true );
+    verify( remoteObject, times( 1 ) ).listen( REMOTE_SELECTION_EVENT, true );
   }
 
   @Test
@@ -433,7 +434,7 @@ public class AutoSuggest_Test {
 
     autoSuggest.removeSelectionListener( listener );
 
-    verify( remoteObject ).listen( "change:elementSelection", false );
+    verify( remoteObject ).listen( REMOTE_SELECTION_EVENT, false );
   }
 
   @Test
@@ -445,7 +446,7 @@ public class AutoSuggest_Test {
 
     autoSuggest.removeSelectionListener( listener );
 
-    verify( remoteObject, never() ).listen( "change:elementSelection", false );
+    verify( remoteObject, never() ).listen( REMOTE_SELECTION_EVENT, false );
   }
 
   @Test
@@ -480,7 +481,7 @@ public class AutoSuggest_Test {
     SuggestionSelectedListener listener = mock( SuggestionSelectedListener.class );
     autoSuggest.addSelectionListener( listener );
 
-    operationHandlerCaptor.get().handleNotify( "change:elementSelection", null );
+    operationHandlerCaptor.get().handleNotify( REMOTE_SELECTION_EVENT, null );
 
     verify( listener ).suggestionSelected();
   }

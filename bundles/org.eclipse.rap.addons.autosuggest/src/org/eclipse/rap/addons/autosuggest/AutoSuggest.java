@@ -31,7 +31,7 @@ import org.eclipse.swt.widgets.Text;
 
 public class AutoSuggest {
 
-  private static final String EVENT_TYPE_SELECTION = "change:elementSelection";
+  private static final String EVENT_TYPE_SELECTION = "suggestionSelected";
   private final static String LISTENER_PREFIX
     = "org/eclipse/rap/addons/autosuggest/internal/resources/";
   private static final String MODEL_ID_KEY

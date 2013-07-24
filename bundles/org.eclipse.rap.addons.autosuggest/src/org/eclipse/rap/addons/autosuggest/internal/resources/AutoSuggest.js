@@ -49,7 +49,6 @@ function onChangeDataSourceId( event ) {
 }
 
 function onChangeSuggestions( event ) {
-  this.set( "elementSelection", -1, { "nosync" : true } );
   // NOTE: Nothing else to do if not visible, but would need to update when it becomes visible.
   //       Currently only onChangeUserText can set resultsVisible to true, which updates implicitly.
   if( this.get( "suggestionsVisible" ) ) {
@@ -102,11 +101,10 @@ function onAcceptSuggestion( event ) {
   var results = this.get( "currentSuggestions" );
   if( results ) {
     var index = this.get( "selectedSuggestionIndex" );
-    if( typeof index === "number" && index > -1 ) {
-      this.set( "elementSelection", results.indicies[ index ] );
-      this.set( "suggestionsVisible", false );
-    } else if( this.get( "autoComplete" ) && results.indicies.length === 1 ) {
-      this.set( "elementSelection", results.indicies[ 0 ] );
+    var suggestionSelected = typeof index === "number" && index > -1;
+    var autoCompleteAccepted = this.get( "autoComplete" ) && results.indicies.length === 1;
+    if( suggestionSelected || autoCompleteAccepted ) {
+      this.notify( "suggestionSelected" );
       this.set( "suggestionsVisible", false );
     }
   }
