@@ -112,8 +112,7 @@ function onDropDownDefaultSelection( model, event ) {
 }
 
 function onModelChangeCurrentSuggestions( dropDown, model, event ) {
-  var results = model.get( "currentSuggestions" );
-  dropDown.setItems( results.items );
+  dropDown.setItems( model.get( "currentSuggestions" ) );
 }
 
 function onModelChangeSuggestionsVisible( dropDown, model, event ) {

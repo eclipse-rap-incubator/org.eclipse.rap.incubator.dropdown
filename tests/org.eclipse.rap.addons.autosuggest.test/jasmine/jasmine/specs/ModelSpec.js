@@ -174,7 +174,7 @@
       model.destroy();
 
       expect( function() {
-        model.get( "foo" )
+        model.get( "foo" );
       } ).toThrow();
 
     } );

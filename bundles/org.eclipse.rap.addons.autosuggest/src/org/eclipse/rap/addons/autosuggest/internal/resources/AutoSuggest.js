@@ -46,26 +46,27 @@ function handleEvent( event ) {
 
 function onChangeDataSourceId( event ) {
   this.set( "suggestions", null );
+  // TODO : schedule filter?
 }
 
 function onChangeSuggestions( event ) {
   // NOTE: Nothing else to do if not visible, but would need to update when it becomes visible.
   //       Currently only onChangeUserText can set resultsVisible to true, which updates implicitly.
   if( this.get( "suggestionsVisible" ) ) {
-    filter.apply( this, [ { "action" : "refresh" } ] );
+    filterSuggestions.apply( this, [ { "action" : "refresh" } ] );
   }
 }
 
 function onChangeUserText( event ) {
   this.set( "suggestionsVisible", event.value != null && event.value.length > 0  );
-  filter.apply( this, [ event.options ] );
+  filterSuggestions.apply( this, [ event.options ] );
 }
 
 function onChangeResults( event ) {
   var action = event.options.action;
   if( this.get( "autoComplete" ) && ( action === "typing" || action === "refresh" ) ) {
-    var items = this.get( "currentSuggestions" ).items;
-    var common = commonText( items );
+    var currentSuggestions = this.get( "currentSuggestions" );
+    var common = commonText( currentSuggestions );
     if( common && common.length > this.get( "userText" ).length ) {
       this.set( "replacementText", common );
     }
@@ -75,7 +76,7 @@ function onChangeResults( event ) {
 function onChangeResultSelection( event ) {
   var suggestion = null;
   if( event.value !== -1 ) {
-    suggestion = this.get( "currentSuggestions" ).items[ event.value ] || "";
+    suggestion = this.get( "currentSuggestions" )[ event.value ] || "";
   }
   this.set( "replacementText", suggestion, { "action" : "selection" } );
 }
@@ -98,11 +99,11 @@ function onChangeSuggestion( event ) {
 }
 
 function onAcceptSuggestion( event ) {
-  var results = this.get( "currentSuggestions" );
-  if( results ) {
+  var currentSuggestions = this.get( "currentSuggestions" );
+  if( currentSuggestions ) {
     var index = this.get( "selectedSuggestionIndex" );
     var suggestionSelected = typeof index === "number" && index > -1;
-    var autoCompleteAccepted = this.get( "autoComplete" ) && results.indicies.length === 1;
+    var autoCompleteAccepted = this.get( "autoComplete" ) && currentSuggestions.length === 1;
     if( suggestionSelected || autoCompleteAccepted ) {
       this.notify( "suggestionSelected" );
       this.set( "suggestionsVisible", false );
@@ -112,27 +113,34 @@ function onAcceptSuggestion( event ) {
   this.set( "textSelection", [ text.length, text.length ] );
 }
 
-function filter( options ) {
-  if( this.get( "suggestions" ) == null ) {
-    processDataSource.apply( this );
-  }
+var defaultFilter = function( suggestion, userText ) {
+  return suggestion.toLowerCase().indexOf( userText.toLowerCase() ) === 0;
+};
+
+function filterSuggestions( options ) {
+  fetchSuggestions.apply( this );
   var userText = this.get( "userText" ) || "";
   this.set( "replacementText", null, { "action" : "sync" } );
-  var query = createQuery( userText.toLowerCase() );
-  var results = searchItems( this.get( "suggestions" ), query );
-  this.set( "currentSuggestions", results, { "action" : options.action } );
+  var filterWrapper = function( suggestion ) {
+    return defaultFilter( suggestion, userText );
+  }
+  var currentSuggestions = filterArray( this.get( "suggestions" ), filterWrapper );
+  this.set( "currentSuggestions", currentSuggestions, { "action" : options.action } );
 }
 
-function processDataSource() {
-  if( this.get( "dataSourceId" ) != null ) {
-    var dataSource = rap.getObject( this.get( "dataSourceId" ) );
-    this.set( "suggestions", dataSource.get( "data" ) );
+function fetchSuggestions() {
+  if( this.get( "suggestions" ) == null ) {
+    if( this.get( "dataSourceId" ) != null ) {
+      var dataSource = rap.getObject( this.get( "dataSourceId" ) );
+      this.set( "suggestions", dataSource.get( "data" ) );
+    } else {
+      this.set( "suggestions", [] );
+    }
   }
 }
 
-
-/////////
-// Helper
+////////////////////////
+// Helper - autoComplete
 
 function commonText( items ) {
   var result = null;
@@ -189,42 +197,18 @@ function allItemsSplitAt( items, offset ) {
   return result;
 }
 
-function searchItems( items, query, limit ) {
-  var resultIndicies = [];
-  var filter = function( item, index ) {
-    if( query.test( item ) ) {
-      resultIndicies.push( index );
-      return true;
-    } else {
-      return false;
-    }
-  };
-  var resultLimit = typeof limit === "number" ? limit : 0;
-  var resultItems = filterArray( items, filter, resultLimit );
-  return {
-    "items" : resultItems,
-    "indicies" : resultIndicies
-  };
-}
+//////////////////
+// Helper - search
 
-function createQuery( str, caseSensitive, ignorePosition ) {
-  var escapedStr = escapeRegExp( str );
-  return new RegExp( ( ignorePosition ? "" : "^" ) + escapedStr, caseSensitive ? "" : "i" );
-}
-
-function escapeRegExp( str ) {
-  return str.replace( /[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&" );
-}
-
-function filterArray( arr, func, limit ) {
+function filterArray( array, filter, limit ) {
   var result = [];
-  if( typeof arr.filter === "function" && limit === 0 ) {
-    result = arr.filter( func );
+  if( typeof array.filter === "function" && limit > 0 ) {
+    result = array.filter( filter );
   } else {
-    for( var i = 0; i < arr.length; i++ ) {
-      if( func( arr[ i ], i ) ) {
-        result.push( arr[ i ] );
-        if( limit !== 0 && result.length === limit ) {
+    for( var i = 0; i < array.length; i++ ) {
+      if( filter( array[ i ], i ) ) {
+        result.push( array[ i ] );
+        if( result.length === limit ) {
           break;
         }
       }

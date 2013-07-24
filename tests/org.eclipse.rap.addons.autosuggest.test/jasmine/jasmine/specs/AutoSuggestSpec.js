@@ -31,51 +31,6 @@
     return result;
   };
 
-  describe( "createQuery", function() {
-
-    var createQuery; // can not be loaded here since resources are not ready yet.
-
-    beforeEach( function() {
-      if( !createQuery ) {
-        createQuery = getVarFromScript( "AutoSuggest", "createQuery" );
-      }
-    } );
-
-    it( "exists", function() {
-      expect( createQuery instanceof Function ).toBe( true );
-    } );
-
-    it( "creates RegExp object", function() {
-      var query = createQuery( "foo" );
-      expect( query instanceof RegExp ).toBe( true );
-    } );
-
-    it( "generates queries that are case insensitive and start with new line", function() {
-      var query = createQuery( "OoX" );
-
-      expect( query.toString() ).toEqual( "/^OoX/i" );
-    } );
-
-    it( "escapes special regexp characters", function() {
-      var query = createQuery( "^foo" );
-
-      expect( query.toString() ).toEqual( "/^\\^foo/i" );
-    } );
-
-    it( "can generate query that is case sensitive", function() {
-      var query = createQuery( "foo", true );
-
-      expect( query.toString() ).toEqual( "/^foo/" );
-    } );
-
-    it( "can generate query that ignores position", function() {
-      var query = createQuery( "foo", true, true );
-
-      expect( query.toString() ).toEqual( "/foo/" );
-    } );
-
-  } );
-
   describe( "commonText", function() {
 
     var commonText;
@@ -133,51 +88,32 @@
 
   } );
 
-  describe( "searchItems", function() {
+  describe( "filterArray", function() {
 
-    var searchItems;
+    var filterArray;
 
     beforeEach( function() {
-      if( !searchItems ) {
-        searchItems = getVarFromScript( "AutoSuggest", "searchItems" );
+      if( !filterArray ) {
+        filterArray = getVarFromScript( "AutoSuggest", "filterArray" );
       }
     } );
 
-    it( "exists", function() {
-      expect( searchItems instanceof Function ).toBe( true );
-    } );
-
-    it( "returns empty result for empty array", function() {
-      var results = searchItems( [], /foo/ );
-
-      expect( results.items ).toEqual( [] );
-      expect( results.indicies ).toEqual( [] );
-    } );
-
-    it( "returns multiple items", function() {
+    it( "returns some", function() {
       var items = [ "afoo", "bar", "food", "abc" ];
 
-      var results = searchItems( items, /foo/ );
+      var results = filterArray( items, function( suggestion ) {
+        return suggestion.indexOf( "foo" ) !== -1;
+      } );
 
-      expect( results.items ).toEqual( [ "afoo", "food" ] );
-      expect( results.indicies ).toEqual( [ 0, 2 ] );
+      expect( results ).toEqual( [ "afoo", "food" ] );
     } );
 
     it( "returns multiple items with limit", function() {
       var items = [ "afoo", "bfoo", "x", "cfoo", "foor", "four" ];
 
-      var results = searchItems( items, /foo/, 3 );
+      var results = filterArray( items, function(){ return true; }, 3 );
 
-      expect( [ "afoo", "bfoo", "cfoo" ], results.items );
-      expect( [ 0, 1, 3 ], results.indicies );
-    } );
-
-    it( "returns only items starting with string", function() {
-      var items = [ "afoo", "bar", "food", "abc" ];
-      var results = searchItems( items, /^foo/ );
-
-      expect( results.items ).toEqual( [ "food" ] );
-      expect( results.indicies ).toEqual( [ 2 ] );
+      expect( [ "afoo", "bfoo", "x" ], results );
     } );
 
   } );
@@ -248,10 +184,10 @@
 
         model.set( "userText", "ba" );
 
-        expect( model.get( "currentSuggestions" ).items ).toEqual( [ "bar", "banana" ] );
+        expect( model.get( "currentSuggestions" ) ).toEqual( [ "bar", "banana" ] );
       } );
 
-      it( "updates results from data provider if suggestions is not set", function() {
+      it( "gets suggestions from data source if suggestions are not set", function() {
         model.addListener( "change:userText", createClientListener( "AutoSuggest" ) );
         model.set( "suggestions", null );
         var dataSource = rap.typeHandler[ "rwt.remote.Model" ].factory();
@@ -261,7 +197,16 @@
 
         model.set( "userText", "ba" );
 
-        expect( model.get( "currentSuggestions" ).items ).toEqual( [ "bar", "banana" ] );
+        expect( model.get( "currentSuggestions" ) ).toEqual( [ "bar", "banana" ] );
+      } );
+
+      it( "sets empty suggestions array if data source is not set", function() {
+        model.addListener( "change:userText", createClientListener( "AutoSuggest" ) );
+        model.set( "suggestions", null );
+
+        model.set( "userText", "ba" );
+
+        expect( model.get( "currentSuggestions" ) ).toEqual( [] );
       } );
 
       it( "forwards action option", function() {
@@ -295,7 +240,7 @@
 
         model.set( "suggestions", [ "foo", "bar" ] );
 
-        expect( model.get( "currentSuggestions" ).items ).toEqual( [ "bar" ] );
+        expect( model.get( "currentSuggestions" ) ).toEqual( [ "bar" ] );
       } );
 
       it( "does not update suggestions if not visible", function() {
@@ -325,7 +270,7 @@
 
       it( "sets replacementText to selected suggestion", function() {
         model.addListener( "change:selectedSuggestionIndex", createClientListener( "AutoSuggest" ) );
-        model.set( "currentSuggestions", { "items" : [ "bar", "banana" ] } );
+        model.set( "currentSuggestions", [ "bar", "banana" ] );
 
         model.set( "selectedSuggestionIndex", 1 );
 
@@ -334,7 +279,7 @@
 
       it( "resets suggestion when selection index is -1", function() {
         model.addListener( "change:selectedSuggestionIndex", createClientListener( "AutoSuggest" ) );
-        model.set( "currentSuggestions", { "items" : [ "bar", "banana" ] } );
+        model.set( "currentSuggestions", [ "bar", "banana" ] );
         model.set( "replacementText", "banana" );
 
         model.set( "selectedSuggestionIndex", -1 );
@@ -345,7 +290,7 @@
       it( "sets action option", function() {
         model.addListener( "change:selectedSuggestionIndex", createClientListener( "AutoSuggest" ) );
         model.addListener( "change:replacementText", logger );
-        model.set( "currentSuggestions", { "items" : [ "bar", "banana" ] } );
+        model.set( "currentSuggestions", [ "bar", "banana" ] );
 
         model.set( "selectedSuggestionIndex", 1 );
 
@@ -418,7 +363,7 @@
         model.set( "replacementText", "ban" );
         model.addListener( "change:currentSuggestions", createClientListener( "AutoSuggest" ) );
 
-        model.set( "currentSuggestions", { "items" : [ "banana" ] } );
+        model.set( "currentSuggestions", [ "banana" ] );
 
         expect( model.get( "replacementText" ) ).toEqual( "ban" );
       } );
@@ -428,7 +373,7 @@
         model.addListener( "change:currentSuggestions", createClientListener( "AutoSuggest" ) );
         model.set( "autoComplete", true );
 
-        model.set( "currentSuggestions", { "items" : [ "banana" ] } );
+        model.set( "currentSuggestions", [ "banana" ] );
 
         expect( model.get( "replacementText" ) ).toEqual( "ban" );
       } );
@@ -439,7 +384,7 @@
         model.set( "autoComplete", true );
         model.addListener( "change:currentSuggestions", createClientListener( "AutoSuggest" ) );
 
-        model.set( "currentSuggestions", { "items" : [ "banana" ] }, { "action" : "typing" } );
+        model.set( "currentSuggestions", [ "banana" ], { "action" : "typing" } );
 
         expect( model.get( "replacementText" ) ).toEqual( "banana" );
       } );
@@ -450,7 +395,7 @@
         model.set( "autoComplete", true );
         model.addListener( "change:currentSuggestions", createClientListener( "AutoSuggest" ) );
 
-        model.set( "currentSuggestions", { "items" : [ "banana" ] }, { "action" : "refresh" } );
+        model.set( "currentSuggestions", [ "banana" ], { "action" : "refresh" } );
 
         expect( model.get( "replacementText" ) ).toEqual( "banana" );
       } );
@@ -461,7 +406,7 @@
         model.addListener( "change:currentSuggestions", createClientListener( "AutoSuggest" ) );
 
         var items = [ "banana foo", "banana bar" ];
-        model.set( "currentSuggestions", { "items" : items }, { "action" : "typing" } );
+        model.set( "currentSuggestions", items, { "action" : "typing" } );
 
         expect( model.get( "replacementText" ) ).toEqual( "banana " );
       } );
@@ -473,7 +418,7 @@
         model.addListener( "change:currentSuggestions", createClientListener( "AutoSuggest" ) );
 
         var items = [ "banana foo", "banana bar" ];
-        model.set( "currentSuggestions", { "items" : items }, { "action" : "typing" } );
+        model.set( "currentSuggestions", items, { "action" : "typing" } );
 
         expect( model.get( "replacementText" ) ).toBe( null );
       } );
@@ -484,7 +429,7 @@
 
       it( "fires suggestionSelected for selectedSuggestionIndex", function() {
         model.addListener( "accept", createClientListener( "AutoSuggest" ) );
-        model.set( "currentSuggestions", { "items" : [ "bar", "banana" ], "indicies" : [ 1, 3 ] } );
+        model.set( "currentSuggestions", [ "bar", "banana" ] );
         model.set( "selectedSuggestionIndex", 1 );
         model.addListener( "suggestionSelected", logger );
 
@@ -496,7 +441,7 @@
 
       it( "fires suggestionSelected when full auto complete is accepted", function() {
         model.addListener( "accept", createClientListener( "AutoSuggest" ) );
-        model.set( "currentSuggestions", { "items" : [ "banana" ], "indicies" : [ 3 ] } );
+        model.set( "currentSuggestions", [ "banana" ] );
         model.set( "selectedSuggestionIndex", -1 );
         model.set( "autoComplete", true );
         model.addListener( "suggestionSelected", logger );
@@ -509,7 +454,7 @@
 
       it( "does nothing when attempting accepting without selected suggestion or auto complete", function() {
         model.addListener( "accept", createClientListener( "AutoSuggest" ) );
-        model.set( "currentSuggestions", { "items" : [ "banana" ], "indicies" : [ 3 ] } );
+        model.set( "currentSuggestions", [ "banana" ] );
         model.set( "selectedSuggestionIndex", -1 );
         model.set( "suggestionsVisible", true );
         model.addListener( "suggestionSelected", logger );
