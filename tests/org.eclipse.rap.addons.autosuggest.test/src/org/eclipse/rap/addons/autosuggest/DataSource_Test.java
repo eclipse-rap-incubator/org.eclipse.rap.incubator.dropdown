@@ -11,11 +11,14 @@
 package org.eclipse.rap.addons.autosuggest;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
 
 import org.eclipse.rap.json.JsonArray;
 import org.eclipse.rap.rwt.remote.Connection;
@@ -80,12 +83,44 @@ public class DataSource_Test {
   }
 
   @Test
+  public void testSetDataProvider_setsDataOnRemoteObject_forColumnDataProvider() {
+    DataSource dataSource = new DataSource();
+
+    dataSource.setDataProvider( new ColumnDataProvider() {
+      public Iterable<?> getSuggestions() {
+        return Arrays.asList( "foo", "bar" );
+      }
+      public String getValue( Object element ) {
+        return ( String )element;
+      }
+      public String[] getTexts( Object element ) {
+        return new String[] { element + "-1", element + "-2" };
+      }
+    } );
+
+    JsonArray array = new JsonArray();
+    array.add( new JsonArray().add( "foo" ).add( "foo-1").add( "foo-2") );
+    array.add( new JsonArray().add( "bar" ).add( "bar-1").add( "bar-2") );
+    verify( remoteObject ).set( eq( "data" ), eq( array ) );
+  }
+
+  @Test
   public void testSetFilterScript_setsFilterScriptOnRemoteObject() {
     DataSource dataSource = new DataSource();
 
     dataSource.setFilterScript( "foobar" );
 
     verify( remoteObject ).set( eq( "filterScript" ), eq( "foobar" ) );
+  }
+
+  @Test
+  public void testSetTemplate() {
+    DataSource dataSource = new DataSource();
+    ColumnTemplate template = mock( ColumnTemplate.class );
+
+    dataSource.setTemplate( template );
+
+    assertSame( template, dataSource.getTemplate() );
   }
 
 }

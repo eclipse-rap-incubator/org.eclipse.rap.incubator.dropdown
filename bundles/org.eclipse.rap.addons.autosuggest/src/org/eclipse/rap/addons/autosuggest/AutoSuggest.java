@@ -73,6 +73,12 @@ public class AutoSuggest {
   public void setDataSource( DataSource dataSource ) {
     checkDisposed();
     model.set( "dataSourceId", dataSource != null ? dataSource.getId() : null );
+    if( dataSource != null ) {
+      ColumnTemplate template = dataSource.getTemplate();
+      if( template != null ) {
+        dropDown.setData( "columns", template.getColumnWidths() );
+      }
+    }
   }
 
   public void setVisibleItemCount( int itemCount ) {

@@ -11,6 +11,7 @@
 package org.eclipse.rap.addons.autosuggest;
 
 import static org.eclipse.rap.rwt.lifecycle.WidgetUtil.getId;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
@@ -305,7 +306,7 @@ public class AutoSuggest_Test {
   }
 
   @Test
-  public void testSetDataSource_setsElementsOnRemoteObject() {
+  public void testSetDataSource_setsDataSourceOnRemoteObject() {
     AutoSuggest autoSuggest = new AutoSuggest( text );
     DataSource dataSource = mock( DataSource.class );
     when( dataSource.getId() ).thenReturn( "providerId" );
@@ -313,6 +314,18 @@ public class AutoSuggest_Test {
     autoSuggest.setDataSource( dataSource );
 
     verify( remoteObject ).set( eq( "dataSourceId" ), eq( "providerId" ) );
+  }
+
+  @Test
+  public void testSetDataSource_setsColumnWithOnDropDown() {
+    AutoSuggest autoSuggest = new AutoSuggest( text );
+    DataSource dataSource = mock( DataSource.class );
+    when( dataSource.getTemplate() ).thenReturn( new ColumnTemplate( 23, 42 ) );
+
+    autoSuggest.setDataSource( dataSource );
+
+    int[] columns = ( int[] )autoSuggest.getDropDown().getData( "columns" );
+    assertArrayEquals( new int[] { 23, 42 }, columns );
   }
 
   @Test

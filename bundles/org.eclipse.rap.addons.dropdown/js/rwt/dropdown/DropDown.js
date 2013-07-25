@@ -9,6 +9,8 @@
  *    EclipseSource - initial API and implementation
  ******************************************************************************/
 
+//@ sourceURL=DropDown.js
+
 (function(){
 
   var POPUP_BORDER = new rwt.html.Border( 1, "solid", "#000000" );

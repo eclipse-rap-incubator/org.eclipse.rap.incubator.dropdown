@@ -22,6 +22,7 @@ public class DataSource {
 
   private final RemoteObject remoteObject;
   private DataProvider dataProvider;
+  private ColumnTemplate template;
 
   public DataSource() {
     Connection connection = RWT.getUISession().getConnection();
@@ -44,12 +45,39 @@ public class DataSource {
     remoteObject.set( "filterScript", script );
   }
 
+  public void setTemplate( ColumnTemplate template ) {
+    this.template = template;
+  }
+
+  ColumnTemplate getTemplate() {
+    return template;
+  }
+
   private void setInitialData() {
+    boolean hasColumns = dataProvider instanceof ColumnDataProvider;
+    remoteObject.set( "data", hasColumns ? getColumnData() : getStringData() );
+  }
+
+  private JsonArray getStringData() {
     JsonArray array = new JsonArray();
     for( Object element : dataProvider.getSuggestions() ) {
       array.add( dataProvider.getValue( element ) );
     }
-    remoteObject.set( "data", array );
+    return array;
+  }
+
+  private JsonArray getColumnData() {
+    JsonArray array = new JsonArray();
+    ColumnDataProvider columnDataProvider = ( ColumnDataProvider )dataProvider;
+    for( Object element : dataProvider.getSuggestions() ) {
+      JsonArray row = new JsonArray().add( dataProvider.getValue( element ) );
+      String[] texts = columnDataProvider.getTexts( element );
+      for( String text : texts ) {
+        row.add( text );
+      }
+      array.add( row );
+    }
+    return array;
   }
 
 }
