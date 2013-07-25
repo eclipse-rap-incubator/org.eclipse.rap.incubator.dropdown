@@ -21,19 +21,8 @@
     <relativePath>../../../org.eclipse.rap.incubator.releng/releng/org.eclipse.rap.incubator.releng/parent</relativePath>
   </parent>
 
-  <artifactId>org.eclipse.rap.dropdown.build</artifactId>
+  <artifactId>org.eclipse.rap.addons.dropdown</artifactId>
   <version>0.1.0-SNAPSHOT</version>
-  <packaging>pom</packaging>
-
-  <modules>
-    <module>../../bundles/org.eclipse.rap.addons.dropdown</module>
-    <module>../../bundles/org.eclipse.rap.addons.autosuggest</module>
-    <!--
-    <module>../../tests/org.eclipse.rap.addons.dropdown.test</module>
-     -->
-    <module>../../tests/org.eclipse.rap.addons.autosuggest.test</module>
-    <module>../../features/org.eclipse.rap.dropdown.feature</module>
-    <module>repository</module>
-  </modules>
+  <packaging>eclipse-plugin</packaging>
 
 </project>

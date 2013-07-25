@@ -32,14 +32,14 @@
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.rap.addons.dropdown.viewer"
+         id="org.eclipse.rap.addons.autosuggest"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.rap.addons.dropdown.viewer.source"
+         id="org.eclipse.rap.addons.autosuggest.source"
          download-size="0"
          install-size="0"
          version="0.0.0"
