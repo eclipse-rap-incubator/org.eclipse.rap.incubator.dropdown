@@ -29,13 +29,13 @@ function handleEvent( event ) {
         onChangeUserText.apply( event.source, [ event ] );
       break;
       case "currentSuggestions":
-        onChangeResults.apply( event.source, [ event ] );
+        onChangeCurrentSuggestions.apply( event.source, [ event ] );
       break;
       case "selectedSuggestionIndex":
-        onChangeResultSelection.apply( event.source, [ event ] );
+        onChangeSelectedSuggestionIndex.apply( event.source, [ event ] );
       break;
       case "replacementText":
-        onChangeSuggestion.apply( event.source, [ event ] );
+        onChangeReplacementText.apply( event.source, [ event ] );
       break;
     }
   }
@@ -61,18 +61,21 @@ function onChangeUserText( event ) {
   filterSuggestions.apply( this, [ event.options ] );
 }
 
-function onChangeResults( event ) {
+function onChangeCurrentSuggestions( event ) {
   var action = event.options.action;
+  var currentSuggestions = this.get( "currentSuggestions" );
   if( this.get( "autoComplete" ) && ( action === "typing" || action === "refresh" ) ) {
-    var currentSuggestions = this.get( "currentSuggestions" );
     var common = commonText( currentSuggestions );
     if( common && common.length > this.get( "userText" ).length ) {
       this.set( "replacementText", common );
     }
   }
+  ensureTemplate.apply( this );
+  var template = this.get( "template" );
+  this.set( "suggestionTexts", currentSuggestions.map( template ) );
 }
 
-function onChangeResultSelection( event ) {
+function onChangeSelectedSuggestionIndex( event ) {
   var suggestion = null;
   if( event.value !== -1 ) {
     suggestion = this.get( "currentSuggestions" )[ event.value ] || "";
@@ -80,7 +83,7 @@ function onChangeResultSelection( event ) {
   this.set( "replacementText", suggestion, { "action" : "selection" } );
 }
 
-function onChangeSuggestion( event ) {
+function onChangeReplacementText( event ) {
   if( event.options.action !== "sync" ) {
     var userText = this.get( "userText" ) || ""; // TODO : could overwrite server set text?
     var text = event.value || userText;
@@ -112,18 +115,15 @@ function onAcceptSuggestion( event ) {
   this.set( "textSelection", [ text.length, text.length ] );
 }
 
-var defaultFilter = function( suggestion, userText ) {
-  return suggestion.toLowerCase().indexOf( userText.toLowerCase() ) === 0;
-};
-
 function filterSuggestions( options ) {
   fetchSuggestions.apply( this );
   var userText = this.get( "userText" ) || "";
   this.set( "replacementText", null, { "action" : "sync" } );
-  var filter = getFilter.apply( this );
+  ensureFilter.apply( this );
+  var filter = this.get( "filter" );
   var filterWrapper = function( suggestion ) {
     return filter( suggestion, userText );
-  }
+  };
   var currentSuggestions = filterArray( this.get( "suggestions" ), filterWrapper );
   this.set( "currentSuggestions", currentSuggestions, { "action" : options.action } );
 }
@@ -139,22 +139,44 @@ function fetchSuggestions() {
   }
 }
 
-function getFilter() {
-  var filter = this.get( "filter" );
-  if( filter == null ) {
+var defaultFilter = function( suggestion, userText ) {
+  return suggestion.toLowerCase().indexOf( userText.toLowerCase() ) === 0;
+};
+
+function ensureFilter() {
+  if( this.get( "filter" ) == null ) {
     var dataSource = getDataSource.apply( this );
     if( dataSource != null && dataSource.get( "filterScript" ) != null ) {
       try {
-        filter = secureEval( "var result = " + dataSource.get( "filterScript" ) + "; result;" );
+        this.set( "filter",
+                  secureEval( "var result = " + dataSource.get( "filterScript" ) + "; result;" ) );
       } catch( ex ) {
         throw new Error( "AutoSuggest could not eval filter function: " + ex.message );
       }
     } else {
-      filter = defaultFilter;
+      this.set( "filter", defaultFilter );
     }
-    this.set( "filter", filter );
   }
-  return filter;
+}
+
+var defaultTemplate = function( suggestion ) {
+  return suggestion;
+};
+
+function ensureTemplate() {
+  if( this.get( "template" ) == null ) {
+    var dataSource = getDataSource.apply( this );
+    if( dataSource != null && dataSource.get( "templateScript" ) != null ) {
+      try {
+        this.set( "template",
+                  secureEval( "var result = " + dataSource.get( "templateScript" ) + "; result;" ) );
+      } catch( ex ) {
+        throw new Error( "AutoSuggest could not eval template function: " + ex.message );
+      }
+    } else {
+      this.set( "template", defaultTemplate );
+    }
+  }
 }
 
 function getDataSource() {
@@ -247,3 +269,14 @@ function secureEval() {
   return eval( arguments[ 0 ] );
 }
 
+function map( array, func ) {
+  if( typeof array.map === "function" ) {
+    return array.map( func );
+  } else {
+    var result = [];
+    for( var i = 0; i < array.length; i++ ) {
+      result[ i ] = func( array[ i ] );
+    }
+    return result;
+  }
+}

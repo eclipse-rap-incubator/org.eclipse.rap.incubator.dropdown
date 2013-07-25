@@ -433,7 +433,7 @@
 
     describe( "change:currentSuggestions", function() {
 
-      it( "does nothing without autocomplete", function() {
+      it( "does not change replacementText without autocomplete", function() {
         model.set( "replacementText", "ban" );
         model.addListener( "change:currentSuggestions", createClientListener( "AutoSuggest" ) );
 
@@ -442,7 +442,7 @@
         expect( model.get( "replacementText" ) ).toEqual( "ban" );
       } );
 
-      it( "does nothing if not typing", function() {
+      it( "does change replacementText if not typing", function() {
         model.set( "replacementText", "ban" );
         model.addListener( "change:currentSuggestions", createClientListener( "AutoSuggest" ) );
         model.set( "autoComplete", true );
@@ -495,6 +495,52 @@
         model.set( "currentSuggestions", items, { "action" : "typing" } );
 
         expect( model.get( "replacementText" ) ).toBe( null );
+      } );
+
+      it( "sets suggestionTexts unchanged if no custom template is set", function() {
+        model.addListener( "change:currentSuggestions", createClientListener( "AutoSuggest" ) );
+
+        model.set( "currentSuggestions", [ "a", "b" ] );
+
+        expect( model.get( "suggestionTexts" ) ).toEqual( [ "a", "b" ] );
+      } );
+
+      it( "applies template to suggestionTexts", function() {
+        model.addListener( "change:currentSuggestions", createClientListener( "AutoSuggest" ) );
+        model.set( "template", function( suggestion ) { return "x" + suggestion; } );
+
+        model.set( "currentSuggestions", [ "a", "b" ] );
+
+        expect( model.get( "suggestionTexts" ) ).toEqual( [ "xa", "xb" ] );
+      } );
+
+      it( "evaluates templateScript from dataSource", function() {
+        model.addListener( "change:currentSuggestions", createClientListener( "AutoSuggest" ) );
+        var dataSource = rap.typeHandler[ "rwt.remote.Model" ].factory();
+        spyOn( rap, "getObject" ).andReturn( dataSource );
+        dataSource.set( "templateScript", "function( suggestion ) { return \"x\" + suggestion; }" );
+        model.set( "dataSourceId", "fooId" );
+
+        model.set( "currentSuggestions", [ "a", "b" ] );
+
+        expect( model.get( "template" )( "foo" ) ).toBe( "xfoo" );
+      } );
+
+      it( "throws custom exception when templateScript can not be parsed", function() {
+        model.addListener( "change:currentSuggestions", createClientListener( "AutoSuggest" ) );
+        var dataSource = rap.typeHandler[ "rwt.remote.Model" ].factory();
+        spyOn( rap, "getObject" ).andReturn( dataSource );
+        dataSource.set( "templateScript", "funasdfction( suggestion ) { return true; }" );
+        model.set( "dataSourceId", "fooId" );
+        var error;
+
+        try {
+          model.set( "currentSuggestions", [ "a", "b" ] );
+        } catch( ex ) {
+          error = ex;
+        }
+
+        expect( error.message ).toContain( "AutoSuggest" );
       } );
 
     } );
