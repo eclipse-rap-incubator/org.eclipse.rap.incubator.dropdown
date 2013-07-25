@@ -40,6 +40,10 @@ public class DataSource {
     setInitialData();
   }
 
+  public void setFilterScript( String script ) {
+    remoteObject.set( "filterScript", script );
+  }
+
   private void setInitialData() {
     JsonArray array = new JsonArray();
     for( Object element : dataProvider.getSuggestions() ) {

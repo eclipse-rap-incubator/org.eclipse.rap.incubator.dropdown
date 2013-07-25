@@ -79,4 +79,13 @@ public class DataSource_Test {
     verify( remoteObject ).set( eq( "data" ), eq( array ) );
   }
 
+  @Test
+  public void testSetFilterScript_setsFilterScriptOnRemoteObject() {
+    DataSource dataSource = new DataSource();
+
+    dataSource.setFilterScript( "foobar" );
+
+    verify( remoteObject ).set( eq( "filterScript" ), eq( "foobar" ) );
+  }
+
 }

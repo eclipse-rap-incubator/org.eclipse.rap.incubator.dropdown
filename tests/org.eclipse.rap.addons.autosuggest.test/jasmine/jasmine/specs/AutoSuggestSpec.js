@@ -31,6 +31,27 @@
     return result;
   };
 
+  describe( "secureEval", function() {
+
+    var secureEval;
+
+    beforeEach( function() {
+      if( !secureEval ) {
+        secureEval = getVarFromScript( "AutoSuggest", "secureEval" );
+      }
+    } );
+
+    it( "evals code", function() {
+      expect( secureEval( "1+2;" ) ).toBe( 3 );
+    } );
+
+    it( "can not access local variables", function() {
+      var foo = 1;
+      expect( secureEval( "typeof foo;" ) ).toBe( "undefined" );
+    } );
+
+  } );
+
   describe( "commonText", function() {
 
     var commonText;
@@ -216,6 +237,59 @@
         model.set( "userText", "ba", { "action" : "foo" } );
 
         expect( log[ 0 ][ 0 ].options.action ).toBe( "foo" );
+      } );
+
+      it( "uses custom filter from dataSource if present", function() {
+        model.addListener( "change:userText", createClientListener( "AutoSuggest" ) );
+        model.set( "suggestions", null );
+        var dataSource = rap.typeHandler[ "rwt.remote.Model" ].factory();
+        dataSource.set( "data", [ "foo", "bar" ] );
+        spyOn( rap, "getObject" ).andReturn( dataSource );
+        model.set( "dataSourceId", "fooId" );
+        dataSource.set( "filterScript",
+            "function( suggestion, userText ) { "
+          + "  return suggestion.indexOf( userText ) !== -1;"
+          + "}"
+        );
+
+        model.set( "userText", "a" );
+
+        expect( model.get( "currentSuggestions" ) ).toEqual( [ "bar" ] );
+      } );
+
+      it( "caches evaluated filter function", function() {
+        model.addListener( "change:userText", createClientListener( "AutoSuggest" ) );
+        model.set( "suggestions", null );
+        var dataSource = rap.typeHandler[ "rwt.remote.Model" ].factory();
+        dataSource.set( "data", [ "foo" ] );
+        spyOn( rap, "getObject" ).andReturn( dataSource );
+        model.set( "dataSourceId", "fooId" );
+        dataSource.set( "filterScript", "function() { return false; }" );
+        model.set( "userText", "a" );
+
+        dataSource.set( "filterScript", "function() { return true; }" );
+        model.set( "userText", "b" );
+
+        expect( model.get( "currentSuggestions" ) ).toEqual( [] );
+      } );
+
+      it( "throws custom exception when filterScript not parse", function() {
+        model.addListener( "change:userText", createClientListener( "AutoSuggest" ) );
+        model.set( "suggestions", null );
+        var dataSource = rap.typeHandler[ "rwt.remote.Model" ].factory();
+        dataSource.set( "data", [ "foo", "bar" ] );
+        spyOn( rap, "getObject" ).andReturn( dataSource );
+        model.set( "dataSourceId", "fooId" );
+        dataSource.set( "filterScript", "funasdfction() { }" );
+        var error;
+
+        try {
+          model.set( "userText", "a" );
+        } catch( ex ) {
+          error = ex;
+        }
+
+        expect( error.message ).toContain( "AutoSuggest" );
       } );
 
     } );

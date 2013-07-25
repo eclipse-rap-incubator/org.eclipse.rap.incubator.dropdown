@@ -28,6 +28,11 @@ public class AutoSuggestSnippet extends AbstractEntryPoint {
     AutoSuggest autoSuggest = new AutoSuggest( text );
     autoSuggest.setAutoComplete( true );
     DataSource dataSource = new DataSource();
+    dataSource.setFilterScript(
+        "functfsdfion( suggestion, userText ) { "
+      + "  return suggestion.indexOf( userText ) !== -1;"
+      + "}"
+    );
     dataSource.setDataProvider( new ArrayDataProvider( "foo", "food", "foobar", "bar" ) );
     autoSuggest.setDataSource( dataSource );
     autoSuggest.addSelectionListener( new SuggestionSelectedListener() {

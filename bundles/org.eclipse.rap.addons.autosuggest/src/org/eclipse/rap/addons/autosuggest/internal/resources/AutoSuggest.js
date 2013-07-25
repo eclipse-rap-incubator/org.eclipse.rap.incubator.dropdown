@@ -120,8 +120,9 @@ function filterSuggestions( options ) {
   fetchSuggestions.apply( this );
   var userText = this.get( "userText" ) || "";
   this.set( "replacementText", null, { "action" : "sync" } );
+  var filter = getFilter.apply( this );
   var filterWrapper = function( suggestion ) {
-    return defaultFilter( suggestion, userText );
+    return filter( suggestion, userText );
   }
   var currentSuggestions = filterArray( this.get( "suggestions" ), filterWrapper );
   this.set( "currentSuggestions", currentSuggestions, { "action" : options.action } );
@@ -129,13 +130,38 @@ function filterSuggestions( options ) {
 
 function fetchSuggestions() {
   if( this.get( "suggestions" ) == null ) {
-    if( this.get( "dataSourceId" ) != null ) {
-      var dataSource = rap.getObject( this.get( "dataSourceId" ) );
+    var dataSource = getDataSource.apply( this );
+    if( dataSource != null ) {
       this.set( "suggestions", dataSource.get( "data" ) );
     } else {
       this.set( "suggestions", [] );
     }
   }
+}
+
+function getFilter() {
+  var filter = this.get( "filter" );
+  if( filter == null ) {
+    var dataSource = getDataSource.apply( this );
+    if( dataSource != null && dataSource.get( "filterScript" ) != null ) {
+      try {
+        filter = secureEval( "var result = " + dataSource.get( "filterScript" ) + "; result;" );
+      } catch( ex ) {
+        throw new Error( "AutoSuggest could not eval filter function: " + ex.message );
+      }
+    } else {
+      filter = defaultFilter;
+    }
+    this.set( "filter", filter );
+  }
+  return filter;
+}
+
+function getDataSource() {
+  if( this.get( "dataSourceId" ) != null ) {
+    return rap.getObject( this.get( "dataSourceId" ) );
+  }
+  return null;
 }
 
 ////////////////////////
@@ -214,5 +240,10 @@ function filterArray( array, filter, limit ) {
     }
   }
   return result;
+}
+
+function secureEval() {
+  // TODO : protect against global var access
+  return eval( arguments[ 0 ] );
 }
 
