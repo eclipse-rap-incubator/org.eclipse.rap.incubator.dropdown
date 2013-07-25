@@ -65,7 +65,7 @@ function onChangeCurrentSuggestions( event ) {
   var action = event.options.action;
   var currentSuggestions = this.get( "currentSuggestions" );
   if( this.get( "autoComplete" ) && ( action === "typing" || action === "refresh" ) ) {
-    var common = commonText( currentSuggestions );
+    var common = commonText( map( currentSuggestions, getReplacementText ) );
     if( common && common.length > this.get( "userText" ).length ) {
       this.set( "replacementText", common );
     }
@@ -80,7 +80,8 @@ function onChangeSelectedSuggestionIndex( event ) {
   if( event.value !== -1 ) {
     suggestion = this.get( "currentSuggestions" )[ event.value ] || "";
   }
-  this.set( "replacementText", suggestion, { "action" : "selection" } );
+  var replacementText = getReplacementText( suggestion );
+  this.set( "replacementText", replacementText, { "action" : "selection" } );
 }
 
 function onChangeReplacementText( event ) {
@@ -140,7 +141,8 @@ function fetchSuggestions() {
 }
 
 var defaultFilter = function( suggestion, userText ) {
-  return suggestion.toLowerCase().indexOf( userText.toLowerCase() ) === 0;
+  var text = getReplacementText( suggestion );
+  return text.toLowerCase().indexOf( userText.toLowerCase() ) === 0;
 };
 
 function ensureFilter() {
@@ -159,8 +161,9 @@ function ensureFilter() {
   }
 }
 
+// TODO [tb] : there should be default templates for string, array and object
 var defaultTemplate = function( suggestion ) {
-  return suggestion;
+  return suggestion instanceof Array ? suggestion.slice( 1 ).join( "\t" ) : suggestion;
 };
 
 function ensureTemplate() {
@@ -186,17 +189,21 @@ function getDataSource() {
   return null;
 }
 
+function getReplacementText( suggestion ) {
+  return suggestion instanceof Array ? suggestion[ 0 ] : suggestion;
+}
+
 ////////////////////////
 // Helper - autoComplete
 
-function commonText( items ) {
+function commonText( texts ) {
   var result = null;
-  if( items.length === 1 ) {
-    result = items[ 0 ];
-  } else if( items.length > 1 ) {
-    var common = commonChars( items );
+  if( texts.length === 1 ) {
+    result = texts[ 0 ];
+  } else if( texts.length > 1 ) {
+    var common = commonChars( texts );
     if( common.length > 0 ) {
-      if( allItemsSplitAt( items, common.length ) ) {
+      if( allTextsSplitAt( texts, common.length ) ) {
         result = common;
       } else {
         var splitRegExp = /\W/g;
@@ -211,14 +218,14 @@ function commonText( items ) {
   return result;
 }
 
-function commonChars( items ) {
-  var testItem = items[ 0 ];
+function commonChars( texts ) {
+  var testItem = texts[ 0 ];
   var result = "";
   var matches = true;
   for( var offset = 0; ( offset < testItem.length ) && matches; offset++ ) {
     var candidate = result + testItem.charAt( offset );
-    for( var i = 0; i < items.length; i++ ) {
-      if( items[ i ].indexOf( candidate ) !== 0 ) {
+    for( var i = 0; i < texts.length; i++ ) {
+      if( texts[ i ].indexOf( candidate ) !== 0 ) {
         matches = false;
         break;
       }
@@ -230,12 +237,13 @@ function commonChars( items ) {
   return result;
 }
 
-function allItemsSplitAt( items, offset ) {
+// TODO [tb] : refactor to every( texts, hasSplitCharacterAt )
+function allTextsSplitAt( texts, offset ) {
   var splitRegExp = /\W/; // not a letter/digit/underscore
   var result = true;
-  for( var i = 0; i < items.length; i++ ) {
-    if( items[ i ].length !== offset ) {
-      var itemChar = items[ i ].charAt( offset );
+  for( var i = 0; i < texts.length; i++ ) {
+    if( texts[ i ].length !== offset ) {
+      var itemChar = texts[ i ].charAt( offset );
       if( !splitRegExp.test( itemChar ) ) {
         result = false;
       }
@@ -244,8 +252,8 @@ function allItemsSplitAt( items, offset ) {
   return result;
 }
 
-//////////////////
-// Helper - search
+/////////
+// Helper
 
 function filterArray( array, filter, limit ) {
   var result = [];

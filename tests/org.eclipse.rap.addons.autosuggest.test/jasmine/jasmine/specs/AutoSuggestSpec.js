@@ -208,6 +208,15 @@
         expect( model.get( "currentSuggestions" ) ).toEqual( [ "bar", "banana" ] );
       } );
 
+      it( "updates currentSuggestions of type array", function() {
+        model.addListener( "change:userText", createClientListener( "AutoSuggest" ) );
+        model.set( "suggestions", [ [ "foo" ], [ "bar" ] ] );
+
+        model.set( "userText", "ba" );
+
+        expect( model.get( "currentSuggestions" ) ).toEqual( [ [ "bar" ] ] );
+      } );
+
       it( "gets suggestions from data source if suggestions are not set", function() {
         model.addListener( "change:userText", createClientListener( "AutoSuggest" ) );
         model.set( "suggestions", null );
@@ -351,6 +360,15 @@
         expect( model.get( "replacementText" ) ).toEqual( "banana" );
       } );
 
+      it( "sets replacementText for array suggestion", function() {
+        model.addListener( "change:selectedSuggestionIndex", createClientListener( "AutoSuggest" ) );
+        model.set( "currentSuggestions", [ [ "a", "b", "c" ], [ "x", "y", "z" ] ] );
+
+        model.set( "selectedSuggestionIndex", 1 );
+
+        expect( model.get( "replacementText" ) ).toEqual( "x" );
+      } );
+
       it( "resets suggestion when selection index is -1", function() {
         model.addListener( "change:selectedSuggestionIndex", createClientListener( "AutoSuggest" ) );
         model.set( "currentSuggestions", [ "bar", "banana" ] );
@@ -463,6 +481,17 @@
         expect( model.get( "replacementText" ) ).toEqual( "banana" );
       } );
 
+      it( "autocompletes currentSuggestion that is array", function() {
+        model.set( "replacementText", "ban" );
+        model.set( "userText", "b" );
+        model.set( "autoComplete", true );
+        model.addListener( "change:currentSuggestions", createClientListener( "AutoSuggest" ) );
+
+        model.set( "currentSuggestions", [ [ "banana" ] ], { "action" : "typing" } );
+
+        expect( model.get( "replacementText" ) ).toEqual( "banana" );
+      } );
+
       it( "autocompletes suggestion while refreshing on single currentSuggestion", function() {
         model.set( "replacementText", "ban" );
         model.set( "userText", "b" );
@@ -503,6 +532,14 @@
         model.set( "currentSuggestions", [ "a", "b" ] );
 
         expect( model.get( "suggestionTexts" ) ).toEqual( [ "a", "b" ] );
+      } );
+
+      it( "sets suggestionTexts for columns", function() {
+        model.addListener( "change:currentSuggestions", createClientListener( "AutoSuggest" ) );
+
+        model.set( "currentSuggestions", [ [ "a", "b", "c" ], [ "x", "y", "z" ] ] );
+
+        expect( model.get( "suggestionTexts" ) ).toEqual( [ "b\tc", "y\tz" ] );
       } );
 
       it( "applies template to suggestionTexts", function() {
