@@ -46,7 +46,6 @@ function handleEvent( event ) {
 
 function onChangeDataSourceId( event ) {
   this.set( "suggestions", null );
-  // TODO : schedule filter?
 }
 
 function onChangeSuggestions( event ) {

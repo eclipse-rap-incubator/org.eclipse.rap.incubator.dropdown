@@ -18,6 +18,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -286,11 +287,13 @@ public class AutoSuggest_Test {
     autoSuggest.getVisibleItemCount();
   }
 
-  @Test( expected = NullPointerException.class )
-  public void testSetDataSource_failsWithNullArgument() {
+  @Test
+  public void testSetDataSource_acceptsNullArgument() {
     AutoSuggest autoSuggest = new AutoSuggest( text );
 
     autoSuggest.setDataSource( null );
+
+    verify( remoteObject ).set( eq( "dataSourceId" ), ( String )isNull() );
   }
 
   @Test( expected = IllegalStateException.class )

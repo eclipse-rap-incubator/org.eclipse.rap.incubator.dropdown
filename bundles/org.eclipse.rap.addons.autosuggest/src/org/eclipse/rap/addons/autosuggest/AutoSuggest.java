@@ -72,10 +72,7 @@ public class AutoSuggest {
 
   public void setDataSource( DataSource dataSource ) {
     checkDisposed();
-    if( dataSource == null ) {
-      throw new NullPointerException( "Data must not be null" );
-    }
-    model.set( "dataSourceId", dataSource.getId() );
+    model.set( "dataSourceId", dataSource != null ? dataSource.getId() : null );
   }
 
   public void setVisibleItemCount( int itemCount ) {

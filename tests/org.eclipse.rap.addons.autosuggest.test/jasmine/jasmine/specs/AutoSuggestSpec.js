@@ -200,7 +200,7 @@
         expect( model.get( "currentSuggestions" ) ).toEqual( [ "bar", "banana" ] );
       } );
 
-      it( "sets empty suggestions array if data source is not set", function() {
+      it( "sets empty currentSuggestions array if no data source is set", function() {
         model.addListener( "change:userText", createClientListener( "AutoSuggest" ) );
         model.set( "suggestions", null );
 
