@@ -21,7 +21,7 @@
     <relativePath>../../../org.eclipse.rap.incubator.releng/releng/org.eclipse.rap.incubator.releng/parent</relativePath>
   </parent>
 
-  <artifactId>org.eclipse.rap.addons.dropdown</artifactId>
+  <artifactId>org.eclipse.rap.addons.autosuggest</artifactId>
   <version>0.1.0-SNAPSHOT</version>
   <packaging>eclipse-plugin</packaging>
 
