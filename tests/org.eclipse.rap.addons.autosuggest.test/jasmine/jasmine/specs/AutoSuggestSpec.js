@@ -37,7 +37,7 @@
 
     beforeEach( function() {
       if( !secureEval ) {
-        secureEval = getVarFromScript( "AutoSuggest", "secureEval" );
+        secureEval = getVarFromScript( "AutoSuggest.js", "secureEval" );
       }
     } );
 
@@ -58,7 +58,7 @@
 
     beforeEach( function() {
       if( !commonText ) {
-        commonText = getVarFromScript( "AutoSuggest", "commonText" );
+        commonText = getVarFromScript( "AutoSuggest.js", "commonText" );
       }
     } );
 
@@ -115,7 +115,7 @@
 
     beforeEach( function() {
       if( !filterArray ) {
-        filterArray = getVarFromScript( "AutoSuggest", "filterArray" );
+        filterArray = getVarFromScript( "AutoSuggest.js", "filterArray" );
       }
     } );
 
@@ -162,7 +162,7 @@
     describe( "change:dataSourceId", function() {
 
       it( "sets suggestions to null", function() {
-        model.addListener( "change:dataSourceId", createClientListener( "AutoSuggest" ) );
+        model.addListener( "change:dataSourceId", createClientListener( "AutoSuggest.js" ) );
         model.set( "suggestions", [] );
 
         model.set( "dataSourceId", "fooId" );
@@ -175,7 +175,7 @@
     describe( "change:userText", function() {
 
       it( "clears replacementText", function() {
-        model.addListener( "change:userText", createClientListener( "AutoSuggest" ) );
+        model.addListener( "change:userText", createClientListener( "AutoSuggest.js" ) );
         model.set( "replacementText", "banana" );
 
         model.set( "userText", "ba" );
@@ -184,7 +184,7 @@
       } );
 
       it( "shows suggestions", function() {
-        model.addListener( "change:userText", createClientListener( "AutoSuggest" ) );
+        model.addListener( "change:userText", createClientListener( "AutoSuggest.js" ) );
 
         model.set( "userText", "ba" );
 
@@ -192,7 +192,7 @@
       } );
 
       it( "hides results if text length is zero", function() {
-        model.addListener( "change:userText", createClientListener( "AutoSuggest" ) );
+        model.addListener( "change:userText", createClientListener( "AutoSuggest.js" ) );
         model.set( "suggestionsVisible", true );
 
         model.set( "userText", "" );
@@ -201,7 +201,7 @@
       } );
 
       it( "updates currentSuggestions", function() {
-        model.addListener( "change:userText", createClientListener( "AutoSuggest" ) );
+        model.addListener( "change:userText", createClientListener( "AutoSuggest.js" ) );
 
         model.set( "userText", "ba" );
 
@@ -209,7 +209,7 @@
       } );
 
       it( "updates currentSuggestions of type array", function() {
-        model.addListener( "change:userText", createClientListener( "AutoSuggest" ) );
+        model.addListener( "change:userText", createClientListener( "AutoSuggest.js" ) );
         model.set( "suggestions", [ [ "foo" ], [ "bar" ] ] );
 
         model.set( "userText", "ba" );
@@ -218,7 +218,7 @@
       } );
 
       it( "gets suggestions from data source if suggestions are not set", function() {
-        model.addListener( "change:userText", createClientListener( "AutoSuggest" ) );
+        model.addListener( "change:userText", createClientListener( "AutoSuggest.js" ) );
         model.set( "suggestions", null );
         var dataSource = rap.typeHandler[ "rwt.remote.Model" ].factory();
         dataSource.set( "data", [ "foo", "bar", "foobar", "banana", "apple", "cherry" ] );
@@ -231,7 +231,7 @@
       } );
 
       it( "sets empty currentSuggestions array if no data source is set", function() {
-        model.addListener( "change:userText", createClientListener( "AutoSuggest" ) );
+        model.addListener( "change:userText", createClientListener( "AutoSuggest.js" ) );
         model.set( "suggestions", null );
 
         model.set( "userText", "ba" );
@@ -240,7 +240,7 @@
       } );
 
       it( "forwards action option", function() {
-        model.addListener( "change:userText", createClientListener( "AutoSuggest" ) );
+        model.addListener( "change:userText", createClientListener( "AutoSuggest.js" ) );
         model.addListener( "change:currentSuggestions", logger );
 
         model.set( "userText", "ba", { "action" : "foo" } );
@@ -249,7 +249,7 @@
       } );
 
       it( "uses custom filter from dataSource if present", function() {
-        model.addListener( "change:userText", createClientListener( "AutoSuggest" ) );
+        model.addListener( "change:userText", createClientListener( "AutoSuggest.js" ) );
         model.set( "suggestions", null );
         var dataSource = rap.typeHandler[ "rwt.remote.Model" ].factory();
         dataSource.set( "data", [ "foo", "bar" ] );
@@ -267,7 +267,7 @@
       } );
 
       it( "caches evaluated filter function", function() {
-        model.addListener( "change:userText", createClientListener( "AutoSuggest" ) );
+        model.addListener( "change:userText", createClientListener( "AutoSuggest.js" ) );
         model.set( "suggestions", null );
         var dataSource = rap.typeHandler[ "rwt.remote.Model" ].factory();
         dataSource.set( "data", [ "foo" ] );
@@ -283,7 +283,7 @@
       } );
 
       it( "throws custom exception when filterScript not parse", function() {
-        model.addListener( "change:userText", createClientListener( "AutoSuggest" ) );
+        model.addListener( "change:userText", createClientListener( "AutoSuggest.js" ) );
         model.set( "suggestions", null );
         var dataSource = rap.typeHandler[ "rwt.remote.Model" ].factory();
         dataSource.set( "data", [ "foo", "bar" ] );
@@ -306,7 +306,7 @@
     describe( "change:suggestions", function() {
 
       it( "clears suggestion", function() {
-        model.addListener( "change:suggestions", createClientListener( "AutoSuggest" ) );
+        model.addListener( "change:suggestions", createClientListener( "AutoSuggest.js" ) );
         model.set( "replacementText", "banana" );
         model.set( "suggestionsVisible", true );
         model.addListener( "change:replacementText", logger );
@@ -317,7 +317,7 @@
       } );
 
       it( "updates suggestions", function() {
-        model.addListener( "change:suggestions", createClientListener( "AutoSuggest" ) );
+        model.addListener( "change:suggestions", createClientListener( "AutoSuggest.js" ) );
         model.set( "userText", "ba" );
         model.set( "suggestionsVisible", true );
 
@@ -327,7 +327,7 @@
       } );
 
       it( "does not update suggestions if not visible", function() {
-        model.addListener( "change:suggestions", createClientListener( "AutoSuggest" ) );
+        model.addListener( "change:suggestions", createClientListener( "AutoSuggest.js" ) );
         model.set( "suggestionsVisible", false );
         model.addListener( "change:currentSuggestions", logger );
 
@@ -337,7 +337,7 @@
       } );
 
       it( "sets suggestions with refresh option", function() {
-        model.addListener( "change:suggestions", createClientListener( "AutoSuggest" ) );
+        model.addListener( "change:suggestions", createClientListener( "AutoSuggest.js" ) );
         model.addListener( "change:currentSuggestions", logger );
         model.set( "suggestionsVisible", true );
         model.set( "userText", "ba" );
@@ -352,7 +352,7 @@
     describe( "change:selectedSuggestionIndex", function() {
 
       it( "sets replacementText to selected suggestion", function() {
-        model.addListener( "change:selectedSuggestionIndex", createClientListener( "AutoSuggest" ) );
+        model.addListener( "change:selectedSuggestionIndex", createClientListener( "AutoSuggest.js" ) );
         model.set( "currentSuggestions", [ "bar", "banana" ] );
 
         model.set( "selectedSuggestionIndex", 1 );
@@ -361,7 +361,7 @@
       } );
 
       it( "sets replacementText for array suggestion", function() {
-        model.addListener( "change:selectedSuggestionIndex", createClientListener( "AutoSuggest" ) );
+        model.addListener( "change:selectedSuggestionIndex", createClientListener( "AutoSuggest.js" ) );
         model.set( "currentSuggestions", [ [ "a", "b", "c" ], [ "x", "y", "z" ] ] );
 
         model.set( "selectedSuggestionIndex", 1 );
@@ -370,7 +370,7 @@
       } );
 
       it( "resets suggestion when selection index is -1", function() {
-        model.addListener( "change:selectedSuggestionIndex", createClientListener( "AutoSuggest" ) );
+        model.addListener( "change:selectedSuggestionIndex", createClientListener( "AutoSuggest.js" ) );
         model.set( "currentSuggestions", [ "bar", "banana" ] );
         model.set( "replacementText", "banana" );
 
@@ -380,7 +380,7 @@
       } );
 
       it( "sets action option", function() {
-        model.addListener( "change:selectedSuggestionIndex", createClientListener( "AutoSuggest" ) );
+        model.addListener( "change:selectedSuggestionIndex", createClientListener( "AutoSuggest.js" ) );
         model.addListener( "change:replacementText", logger );
         model.set( "currentSuggestions", [ "bar", "banana" ] );
 
@@ -394,7 +394,7 @@
     describe( "change:replacementText", function() {
 
       it( "ignores events from change:userText", function() {
-        model.addListener( "change:replacementText", createClientListener( "AutoSuggest" ) );
+        model.addListener( "change:replacementText", createClientListener( "AutoSuggest.js" ) );
         model.set( "text", "bar" );
         model.set( "textSelection", [ 0, 0 ] );
 
@@ -405,7 +405,7 @@
       } );
 
       it( "sets text to suggestion", function() {
-        model.addListener( "change:replacementText", createClientListener( "AutoSuggest" ) );
+        model.addListener( "change:replacementText", createClientListener( "AutoSuggest.js" ) );
 
         model.set( "replacementText", "foo" );
 
@@ -413,7 +413,7 @@
       } );
 
       it( "sets textSelection for replacementText", function() {
-        model.addListener( "change:replacementText", createClientListener( "AutoSuggest" ) );
+        model.addListener( "change:replacementText", createClientListener( "AutoSuggest.js" ) );
 
         model.set( "replacementText", "foo", { "action" : "selection" } );
 
@@ -421,7 +421,7 @@
       } );
 
       it( "sets textSelection for auto complete", function() {
-        model.addListener( "change:replacementText", createClientListener( "AutoSuggest" ) );
+        model.addListener( "change:replacementText", createClientListener( "AutoSuggest.js" ) );
         model.set( "userText", "foo" );
 
         model.set( "replacementText", "foobar" );
@@ -430,7 +430,7 @@
       } );
 
       it( "resets text to userText", function() {
-        model.addListener( "change:replacementText", createClientListener( "AutoSuggest" ) );
+        model.addListener( "change:replacementText", createClientListener( "AutoSuggest.js" ) );
         model.set( "userText", "bar" );
 
         model.set( "replacementText", null, { "action" : "selection" } );
@@ -439,7 +439,7 @@
       } );
 
       it( "resets selection to userText end", function() {
-        model.addListener( "change:replacementText", createClientListener( "AutoSuggest" ) );
+        model.addListener( "change:replacementText", createClientListener( "AutoSuggest.js" ) );
         model.set( "userText", "bar" );
 
         model.set( "replacementText", null, { "action" : "selection" } );
@@ -453,7 +453,7 @@
 
       it( "does not change replacementText without autocomplete", function() {
         model.set( "replacementText", "ban" );
-        model.addListener( "change:currentSuggestions", createClientListener( "AutoSuggest" ) );
+        model.addListener( "change:currentSuggestions", createClientListener( "AutoSuggest.js" ) );
 
         model.set( "currentSuggestions", [ "banana" ] );
 
@@ -462,7 +462,7 @@
 
       it( "does change replacementText if not typing", function() {
         model.set( "replacementText", "ban" );
-        model.addListener( "change:currentSuggestions", createClientListener( "AutoSuggest" ) );
+        model.addListener( "change:currentSuggestions", createClientListener( "AutoSuggest.js" ) );
         model.set( "autoComplete", true );
 
         model.set( "currentSuggestions", [ "banana" ] );
@@ -474,7 +474,7 @@
         model.set( "replacementText", "ban" );
         model.set( "userText", "b" );
         model.set( "autoComplete", true );
-        model.addListener( "change:currentSuggestions", createClientListener( "AutoSuggest" ) );
+        model.addListener( "change:currentSuggestions", createClientListener( "AutoSuggest.js" ) );
 
         model.set( "currentSuggestions", [ "banana" ], { "action" : "typing" } );
 
@@ -485,7 +485,7 @@
         model.set( "replacementText", "ban" );
         model.set( "userText", "b" );
         model.set( "autoComplete", true );
-        model.addListener( "change:currentSuggestions", createClientListener( "AutoSuggest" ) );
+        model.addListener( "change:currentSuggestions", createClientListener( "AutoSuggest.js" ) );
 
         model.set( "currentSuggestions", [ [ "banana" ] ], { "action" : "typing" } );
 
@@ -496,7 +496,7 @@
         model.set( "replacementText", "ban" );
         model.set( "userText", "b" );
         model.set( "autoComplete", true );
-        model.addListener( "change:currentSuggestions", createClientListener( "AutoSuggest" ) );
+        model.addListener( "change:currentSuggestions", createClientListener( "AutoSuggest.js" ) );
 
         model.set( "currentSuggestions", [ "banana" ], { "action" : "refresh" } );
 
@@ -506,7 +506,7 @@
       it( "partially autocompletes suggestion for common text", function() {
         model.set( "autoComplete", true );
         model.set( "userText", "b" );
-        model.addListener( "change:currentSuggestions", createClientListener( "AutoSuggest" ) );
+        model.addListener( "change:currentSuggestions", createClientListener( "AutoSuggest.js" ) );
 
         var items = [ "banana foo", "banana bar" ];
         model.set( "currentSuggestions", items, { "action" : "typing" } );
@@ -518,7 +518,7 @@
         model.set( "replacementText", null );
         model.set( "autoComplete", true );
         model.set( "userText", "banana xxx" );
-        model.addListener( "change:currentSuggestions", createClientListener( "AutoSuggest" ) );
+        model.addListener( "change:currentSuggestions", createClientListener( "AutoSuggest.js" ) );
 
         var items = [ "banana foo", "banana bar" ];
         model.set( "currentSuggestions", items, { "action" : "typing" } );
@@ -527,7 +527,7 @@
       } );
 
       it( "sets suggestionTexts unchanged if no custom template is set", function() {
-        model.addListener( "change:currentSuggestions", createClientListener( "AutoSuggest" ) );
+        model.addListener( "change:currentSuggestions", createClientListener( "AutoSuggest.js" ) );
 
         model.set( "currentSuggestions", [ "a", "b" ] );
 
@@ -535,7 +535,7 @@
       } );
 
       it( "sets suggestionTexts for columns", function() {
-        model.addListener( "change:currentSuggestions", createClientListener( "AutoSuggest" ) );
+        model.addListener( "change:currentSuggestions", createClientListener( "AutoSuggest.js" ) );
 
         model.set( "currentSuggestions", [ [ "a", "b", "c" ], [ "x", "y", "z" ] ] );
 
@@ -543,7 +543,7 @@
       } );
 
       it( "applies template to suggestionTexts", function() {
-        model.addListener( "change:currentSuggestions", createClientListener( "AutoSuggest" ) );
+        model.addListener( "change:currentSuggestions", createClientListener( "AutoSuggest.js" ) );
         model.set( "template", function( suggestion ) { return "x" + suggestion; } );
 
         model.set( "currentSuggestions", [ "a", "b" ] );
@@ -552,7 +552,7 @@
       } );
 
       it( "evaluates templateScript from dataSource", function() {
-        model.addListener( "change:currentSuggestions", createClientListener( "AutoSuggest" ) );
+        model.addListener( "change:currentSuggestions", createClientListener( "AutoSuggest.js" ) );
         var dataSource = rap.typeHandler[ "rwt.remote.Model" ].factory();
         spyOn( rap, "getObject" ).andReturn( dataSource );
         dataSource.set( "templateScript", "function( suggestion ) { return \"x\" + suggestion; }" );
@@ -564,7 +564,7 @@
       } );
 
       it( "throws custom exception when templateScript can not be parsed", function() {
-        model.addListener( "change:currentSuggestions", createClientListener( "AutoSuggest" ) );
+        model.addListener( "change:currentSuggestions", createClientListener( "AutoSuggest.js" ) );
         var dataSource = rap.typeHandler[ "rwt.remote.Model" ].factory();
         spyOn( rap, "getObject" ).andReturn( dataSource );
         dataSource.set( "templateScript", "funasdfction( suggestion ) { return true; }" );
@@ -585,7 +585,7 @@
     describe( "accept", function() {
 
       it( "fires suggestionSelected for selectedSuggestionIndex", function() {
-        model.addListener( "accept", createClientListener( "AutoSuggest" ) );
+        model.addListener( "accept", createClientListener( "AutoSuggest.js" ) );
         model.set( "currentSuggestions", [ "bar", "banana" ] );
         model.set( "selectedSuggestionIndex", 1 );
         model.addListener( "suggestionSelected", logger );
@@ -597,7 +597,7 @@
       } );
 
       it( "fires suggestionSelected when full auto complete is accepted", function() {
-        model.addListener( "accept", createClientListener( "AutoSuggest" ) );
+        model.addListener( "accept", createClientListener( "AutoSuggest.js" ) );
         model.set( "currentSuggestions", [ "banana" ] );
         model.set( "selectedSuggestionIndex", -1 );
         model.set( "autoComplete", true );
@@ -610,7 +610,7 @@
       } );
 
       it( "does nothing when attempting accepting without selected suggestion or auto complete", function() {
-        model.addListener( "accept", createClientListener( "AutoSuggest" ) );
+        model.addListener( "accept", createClientListener( "AutoSuggest.js" ) );
         model.set( "currentSuggestions", [ "banana" ] );
         model.set( "selectedSuggestionIndex", -1 );
         model.set( "suggestionsVisible", true );
@@ -623,7 +623,7 @@
       } );
 
       it( "clears text selection", function() {
-        model.addListener( "accept", createClientListener( "AutoSuggest" ) );
+        model.addListener( "accept", createClientListener( "AutoSuggest.js" ) );
         model.set( "text", "foobar" );
 
         model.notify( "accept", { source : model, type : "accept" } );

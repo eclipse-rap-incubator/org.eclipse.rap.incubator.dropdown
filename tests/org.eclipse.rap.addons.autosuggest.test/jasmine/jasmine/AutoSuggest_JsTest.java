@@ -45,7 +45,7 @@ public class AutoSuggest_JsTest {
     jasmine.parseScript( LOCAL_LOADER, "jasmine/specs/AutoSuggestSpec.js" );
     jasmine.parseScript( SCRIPTING_LOADER, "org/eclipse/rap/clientscripting/SWT.js" );
     jasmine.parseScript( SCRIPTING_LOADER, "org/eclipse/rap/clientscripting/Function.js" );
-    jasmine.addResource( "AutoSuggest", LOCAL_LOADER, AUTO_SUGGEST_JS );
+    jasmine.addResource( "AutoSuggest.js", LOCAL_LOADER, AUTO_SUGGEST_JS );
     jasmine.execute();
   }
 

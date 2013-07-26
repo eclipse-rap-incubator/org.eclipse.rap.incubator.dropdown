@@ -22,11 +22,7 @@
 
   TestUtil = {
 
-    loadResourceFromClassLoader : function( name, loader, path ) {
-      throw new Error( "Not supported in browser environment" );
-    },
-
-    loadResourceFromURL : function( name, url ) {
+    loadResource : function( name, url ) {
       resources[ name ] = xhrGet( url );
     },
 

@@ -24,23 +24,16 @@ class JasmineRunner {
   private static final String CHARSET = "UTF-8";
   private final ScriptableObject scope;
   private final ScriptableObject jasmineEnv;
+  private final Map<String, Object> resources = new HashMap<String, Object>();
   private JasmineReporter publicReporter;
-  private TestUtil testUtil;
 
   public JasmineRunner() {
     scope = Context.enter().initStandardObjects();
-    createTestUtil();
-    scope.put( "window", scope, scope );
-    createStubs( "setTimeout", "clearTimeout", "setInterval", "clearInterval" );
+    initializeScope();
     parseScript( getClass().getClassLoader(), "org/eclipse/rap/jstestrunner/jasmine/jasmine.js" );
     jasmineEnv = getJasmineEnv();
     createReporter();
     Context.exit();
-  }
-
-  private void createTestUtil() {
-    testUtil = new TestUtil();
-    scope.put( "TestUtil", scope, testUtil );
   }
 
   public void setReporter( JasmineReporter publicReporter ) {
@@ -70,7 +63,7 @@ class JasmineRunner {
   }
 
   public void addResource( String name, ClassLoader loader, String path ) {
-    testUtil.loadResourceFromClassLoader( name, loader, path );
+    resources.put( name, readContent( loader, path ) );
   }
 
   public void execute() {
@@ -82,6 +75,12 @@ class JasmineRunner {
 
   ////////////
   // Internals
+
+  private void initializeScope() {
+    scope.put( "TestUtil", scope, new TestUtil() );
+    scope.put( "window", scope, scope );
+    createStubs( "setTimeout", "clearTimeout", "setInterval", "clearInterval" );
+  }
 
   private void createReporter() {
     ScriptableObject.callMethod( jasmineEnv, "addReporter", new Object[]{ new InternalReporter() } );
@@ -204,16 +203,6 @@ class JasmineRunner {
   }
 
   public class TestUtil {
-
-    Map<String, Object> resources = new HashMap< String, Object>();
-
-    public void loadResourceFromURL( String name, String url ) {
-      throw new UnsupportedOperationException( "Not supported in Rhino environment" );
-    }
-
-    public void loadResourceFromClassLoader( String name, ClassLoader loader, String path ) {
-      resources.put( name, readContent( loader, path ) );
-    }
 
     public Object getResource( String name ) {
       return resources.get( name );
