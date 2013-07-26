@@ -317,10 +317,10 @@ public class AutoSuggest_Test {
   }
 
   @Test
-  public void testSetDataSource_setsColumnWithOnDropDown() {
+  public void testSetDataSource_setsColumnWidthOnDropDown() {
     AutoSuggest autoSuggest = new AutoSuggest( text );
-    DataSource dataSource = mock( DataSource.class );
-    when( dataSource.getTemplate() ).thenReturn( new ColumnTemplate( 23, 42 ) );
+    DataSource dataSource = new DataSource();
+    dataSource.setTemplate( new ColumnTemplate( 23, 42 ) );
 
     autoSuggest.setDataSource( dataSource );
 
