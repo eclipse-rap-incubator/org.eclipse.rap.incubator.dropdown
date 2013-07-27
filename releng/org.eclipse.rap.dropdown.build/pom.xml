@@ -30,9 +30,9 @@
     <module>../../bundles/org.eclipse.rap.addons.autosuggest</module>
     <!--
     <module>../../tests/org.eclipse.rap.addons.dropdown.test</module>
+     -->
     <module>../../tests/org.eclipse.rap.addons.autosuggest.test</module>
     <module>../../tests/org.eclipse.rap.jstestrunner</module>
-     -->
     <module>../../features/org.eclipse.rap.dropdown.feature</module>
     <module>repository</module>
   </modules>
