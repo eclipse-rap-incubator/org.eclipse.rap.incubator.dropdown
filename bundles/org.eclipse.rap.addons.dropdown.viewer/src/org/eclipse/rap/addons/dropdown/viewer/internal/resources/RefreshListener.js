@@ -14,7 +14,11 @@ var createQuery = rwt.dropdown.DropDown.createQuery;
 function handleEvent( viewer ) {
   var dropdown = rap.getObject( viewer.get( "dropDown" ) );
   var data = viewer.get( "elements" );
-  var text = rap.getObject( viewer.get( "text" ) );
+  try {
+    var text = rap.getObject( viewer.get( "text" ) );
+  } catch( ex ) { // widget may already be disposed
+    return;
+  }
   var str = text.getText();
   var result = searchItems( data, createQuery( str ) );
   if( result.items.length === 0 || ( result.items.length === 1 && str === result.items[ 0 ] ) ) {
