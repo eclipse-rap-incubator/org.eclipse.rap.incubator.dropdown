@@ -12,13 +12,10 @@ package org.eclipse.rap.jstestrunner.jasmine;
 
 import static org.junit.Assert.fail;
 
-import org.junit.rules.TestRule;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
 import org.mozilla.javascript.ScriptableObject;
 
 
-public class JasmineTestRunner implements TestRule {
+public class JasmineTestRunner {
 
   private final JasmineRunner jasmine;
   private final JasmineJUnitReporter reporter;
@@ -46,25 +43,6 @@ public class JasmineTestRunner implements TestRule {
     if( !reporter.hasPassed() ) {
       fail( reporter.getLog() );
     }
-  }
-
-  public Statement apply( Statement base, Description description ) {
-    return base;
-  }
-
-  class JasmineStatement extends Statement {
-
-    private final Statement base;
-
-    public JasmineStatement( Statement base ) {
-      this.base = base;
-    }
-
-    @Override
-    public void evaluate() throws Throwable {
-      base.evaluate();
-    }
-
   }
 
 }

@@ -13,39 +13,38 @@ package jasmine;
 import org.eclipse.rap.clientscripting.ClientListener;
 import org.eclipse.rap.jstestrunner.jasmine.JasmineTestRunner;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 
 
-public class AutoSuggest_JsTest {
+public class AutoSuggestJs_Test {
 
+  private static final ClassLoader LOCAL = AutoSuggestJs_Test.class.getClassLoader();
+  private static final ClassLoader CLIENTSCRIPTING = ClientListener.class.getClassLoader();
   private static final String AUTO_SUGGEST_JS
     = "org/eclipse/rap/addons/autosuggest/internal/resources/AutoSuggest.js";
-  private static final ClassLoader LOCAL_LOADER = AutoSuggest_JsTest.class.getClassLoader();
-  private static final ClassLoader SCRIPTING_LOADER = ClientListener.class.getClassLoader();
 
-  @Rule
-  public JasmineTestRunner jasmine = new JasmineTestRunner();
+  private JasmineTestRunner jasmine;
 
   @Before
   public void setUp() {
-    jasmine.parseScript( LOCAL_LOADER, "jasmine/fixture/rap-mock.js" );
-    jasmine.parseScript( LOCAL_LOADER, "jasmine/fixture/rwt-mock.js" );
-    jasmine.parseScript( LOCAL_LOADER, "rwt/remote/Model.js" );
+    jasmine = new JasmineTestRunner();
+    jasmine.parseScript( LOCAL, "jasmine/fixture/rap-mock.js" );
+    jasmine.parseScript( LOCAL, "jasmine/fixture/rwt-mock.js" );
+    jasmine.parseScript( LOCAL, "rwt/remote/Model.js" );
   }
 
   @Test
   public void testModelSpec() {
-    jasmine.parseScript( LOCAL_LOADER, "jasmine/specs/ModelSpec.js" );
+    jasmine.parseScript( LOCAL, "jasmine/specs/ModelSpec.js" );
     jasmine.execute();
   }
 
   @Test
   public void testListenerSpec() {
-    jasmine.parseScript( LOCAL_LOADER, "jasmine/specs/AutoSuggestSpec.js" );
-    jasmine.parseScript( SCRIPTING_LOADER, "org/eclipse/rap/clientscripting/SWT.js" );
-    jasmine.parseScript( SCRIPTING_LOADER, "org/eclipse/rap/clientscripting/Function.js" );
-    jasmine.addResource( "AutoSuggest.js", LOCAL_LOADER, AUTO_SUGGEST_JS );
+    jasmine.addResource( "AutoSuggest.js", LOCAL, AUTO_SUGGEST_JS );
+    jasmine.parseScript( CLIENTSCRIPTING, "org/eclipse/rap/clientscripting/SWT.js" );
+    jasmine.parseScript( CLIENTSCRIPTING, "org/eclipse/rap/clientscripting/Function.js" );
+    jasmine.parseScript( LOCAL, "jasmine/specs/AutoSuggestSpec.js" );
     jasmine.execute();
   }
 
