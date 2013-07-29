@@ -40,10 +40,7 @@ function handleShow( event ) {
   if( !text.getData( "typing" ) ) {
     var data = viewer.get( "elements" );
     var str = text.getText();
-    var result = searchItems( data, createQuery( str ) );
-    if( result.items.length === 0 || ( result.items.length === 1 && str === result.items[ 0 ] ) ) {
-      result = searchItems( data, /.*/ );
-    }
+    var result = searchItems( data, /.*/ );
     dropdown.setItems( result.items );
     dropdown.setData( "indexMapping", result.indicies );
   }
