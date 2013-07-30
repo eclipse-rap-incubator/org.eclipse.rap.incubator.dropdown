@@ -56,7 +56,13 @@ function handleTextEvent( model, event ) {
 
 function handleModelEvent( event ) {
   var model = event.source;
-  var textWidget = rap.getObject( model.get( "textWidgetId" ) );
+  var textWidget;
+  try {
+    textWidget = rap.getObject( model.get( "textWidgetId" ) );
+  } catch( ex ) {
+    // When Text is disposed, AutoSuggest may perform a set operation before it is disposed as well
+    return;
+  }
   var dropDown = rap.getObject( model.get( "dropDownWidgetId" ) );
   switch( event.property ) {
     case "text":
