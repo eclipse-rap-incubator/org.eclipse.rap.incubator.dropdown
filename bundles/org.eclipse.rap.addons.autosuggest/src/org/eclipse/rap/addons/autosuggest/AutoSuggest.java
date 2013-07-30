@@ -18,7 +18,8 @@ import java.util.List;
 import org.eclipse.rap.addons.autosuggest.internal.ClientModelListener;
 import org.eclipse.rap.addons.autosuggest.internal.Model;
 import org.eclipse.rap.addons.autosuggest.internal.ModelListener;
-import org.eclipse.rap.addons.autosuggest.internal.resources.ResourceLoaderUtil;
+import org.eclipse.rap.addons.autosuggest.internal.resources.AutoSuggestScript;
+import org.eclipse.rap.addons.autosuggest.internal.resources.DataBindingScript;
 import org.eclipse.rap.addons.dropdown.DropDown;
 import org.eclipse.rap.clientscripting.ClientListener;
 import org.eclipse.rap.clientscripting.WidgetDataWhiteList;
@@ -32,8 +33,6 @@ import org.eclipse.swt.widgets.Text;
 public class AutoSuggest {
 
   private static final String EVENT_TYPE_SELECTION = "suggestionSelected";
-  private final static String LISTENER_PREFIX
-    = "org/eclipse/rap/addons/autosuggest/internal/resources/";
   private static final String MODEL_ID_KEY
     = "org.eclipse.rap.addons.autosuggest#Model";
 
@@ -149,16 +148,15 @@ public class AutoSuggest {
   }
 
   private void attachClientListeners() {
-    // TODO [tb] : share listener within session
-    clientListener = createClientListener( "DataBinding.js" );
+    clientListener = new ClientListener( DataBindingScript.getInstance() );
     text.addListener( SWT.Modify, clientListener );
     text.addListener( SWT.Verify, clientListener );
     dropDown.addListener( SWT.Show, clientListener );
     dropDown.addListener( SWT.Hide, clientListener );
     dropDown.addListener( SWT.Selection, clientListener );
     dropDown.addListener( SWT.DefaultSelection, clientListener );
-    model.addListener( "change", createModelListener( "DataBinding.js" ) );
-    ClientModelListener modelListener = createModelListener( "AutoSuggest.js" );
+    model.addListener( "change", new ClientModelListener( DataBindingScript.getInstance() ) );
+    ClientModelListener modelListener = new ClientModelListener( AutoSuggestScript.getInstance() );
     model.addListener( "change", modelListener );
     model.addListener( "accept", modelListener );
   }
@@ -169,14 +167,6 @@ public class AutoSuggest {
     model.set( "dropDownWidgetId", getId( dropDown ) );
     dropDown.setData( MODEL_ID_KEY, model.getId() );
     text.setData( MODEL_ID_KEY, model.getId() );
-  }
-
-  private static ClientListener createClientListener( String name ) {
-    return new ClientListener( ResourceLoaderUtil.readTextContent( LISTENER_PREFIX + name ) );
-  }
-
-  private static ClientModelListener createModelListener( String name ) {
-    return new ClientModelListener( ResourceLoaderUtil.readTextContent( LISTENER_PREFIX + name ) );
   }
 
 }

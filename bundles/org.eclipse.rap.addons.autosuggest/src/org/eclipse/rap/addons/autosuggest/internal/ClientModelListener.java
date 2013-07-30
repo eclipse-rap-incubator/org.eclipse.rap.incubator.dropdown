@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.eclipse.rap.addons.autosuggest.internal;
 
+import org.eclipse.rap.clientscripting.Script;
 import org.eclipse.rap.clientscripting.internal.ClientFunction;
 import org.eclipse.rap.clientscripting.internal.ClientListenerBinding;
 import org.eclipse.rap.json.JsonObject;
@@ -20,6 +21,10 @@ public final class ClientModelListener extends ClientFunction implements ModelLi
 
   public ClientModelListener( String scriptCode ) {
     super( scriptCode );
+  }
+
+  public ClientModelListener( Script script ) {
+    super( script );
   }
 
   public void handleEvent( JsonObject argument ) { }
