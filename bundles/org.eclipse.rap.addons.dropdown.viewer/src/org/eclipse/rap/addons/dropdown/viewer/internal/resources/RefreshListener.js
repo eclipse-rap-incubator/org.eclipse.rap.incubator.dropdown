@@ -8,6 +8,9 @@
  * Contributors:
  *    EclipseSource - initial API and implementation
  ******************************************************************************/
+
+//@ sourceURL=RefreshLIstener.js
+
 var searchItems = rwt.dropdown.DropDown.searchItems;
 var createQuery = rwt.dropdown.DropDown.createQuery;
 
