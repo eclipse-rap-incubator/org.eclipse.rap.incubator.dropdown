@@ -40,7 +40,6 @@ public class AutoSuggestSnippet extends AbstractEntryPoint {
   protected void createContents( Composite parent ) {
     parent.setLayout( new FormLayout() );
     createDataSources();
-
     text1 = new Text( parent, SWT.BORDER );
     text1.setLayoutData( createTextData( null ) );
     AutoSuggest autoSuggest1 = new AutoSuggest( text1 );

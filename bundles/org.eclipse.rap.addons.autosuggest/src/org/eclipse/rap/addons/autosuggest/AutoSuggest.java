@@ -41,7 +41,7 @@ public class AutoSuggest {
   private final Model model;
   private final List<SuggestionSelectedListener> selectionListeners;
   private final ModelListener modelListener;
-  private ClientListener clientListener;
+  private final ClientListener[] clientListeners;
   private boolean isDisposed;
 
   public AutoSuggest( Text text ) {
@@ -61,7 +61,7 @@ public class AutoSuggest {
       }
     };
     connectClientObjects();
-    attachClientListeners();
+    clientListeners = attachClientListeners( text, dropDown, model );
     text.addListener( SWT.Dispose, new Listener() {
       public void handleEvent( Event event ) {
         dispose();
@@ -123,8 +123,7 @@ public class AutoSuggest {
     isDisposed = true;
     dropDown.dispose();
     model.dispose();
-    text.removeListener( SWT.Verify, clientListener );
-    text.removeListener( SWT.Modify, clientListener );
+    removeTextClientListeners( text, clientListeners );
   }
 
   public boolean isDisposed() {
@@ -147,8 +146,8 @@ public class AutoSuggest {
     }
   }
 
-  private void attachClientListeners() {
-    clientListener = new ClientListener( DataBindingScript.getInstance() );
+  protected ClientListener[] attachClientListeners( Text text, DropDown dropDown, Model model ) {
+    ClientListener clientListener = new ClientListener( DataBindingScript.getInstance() );
     text.addListener( SWT.Modify, clientListener );
     text.addListener( SWT.Verify, clientListener );
     dropDown.addListener( SWT.Show, clientListener );
@@ -159,6 +158,7 @@ public class AutoSuggest {
     ClientModelListener modelListener = new ClientModelListener( AutoSuggestScript.getInstance() );
     model.addListener( "change", modelListener );
     model.addListener( "accept", modelListener );
+    return new ClientListener[] { clientListener };
   }
 
   private void connectClientObjects() {
@@ -167,6 +167,11 @@ public class AutoSuggest {
     model.set( "dropDownWidgetId", getId( dropDown ) );
     dropDown.setData( MODEL_ID_KEY, model.getId() );
     text.setData( MODEL_ID_KEY, model.getId() );
+  }
+
+  protected void removeTextClientListeners( Text text, ClientListener[] clientListeners ) {
+    text.removeListener( SWT.Verify, clientListeners[ 0 ] );
+    text.removeListener( SWT.Modify, clientListeners[ 0 ] );
   }
 
 }

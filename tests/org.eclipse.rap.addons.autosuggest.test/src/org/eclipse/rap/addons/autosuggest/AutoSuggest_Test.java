@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.eclipse.rap.addons.autosuggest.internal.Model;
 import org.eclipse.rap.addons.dropdown.DropDown;
 import org.eclipse.rap.clientscripting.ClientListener;
 import org.eclipse.rap.rwt.RWT;
@@ -191,6 +192,28 @@ public class AutoSuggest_Test {
   }
 
   @Test
+  public void testConstructor_callAttachClientListenerWithTargets() {
+    final AtomicReference<Text> textArg = new AtomicReference<Text>();
+    final AtomicReference<DropDown> dropDownArg = new AtomicReference<DropDown>();
+    final AtomicReference<Model> modelArg = new AtomicReference<Model>();
+
+    AutoSuggest autoSuggest = new AutoSuggest( text ) {
+      @Override
+      protected ClientListener[] attachClientListeners( Text text, DropDown dropDown, Model model )
+      {
+        textArg.set( text );
+        modelArg.set( model );
+        dropDownArg.set( dropDown );
+        return super.attachClientListeners( text, dropDown, model );
+      }
+    };
+
+    assertSame( autoSuggest.getDropDown(), dropDownArg.get() );
+    assertSame( text, textArg.get() );
+    assertEquals( "foo", modelArg.get().getId() );
+  }
+
+  @Test
   public void testIsDisposed_returnsFalse() {
     AutoSuggest autoSuggest = new AutoSuggest( text );
 
@@ -241,6 +264,31 @@ public class AutoSuggest_Test {
 
     autoSuggest.dispose();
     autoSuggest.dispose();
+  }
+
+  @Test
+  public void testDispose_callRemoveTextClientListenerWithTextAndListeners() {
+    final ClientListener clientListener = new ClientListener( "" );
+    final AtomicReference<ClientListener[]> clientListenerArg = new AtomicReference<ClientListener[]>();
+    final AtomicReference<Text> textArg = new AtomicReference<Text>();
+    AutoSuggest autoSuggest = new AutoSuggest( text ) {
+      @Override
+      protected ClientListener[] attachClientListeners( Text text, DropDown dropDown, Model model )
+      {
+        return new ClientListener[]{ clientListener };
+      }
+      @Override
+      protected void removeTextClientListeners( Text text, ClientListener[] clientListeners ) {
+        textArg.set( text );
+        clientListenerArg.set( clientListeners );
+      }
+    };
+
+    autoSuggest.dispose();
+
+    assertSame( text, textArg.get() );
+    assertEquals( 1, clientListenerArg.get().length );
+    assertSame( clientListener, clientListenerArg.get()[ 0 ] );
   }
 
   @Test

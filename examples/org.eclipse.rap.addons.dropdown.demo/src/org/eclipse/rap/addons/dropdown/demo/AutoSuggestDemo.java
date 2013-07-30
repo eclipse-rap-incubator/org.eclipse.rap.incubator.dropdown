@@ -16,7 +16,13 @@ import org.eclipse.rap.addons.autosuggest.AutoSuggest;
 import org.eclipse.rap.addons.autosuggest.DataProvider;
 import org.eclipse.rap.addons.autosuggest.DataSource;
 import org.eclipse.rap.addons.autosuggest.SuggestionSelectedListener;
+import org.eclipse.rap.addons.autosuggest.internal.ClientModelListener;
+import org.eclipse.rap.addons.autosuggest.internal.Model;
+import org.eclipse.rap.addons.dropdown.DropDown;
 import org.eclipse.rap.addons.dropdown.demo.data.KFZ;
+import org.eclipse.rap.addons.dropdown.demo.scripts.CustomAutoSuggestScript;
+import org.eclipse.rap.addons.dropdown.demo.scripts.CustomDataBindingScript;
+import org.eclipse.rap.clientscripting.ClientListener;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.application.AbstractEntryPoint;
 import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteList;
@@ -38,10 +44,45 @@ import org.eclipse.swt.widgets.Text;
 @SuppressWarnings("restriction")
 public class AutoSuggestDemo extends AbstractEntryPoint {
 
+
+  private class CustomAutoSuggest extends AutoSuggest {
+
+    public CustomAutoSuggest( Text text ) {
+      super( text );
+    }
+
+    @Override
+    protected ClientListener[] attachClientListeners( Text text, DropDown dropDown, Model model ) {
+      ClientListener clientListener = new ClientListener( CustomDataBindingScript.getInstance() );
+      text.addListener( SWT.Modify, clientListener );
+      text.addListener( SWT.Verify, clientListener );
+      dropDown.addListener( SWT.Show, clientListener );
+      dropDown.addListener( SWT.Hide, clientListener );
+      dropDown.addListener( SWT.Selection, clientListener );
+      dropDown.addListener( SWT.DefaultSelection, clientListener );
+      model.addListener( "change", new ClientModelListener( CustomDataBindingScript.getInstance() ) );
+      ClientModelListener modelListener = new ClientModelListener( CustomAutoSuggestScript.getInstance() );
+      model.addListener( "change", modelListener );
+      model.addListener( "accept", modelListener );
+      return new ClientListener[] { clientListener };
+    }
+
+    @Override
+    protected void removeTextClientListeners( Text text, ClientListener[] clientListeners ) {
+      text.removeListener( SWT.Verify, clientListeners[ 0 ] );
+      text.removeListener( SWT.Modify, clientListeners[ 0 ] );
+    }
+
+  }
+
   private Text text;
   private AutoSuggest autoSuggest;
   private DataSource de;
   private DataSource at;
+  private boolean useCustomScripts = false;
+  private boolean useAutoComplete = false;
+  private DataSource currentDataSource;
+  private Table table;
 
   @Override
   protected void createContents( Composite parent ) {
@@ -50,9 +91,11 @@ public class AutoSuggestDemo extends AbstractEntryPoint {
     Composite composite = new Composite( parent, SWT.NONE );
     composite.setLayout( new GridLayout( 3, false ) );
     createTextArea( composite );
+    createAutoSuggest();
     createLocationArea( composite );
     createConfigArea( composite );
     createLogArea( composite );
+    createLogger();
     createDisposeButton( composite );
   }
 
@@ -77,6 +120,7 @@ public class AutoSuggestDemo extends AbstractEntryPoint {
         return array[ 1 ] + " (" + array[ 0 ] + ")";
       }
     } );
+    currentDataSource = de;
   }
 
   private void createTextArea( Composite parent ) {
@@ -88,8 +132,16 @@ public class AutoSuggestDemo extends AbstractEntryPoint {
     text.setLayoutData( gridData );
     text.setMessage( "City" );
     text.setFocus();
-    autoSuggest = new AutoSuggest( text );
-    autoSuggest.setDataSource( de );
+  }
+
+  public void createAutoSuggest() {
+    if( useCustomScripts ) {
+      autoSuggest = new CustomAutoSuggest( text );
+    } else {
+      autoSuggest = new AutoSuggest( text );
+    }
+    autoSuggest.setDataSource( currentDataSource );
+    autoSuggest.setAutoComplete( useAutoComplete );
   }
 
   private void createLocationArea( Composite parent ) {
@@ -105,6 +157,7 @@ public class AutoSuggestDemo extends AbstractEntryPoint {
     germany.addListener( SWT.Selection, new Listener() {
       public void handleEvent( Event event ) {
         if( germany.getSelection() ) {
+          currentDataSource = de;
           autoSuggest.setDataSource( de );
         }
       }
@@ -114,6 +167,7 @@ public class AutoSuggestDemo extends AbstractEntryPoint {
     austria.addListener( SWT.Selection, new Listener() {
       public void handleEvent( Event event ) {
         if( austria.getSelection() ) {
+          currentDataSource = at;
           autoSuggest.setDataSource( at );
         }
       }
@@ -131,19 +185,33 @@ public class AutoSuggestDemo extends AbstractEntryPoint {
     autoComplete.setText( "AutoComplete" );
     autoComplete.addListener( SWT.Selection, new Listener() {
       public void handleEvent( Event event ) {
-        autoSuggest.setAutoComplete( autoComplete.getSelection() );
+        useAutoComplete = autoComplete.getSelection();
+        autoSuggest.setAutoComplete( useAutoComplete );
+      }
+    } );
+    final Button customScripts = new Button( location, SWT.CHECK );
+    customScripts.setText( "Custom Scripts" );
+    customScripts.addListener( SWT.Selection, new Listener() {
+      public void handleEvent( Event event ) {
+        autoSuggest.dispose();
+        useCustomScripts = customScripts.getSelection();
+        createAutoSuggest();
+        createLogger();
       }
     } );
   }
 
   private void createLogArea( Composite parent ) {
-    final Table table = new Table( parent, SWT.BORDER | SWT.HIDE_SELECTION );
+    table = new Table( parent, SWT.BORDER | SWT.HIDE_SELECTION );
     new TableColumn( table, SWT.NONE ).setText( "KFZ" );
     new TableColumn( table, SWT.NONE ).setText( "Area" );
     table.getColumn( 0 ).setWidth( 200 );
     table.getColumn( 1 ).setWidth( 40 );
     GridData gridData = new GridData( 250, 60 );
     table.setLayoutData( gridData );
+  }
+
+  private void createLogger() {
     autoSuggest.addSelectionListener( new SuggestionSelectedListener() {
       public void suggestionSelected() {
         TableItem item = new TableItem( table, SWT.NONE );
