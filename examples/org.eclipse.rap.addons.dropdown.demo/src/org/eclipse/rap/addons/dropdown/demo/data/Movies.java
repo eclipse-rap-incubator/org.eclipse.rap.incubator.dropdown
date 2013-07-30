@@ -8,7 +8,7 @@
  * Contributors:
  *    EclipseSource - initial API and implementation
  ******************************************************************************/
-package org.eclipse.rap.addons.dropdown.demo;
+package org.eclipse.rap.addons.dropdown.demo.data;
 
 public class Movies {
 

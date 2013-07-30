@@ -14,168 +14,81 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.rap.addons.dropdown.DropDown;
-import org.eclipse.rap.clientscripting.ClientListener;
+import org.eclipse.rap.addons.dropdown.demo.data.Movies;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.application.AbstractEntryPoint;
-import org.eclipse.rap.rwt.client.service.JavaScriptLoader;
-import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteList;
-import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteListImpl;
-import org.eclipse.rap.rwt.lifecycle.WidgetUtil;
-import org.eclipse.rap.rwt.remote.RemoteObject;
-import org.eclipse.rap.rwt.service.ResourceManager;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.layout.FormAttachment;
+import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 
 
-@SuppressWarnings("restriction")
 public class DropDownDemo extends AbstractEntryPoint {
 
-  private final String PATH_PREFIX = "/org/eclipse/rap/addons/dropdown/demo/";
+  private String[] currentTexts = new String[ 0 ] ;
+  private String userText = "";
 
   @Override
   protected void createContents( Composite parent ) {
-    getShell().setLayout( new GridLayout( 1, false ) );
-    WidgetDataWhiteListImpl list
-      = ( WidgetDataWhiteListImpl )RWT.getClient().getService( WidgetDataWhiteList.class );
-    list.setKeys( new String[]{ "dropdown", "text", "data" } );
-    createNationsExample( parent );
-    create90sMoviesExample( parent );
-    create80sMoviesExample( parent );
-  }
-
-  private void createNationsExample( Composite parent ) {
-    // TODO : Use CSS Theming on textBox / open button
-    Group group = new Group( parent, SWT.NONE );
-    group.setText( "DropDown + client expand button, 192 entries cached" );
-    group.setLayout( new GridLayout( 1, true ) );
-    Composite textBox = new Composite( group, SWT.BORDER );
-    GridLayout layout = new GridLayout( 2, false );
-    layout.marginHeight = 0;
-    layout.marginWidth = 0;
-    textBox.setLayout( layout );
-    Text text = createText( textBox, SWT.NONE );
-    text.setMessage( "Nations" );
-    Button open = new Button( textBox, SWT.ARROW | SWT.DOWN );
-    open.setLayoutData( new GridData( SWT.RIGHT, SWT.FILL, false, true ) );
-    addButtonClientListener( open );
-    final DropDown dropdown = createDropDown( text );
-    open.setData( "dropdown", WidgetUtil.getId( dropdown ) );
-    dropdown.setVisibleItemCount( 3 );
-    dropdown.setData( "data", getClientData( "Nations" ) );
-  }
-
-  private void create90sMoviesExample( Composite parent ) {
-    Group group = new Group( parent, SWT.NONE );
-    group.setText( "DropDown only, 1157 entries cached" );
-    group.setLayout( new GridLayout( 1, true ) );
-    Text text = createText( group, SWT.BORDER );
-    text.setMessage( "90's Movies" );
-    DropDown dropdown = createDropDown( text );
-    dropdown.setData( "data", getClientData( "Movies" ) );
-  }
-
-  private static void create80sMoviesExample( Composite parent ) {
-    Group group = new Group( parent, SWT.NONE );
-    group.setText( "DropDown only, 760 entries, no ClientScripting, markup" );
-    group.setLayout( new GridLayout( 1, true ) );
-    final Text text = new Text( group, SWT.BORDER );
-    GridData gridData = new GridData( 200, 23 );
-    gridData.verticalAlignment = SWT.TOP;
-    text.setLayoutData( gridData );
+    parent.setLayout( new FormLayout() );
+    final Text text = new Text( parent, SWT.BORDER );
+    text.setLayoutData( createLayoutData() );
     text.setMessage( "80's Movies" );
     final DropDown dropdown = new DropDown( text );
     dropdown.setData( RWT.MARKUP_ENABLED, Boolean.TRUE );
+    addModifyListener( text, dropdown );
+    addSelectionListener( text, dropdown );
+    addDefaultSelectionListener( text, dropdown );
+    dropdown.setData( "columns", new int[] { 300, 60 } ); // provisional API!
+  }
+
+  public void addModifyListener( final Text text, final DropDown dropdown ) {
     text.addListener( SWT.Modify, new Listener() {
       public void handleEvent( Event event ) {
         if( text.getData( "selecting" ) != Boolean.TRUE ) {
-          if( text.getText().length() >= 2 ) {
+          userText = text.getText();
+          if( userText.length() >= 2 ) {
             dropdown.show();
-            dropdown.setItems( filter( Movies.VALUES, text.getText().toLowerCase(), 10 ) );
+            String searchStr = userText.toLowerCase();
+            currentTexts = filter( Movies.VALUES, searchStr, 10 );
+            dropdown.setItems( format( currentTexts, searchStr ) );
           } else {
             dropdown.hide();
           }
         }
       }
     } );
+  }
+
+  public void addSelectionListener( final Text text, final DropDown dropdown ) {
     dropdown.addListener( SWT.Selection, new Listener() {
       public void handleEvent( Event event ) {
-        if( event.text.length() > 0 ) {
+        if( event.index != -1 ) {
           text.setData( "selecting", Boolean.TRUE );
-          text.setText( event.text );
+          text.setText( currentTexts[ event.index ] );
           text.setData( "selecting", Boolean.FALSE );
           text.selectAll();
+        } else {
+          text.setText( userText );
+          text.setSelection( userText.length(), userText.length() );
+          text.setFocus();
         }
       }
     } );
+  }
+
+  public void addDefaultSelectionListener( final Text text, final DropDown dropdown ) {
     dropdown.addListener( SWT.DefaultSelection, new Listener() {
       public void handleEvent( Event event ) {
-        text.setText( event.text );
+        text.setText( currentTexts[ event.index ] );
         text.setSelection( event.text.length() );
         dropdown.hide();
       }
     } );
-    dropdown.setData( "columns", new int[] { 300, 60 } );
-  }
-
-  private Text createText( Composite parent, int style ) {
-    Text text = new Text( parent, style );
-    GridData gridData = new GridData( 200, 23 );
-    gridData.verticalAlignment = SWT.TOP;
-    text.setLayoutData( gridData );
-    addTextClientListener( text );
-    return text;
-  }
-
-  private DropDown createDropDown( Text text ) {
-    DropDown dropdown = new DropDown( text );
-    dropdown.setData( "text", WidgetUtil.getId( text ) );
-    text.setData( "dropdown", WidgetUtil.getId( dropdown ) );
-    addDropDownClientListener( dropdown );
-    return dropdown;
-  }
-
-  private void addDropDownClientListener( DropDown dropdown ) {
-    String script = ResourceLoaderUtil.readTextContent( PATH_PREFIX + "DropDownEventHandler.js" );
-    ClientListener listener = new ClientListener( script );
-    dropdown.addListener( SWT.Selection, listener );
-    dropdown.addListener( SWT.DefaultSelection, listener );
-  }
-
-  private void addButtonClientListener( Button button ) {
-    String script = ResourceLoaderUtil.readTextContent( PATH_PREFIX + "ButtonEventHandler.js" );
-    ClientListener listener = new ClientListener( script );
-    button.addListener( SWT.MouseDown, listener );
-  }
-
-  private void addTextClientListener( Text text ) {
-    String script = ResourceLoaderUtil.readTextContent( PATH_PREFIX + "TextEventHandler.js" );
-     // TODO: should take inputStream or loader + path
-    ClientListener listener = new ClientListener( script );
-    text.addListener( SWT.Modify, listener );
-    text.addListener( SWT.Verify, listener );
-    text.addListener( SWT.KeyDown, listener );
-  }
-
-  // Experimental: Uses internal API, but allows to use cacheable data without polluting the
-  // public namespace.
-  private String getClientData( String type ) {
-    ResourceManager manager = RWT.getResourceManager();
-    String registerFilename = "clientData/" + type + ".js";
-    if( !manager.isRegistered( registerFilename ) ) {
-      manager.register( registerFilename, getClass().getResourceAsStream( type + ".js" ) );
-    }
-    JavaScriptLoader jsl = RWT.getClient().getService( JavaScriptLoader.class );
-    jsl.require( manager.getLocation( registerFilename ) );
-    RemoteObject remoteObject
-      = RWT.getUISession().getConnection().createRemoteObject( "clientData." + type );
-    return remoteObject.getId();
   }
 
   private static String[] filter( String[] values, String text, int limit ) {
@@ -183,14 +96,34 @@ public class DropDownDemo extends AbstractEntryPoint {
     for( int i = 0; result.size() < limit && i < values.length; i++ ) {
       String item = values[ i ];
       if( item.toLowerCase().startsWith( text ) ) {
-        int length = text.length();
-        int rating = ( int )( Math.random() * 10 );
-        result.add(
-          "<b>" + item.substring( 0, length ) + "</b>" + item.substring( length ) + "\t" + rating + "/10"
-        );
+        result.add( item );
       }
     }
     return result.toArray( new String[ result.size() ] );
   }
 
+  private static String[] format( String[] values, String text ) {
+    String[] result = new String[ values.length ];
+    for( int i = 0; i < values.length; i++ ) {
+      String item = values[ i ];
+      int length = text.length();
+      int rating = ( int )( Math.random() * 10 );
+      result[ i ] =  "<b>"
+                    + item.substring( 0, length )
+                    + "</b>"
+                    + item.substring( length )
+                    + "\t"
+                    + rating
+                    + "/10";
+    }
+    return result;
+  }
+
+  private static FormData createLayoutData() {
+    FormData formData = new FormData();
+    formData.top = new FormAttachment( 0, 100 );
+    formData.left = new FormAttachment( 50, -150 );
+    formData.right = new FormAttachment( 50, 150 );
+    return formData;
+  }
 }

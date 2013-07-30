@@ -18,6 +18,8 @@ import org.eclipse.rap.addons.autosuggest.ColumnDataProvider;
 import org.eclipse.rap.addons.autosuggest.ColumnTemplate;
 import org.eclipse.rap.addons.autosuggest.DataSource;
 import org.eclipse.rap.addons.autosuggest.SuggestionSelectedListener;
+import org.eclipse.rap.addons.dropdown.demo.data.KFZ;
+import org.eclipse.rap.addons.dropdown.demo.data.Movies;
 import org.eclipse.rap.rwt.application.AbstractEntryPoint;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FormAttachment;
