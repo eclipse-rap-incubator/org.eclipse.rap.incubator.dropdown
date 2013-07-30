@@ -526,29 +526,29 @@
         expect( model.get( "replacementText" ) ).toBe( null );
       } );
 
-      it( "sets suggestionTexts unchanged if no custom template is set", function() {
+      it( "sets currentSuggestionTexts unchanged if no custom template is set", function() {
         model.addListener( "change:currentSuggestions", createClientListener( "AutoSuggest.js" ) );
 
         model.set( "currentSuggestions", [ "a", "b" ] );
 
-        expect( model.get( "suggestionTexts" ) ).toEqual( [ "a", "b" ] );
+        expect( model.get( "currentSuggestionTexts" ) ).toEqual( [ "a", "b" ] );
       } );
 
-      it( "sets suggestionTexts for columns", function() {
+      it( "sets currentSuggestionTexts for columns", function() {
         model.addListener( "change:currentSuggestions", createClientListener( "AutoSuggest.js" ) );
 
         model.set( "currentSuggestions", [ [ "a", "b", "c" ], [ "x", "y", "z" ] ] );
 
-        expect( model.get( "suggestionTexts" ) ).toEqual( [ "b\tc", "y\tz" ] );
+        expect( model.get( "currentSuggestionTexts" ) ).toEqual( [ "b\tc", "y\tz" ] );
       } );
 
-      it( "applies template to suggestionTexts", function() {
+      it( "applies template to currentSuggestionTexts", function() {
         model.addListener( "change:currentSuggestions", createClientListener( "AutoSuggest.js" ) );
         model.set( "template", function( suggestion ) { return "x" + suggestion; } );
 
         model.set( "currentSuggestions", [ "a", "b" ] );
 
-        expect( model.get( "suggestionTexts" ) ).toEqual( [ "xa", "xb" ] );
+        expect( model.get( "currentSuggestionTexts" ) ).toEqual( [ "xa", "xb" ] );
       } );
 
       it( "evaluates templateScript from dataSource", function() {

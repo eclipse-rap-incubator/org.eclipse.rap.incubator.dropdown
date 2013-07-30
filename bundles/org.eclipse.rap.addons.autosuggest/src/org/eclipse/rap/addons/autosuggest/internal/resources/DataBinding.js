@@ -71,8 +71,8 @@ function handleModelEvent( event ) {
     case "textSelection":
       onModelChangeTextSelection( textWidget, model, event );
     break;
-    case "suggestionTexts":
-      onModelChangeSuggestionTexts( dropDown, model, event );
+    case "currentSuggestionTexts":
+      onModelChangeCurrentSuggestionTexts( dropDown, model, event );
     break;
     case "suggestionsVisible":
       onModelChangeSuggestionsVisible( dropDown, model, event );
@@ -117,8 +117,8 @@ function onDropDownDefaultSelection( model, event ) {
   model.notify( "accept", { type : "accept", "source" : model }  );
 }
 
-function onModelChangeSuggestionTexts( dropDown, model, event ) {
-  dropDown.setItems( model.get( "suggestionTexts" ) );
+function onModelChangeCurrentSuggestionTexts( dropDown, model, event ) {
+  dropDown.setItems( model.get( "currentSuggestionTexts" ) );
 }
 
 function onModelChangeSuggestionsVisible( dropDown, model, event ) {
