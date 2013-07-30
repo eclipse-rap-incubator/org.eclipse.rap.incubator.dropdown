@@ -16,13 +16,9 @@ import org.eclipse.rap.addons.autosuggest.AutoSuggest;
 import org.eclipse.rap.addons.autosuggest.DataProvider;
 import org.eclipse.rap.addons.autosuggest.DataSource;
 import org.eclipse.rap.addons.autosuggest.SuggestionSelectedListener;
-import org.eclipse.rap.addons.autosuggest.internal.ClientModelListener;
-import org.eclipse.rap.addons.autosuggest.internal.Model;
-import org.eclipse.rap.addons.dropdown.DropDown;
 import org.eclipse.rap.addons.dropdown.demo.data.KFZ;
 import org.eclipse.rap.addons.dropdown.demo.scripts.CustomAutoSuggestScript;
 import org.eclipse.rap.addons.dropdown.demo.scripts.CustomDataBindingScript;
-import org.eclipse.rap.clientscripting.ClientListener;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.application.AbstractEntryPoint;
 import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteList;
@@ -52,25 +48,12 @@ public class AutoSuggestDemo extends AbstractEntryPoint {
     }
 
     @Override
-    protected ClientListener[] attachClientListeners( Text text, DropDown dropDown, Model model ) {
-      ClientListener clientListener = new ClientListener( CustomDataBindingScript.getInstance() );
-      text.addListener( SWT.Modify, clientListener );
-      text.addListener( SWT.Verify, clientListener );
-      dropDown.addListener( SWT.Show, clientListener );
-      dropDown.addListener( SWT.Hide, clientListener );
-      dropDown.addListener( SWT.Selection, clientListener );
-      dropDown.addListener( SWT.DefaultSelection, clientListener );
-      model.addListener( "change", new ClientModelListener( CustomDataBindingScript.getInstance() ) );
-      ClientModelListener modelListener = new ClientModelListener( CustomAutoSuggestScript.getInstance() );
-      model.addListener( "change", modelListener );
-      model.addListener( "accept", modelListener );
-      return new ClientListener[] { clientListener };
-    }
-
-    @Override
-    protected void removeTextClientListeners( Text text, ClientListener[] clientListeners ) {
-      text.removeListener( SWT.Verify, clientListeners[ 0 ] );
-      text.removeListener( SWT.Modify, clientListeners[ 0 ] );
+    protected void attachClientListeners() {
+      int[] dropDownEventTypes = new int[] { SWT.Show, SWT.Hide, SWT.Selection, SWT.DefaultSelection };
+      attachClientListenerToDropDown( CustomDataBindingScript.getInstance(), dropDownEventTypes );
+      attachClientListenerToText( CustomDataBindingScript.getInstance(), SWT.Modify, SWT.Verify );
+      attachClientListenerToModel( CustomDataBindingScript.getInstance(), "change" );
+      attachClientListenerToModel( CustomAutoSuggestScript.getInstance(), "change", "accept" );
     }
 
   }

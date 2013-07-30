@@ -22,6 +22,7 @@ import org.eclipse.rap.addons.autosuggest.internal.resources.AutoSuggestScript;
 import org.eclipse.rap.addons.autosuggest.internal.resources.DataBindingScript;
 import org.eclipse.rap.addons.dropdown.DropDown;
 import org.eclipse.rap.clientscripting.ClientListener;
+import org.eclipse.rap.clientscripting.Script;
 import org.eclipse.rap.clientscripting.WidgetDataWhiteList;
 import org.eclipse.rap.json.JsonObject;
 import org.eclipse.swt.SWT;
@@ -41,7 +42,8 @@ public class AutoSuggest {
   private final Model model;
   private final List<SuggestionSelectedListener> selectionListeners;
   private final ModelListener modelListener;
-  private final ClientListener[] clientListeners;
+  private ClientListener textClientListener;
+  private int[] textClientListenerTypes;
   private boolean isDisposed;
 
   public AutoSuggest( Text text ) {
@@ -61,7 +63,7 @@ public class AutoSuggest {
       }
     };
     connectClientObjects();
-    clientListeners = attachClientListeners( text, dropDown, model );
+    attachClientListeners();
     text.addListener( SWT.Dispose, new Listener() {
       public void handleEvent( Event event ) {
         dispose();
@@ -123,7 +125,7 @@ public class AutoSuggest {
     isDisposed = true;
     dropDown.dispose();
     model.dispose();
-    removeTextClientListeners( text, clientListeners );
+    removeTextClientListeners();
   }
 
   public boolean isDisposed() {
@@ -146,19 +148,37 @@ public class AutoSuggest {
     }
   }
 
-  protected ClientListener[] attachClientListeners( Text text, DropDown dropDown, Model model ) {
-    ClientListener clientListener = new ClientListener( DataBindingScript.getInstance() );
-    text.addListener( SWT.Modify, clientListener );
-    text.addListener( SWT.Verify, clientListener );
-    dropDown.addListener( SWT.Show, clientListener );
-    dropDown.addListener( SWT.Hide, clientListener );
-    dropDown.addListener( SWT.Selection, clientListener );
-    dropDown.addListener( SWT.DefaultSelection, clientListener );
-    model.addListener( "change", new ClientModelListener( DataBindingScript.getInstance() ) );
-    ClientModelListener modelListener = new ClientModelListener( AutoSuggestScript.getInstance() );
-    model.addListener( "change", modelListener );
-    model.addListener( "accept", modelListener );
-    return new ClientListener[] { clientListener };
+  protected void attachClientListeners() {
+    int[] dropDownEventTypes = new int[] { SWT.Show, SWT.Hide, SWT.Selection, SWT.DefaultSelection };
+    attachClientListenerToDropDown( DataBindingScript.getInstance(), dropDownEventTypes );
+    attachClientListenerToText( DataBindingScript.getInstance(), SWT.Modify, SWT.Verify );
+    attachClientListenerToModel( DataBindingScript.getInstance(), "change" );
+    attachClientListenerToModel( AutoSuggestScript.getInstance(), "change", "accept" );
+  }
+
+  protected void attachClientListenerToText( Script script, int... types ) {
+    if( textClientListener != null ) {
+      throw new IllegalStateException( "AutoSuggest: Can not add listener to Text twice." );
+    }
+    textClientListenerTypes = types;
+    textClientListener = new ClientListener( script );
+    for( int type : types ) {
+      text.addListener( type, textClientListener );
+    }
+  }
+
+  protected void attachClientListenerToDropDown( Script script, int... types ) {
+    ClientListener clientListener = new ClientListener( script );
+    for( int type : types ) {
+      dropDown.addListener( type, clientListener );
+    }
+  }
+
+  protected void attachClientListenerToModel( Script script, String... types ) {
+    ClientModelListener clientModelListener = new ClientModelListener( script );
+    for( String type : types ) {
+      model.addListener( type, clientModelListener );
+    }
   }
 
   private void connectClientObjects() {
@@ -169,9 +189,10 @@ public class AutoSuggest {
     text.setData( MODEL_ID_KEY, model.getId() );
   }
 
-  protected void removeTextClientListeners( Text text, ClientListener[] clientListeners ) {
-    text.removeListener( SWT.Verify, clientListeners[ 0 ] );
-    text.removeListener( SWT.Modify, clientListeners[ 0 ] );
+  private void removeTextClientListeners() {
+    for( int type : textClientListenerTypes ) {
+      text.removeListener( type, textClientListener );
+    }
   }
 
 }
