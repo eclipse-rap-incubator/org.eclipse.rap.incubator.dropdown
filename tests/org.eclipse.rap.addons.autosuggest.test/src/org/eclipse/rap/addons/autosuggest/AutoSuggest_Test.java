@@ -34,7 +34,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.rap.addons.dropdown.DropDown;
 import org.eclipse.rap.clientscripting.ClientListener;
-import org.eclipse.rap.clientscripting.Script;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteList;
 import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteListImpl;
@@ -192,68 +191,6 @@ public class AutoSuggest_Test {
   }
 
   @Test
-  public void testConstructor_soesNotAttachListenersWithOverwrittenAttachClientListeners() {
-    AutoSuggest autoSuggest = new AutoSuggest( text ) {
-      @Override
-      protected void attachClientListeners() {
-      }
-    };
-
-    DropDown dropDown = autoSuggest.getDropDown();
-    assertFalse( text.isListening( SWT.Verify ) );
-    assertFalse( text.isListening( SWT.Modify ) );
-    assertFalse( dropDown.isListening( SWT.Show ) );
-    assertFalse( dropDown.isListening( SWT.Hide ) );
-    assertFalse( dropDown.isListening( SWT.Selection ) );
-    assertFalse( dropDown.isListening( SWT.DefaultSelection ) );
-  }
-
-  @Test
-  public void testAttachClientListenerToText() {
-    new AutoSuggest( text ) {
-      @Override
-      protected void attachClientListeners() {
-        attachClientListenerToText( new Script( "" ), SWT.Verify, SWT.Modify );
-      }
-    };
-
-    assertTrue( text.getListeners( SWT.Verify )[ 0 ] instanceof ClientListener );
-    assertTrue( text.getListeners( SWT.Modify )[ 0 ] instanceof ClientListener );
-  }
-
-  @Test
-  public void testAttachClientListenerToText_failsWhenCalledTwice() {
-    final AtomicReference<IllegalStateException> exception = new AtomicReference<IllegalStateException>();
-    new AutoSuggest( text ) {
-      @Override
-      protected void attachClientListeners() {
-        attachClientListenerToText( new Script( "" ), SWT.Verify, SWT.Modify );
-        try {
-          attachClientListenerToText( new Script( "" ), SWT.Verify, SWT.Modify );
-        } catch( IllegalStateException ex ) {
-          exception.set( ex );
-        }
-      }
-    };
-
-    assertTrue( exception.get().getMessage().indexOf( "twice" ) != -1 );
-  }
-
-  @Test
-  public void testAttachClientListenerToDropDown() {
-    AutoSuggest autoSuggest = new AutoSuggest( text ) {
-      @Override
-      protected void attachClientListeners() {
-        attachClientListenerToDropDown( new Script( "" ), SWT.Selection, SWT.Show );
-      }
-    };
-
-    DropDown dropDown = autoSuggest.getDropDown();
-    assertTrue( dropDown.getListeners( SWT.Selection )[ 0 ] instanceof ClientListener );
-    assertTrue( dropDown.getListeners( SWT.Show )[ 0 ] instanceof ClientListener );
-  }
-
-  @Test
   public void testIsDisposed_returnsFalse() {
     AutoSuggest autoSuggest = new AutoSuggest( text );
 
@@ -297,22 +234,6 @@ public class AutoSuggest_Test {
     assertFalse( text.isListening( SWT.Verify ) );
     assertFalse( text.isListening( SWT.Modify ) );
   }
-
-  @Test
-  public void testDispose_removesCustomClientListenersFromText() {
-    AutoSuggest autoSuggest = new AutoSuggest( text ) {
-      @Override
-      protected void attachClientListeners() {
-        attachClientListenerToText( new Script( "" ), SWT.Verify, SWT.FocusIn );
-      }
-    };
-
-    autoSuggest.dispose();
-
-    assertFalse( text.isListening( SWT.Verify ) );
-    assertFalse( text.isListening( SWT.FocusIn ) );
-  }
-
 
   @Test
   public void testDispose_disposeTwice() {

@@ -18,7 +18,7 @@ import org.eclipse.rap.addons.autosuggest.DataSource;
 import org.eclipse.rap.addons.autosuggest.SuggestionSelectedListener;
 import org.eclipse.rap.addons.dropdown.demo.data.KFZ;
 import org.eclipse.rap.addons.dropdown.demo.scripts.CustomAutoSuggestScript;
-import org.eclipse.rap.addons.dropdown.demo.scripts.CustomDataBindingScript;
+import org.eclipse.rap.clientscripting.Script;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.application.AbstractEntryPoint;
 import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteList;
@@ -48,12 +48,8 @@ public class AutoSuggestDemo extends AbstractEntryPoint {
     }
 
     @Override
-    protected void attachClientListeners() {
-      int[] dropDownEventTypes = new int[] { SWT.Show, SWT.Hide, SWT.Selection, SWT.DefaultSelection };
-      attachClientListenerToDropDown( CustomDataBindingScript.getInstance(), dropDownEventTypes );
-      attachClientListenerToText( CustomDataBindingScript.getInstance(), SWT.Modify, SWT.Verify );
-      attachClientListenerToModel( CustomDataBindingScript.getInstance(), "change" );
-      attachClientListenerToModel( CustomAutoSuggestScript.getInstance(), "change", "accept" );
+    protected Script getAutoSuggestScript() {
+      return CustomAutoSuggestScript.getInstance();
     }
 
   }

@@ -148,17 +148,18 @@ public class AutoSuggest {
     }
   }
 
-  protected void attachClientListeners() {
+  private void attachClientListeners() {
     int[] dropDownEventTypes = new int[] { SWT.Show, SWT.Hide, SWT.Selection, SWT.DefaultSelection };
     attachClientListenerToDropDown( EventDelegatorScript.getInstance(), dropDownEventTypes );
     attachClientListenerToText( EventDelegatorScript.getInstance(), SWT.Modify, SWT.Verify );
-    attachClientListenerToModel( AutoSuggestScript.getInstance(), "change", "accept" );
+    attachClientListenerToModel( getAutoSuggestScript(), "change", "accept" );
   }
 
-  protected void attachClientListenerToText( Script script, int... types ) {
-    if( textClientListener != null ) {
-      throw new IllegalStateException( "AutoSuggest: Can not add listener to Text twice." );
-    }
+  protected Script getAutoSuggestScript() {
+    return AutoSuggestScript.getInstance();
+  }
+
+  private void attachClientListenerToText( Script script, int... types ) {
     textClientListenerTypes = types;
     textClientListener = new ClientListener( script );
     for( int type : types ) {
@@ -166,14 +167,14 @@ public class AutoSuggest {
     }
   }
 
-  protected void attachClientListenerToDropDown( Script script, int... types ) {
+  private void attachClientListenerToDropDown( Script script, int... types ) {
     ClientListener clientListener = new ClientListener( script );
     for( int type : types ) {
       dropDown.addListener( type, clientListener );
     }
   }
 
-  protected void attachClientListenerToModel( Script script, String... types ) {
+  private void attachClientListenerToModel( Script script, String... types ) {
     ClientModelListener clientModelListener = new ClientModelListener( script );
     for( String type : types ) {
       model.addListener( type, clientModelListener );
