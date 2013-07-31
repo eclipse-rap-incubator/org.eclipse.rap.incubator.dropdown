@@ -14,18 +14,18 @@ import org.eclipse.rap.clientscripting.Script;
 import org.eclipse.rap.rwt.SingletonUtil;
 
 
-public class DataBindingScript extends Script {
+public class EventDelegatorScript extends Script {
 
-  public static DataBindingScript getInstance() {
-    return SingletonUtil.getSessionInstance( DataBindingScript.class );
+  public static EventDelegatorScript getInstance() {
+    return SingletonUtil.getSessionInstance( EventDelegatorScript.class );
   }
 
-  private DataBindingScript() {
+  private EventDelegatorScript() {
     super( getText() );
   }
 
   private static String getText() {
-    String path = "org/eclipse/rap/addons/autosuggest/internal/resources/DataBinding.js";
+    String path = "org/eclipse/rap/addons/autosuggest/internal/resources/EventDelegator.js";
     return ResourceLoaderUtil.readTextContent( path );
   }
 

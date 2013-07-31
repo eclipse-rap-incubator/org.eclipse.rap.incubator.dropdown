@@ -14,22 +14,51 @@
 ///////////////////
 // Event Delegation
 
+var MODEL_KEY = "org.eclipse.rap.addons.autosuggest#Model";
+
 function handleEvent( event ) {
+  if( event.widget ) {
+    var model = rap.getObject( event.widget.getData( MODEL_KEY ) );
+    if( event.widget.classname === "rwt.dropdown.DropDown" ) {
+      handleDropDownEvent( model, event );
+    } else {
+      handleTextEvent( model, event );
+    }
+  } else {
+    handleModelEvent( event.source, event );
+  }
+}
+
+function handleModelEvent( model, event ) {
+  var textWidget;
+  try {
+    textWidget = rap.getObject( model.get( "textWidgetId" ) );
+  } catch( ex ) {
+    // When Text is disposed, AutoSuggest may perform a set operation before it is also disposed
+    return;
+  }
+  var dropDown = rap.getObject( model.get( "dropDownWidgetId" ) );
   if( event.type === "accept" ) {
-    onAcceptSuggestion.apply( event.source, [ event ] );
+    onAcceptSuggestion.apply( model, [ event ] );
   } else {
     switch( event.property ) {
       case "dataSourceId":
-        onChangeDataSourceId.apply( event.source, [ event ] );
+        onChangeDataSourceId.apply( model, [ event ] );
       break;
       case "suggestions":
-        onChangeSuggestions.apply( event.source, [ event ] );
+        onChangeSuggestions.apply( model, [ event ] );
       break;
       case "userText":
-        onChangeUserText.apply( event.source, [ event ] );
+        onChangeUserText.apply( model, [ event ] );
+      break;
+      case "suggestionsVisible":
+        syncModelSuggestionsVisible.apply( model, [ dropDown, event ] );
       break;
       case "currentSuggestions":
-        onChangeCurrentSuggestions.apply( event.source, [ event ] );
+        onChangeCurrentSuggestions.apply( model, [ event ] );
+      break;
+      case "currentSuggestionTexts":
+        syncModelCurrentSuggestionTexts.apply( model, [ dropDown, event ] );
       break;
       case "selectedSuggestionIndex":
         onChangeSelectedSuggestionIndex.apply( event.source, [ event ] );
@@ -37,8 +66,82 @@ function handleEvent( event ) {
       case "replacementText":
         onChangeReplacementText.apply( event.source, [ event ] );
       break;
+      case "text":
+        syncModelText.apply( model, [ textWidget, event ] );
+      break;
+      case "textSelection":
+        syncModelTextSelection.apply( model, [ textWidget, event ] );
+      break;
     }
   }
+}
+
+function handleDropDownEvent( model, event ) {
+  switch( event.type ) {
+    case SWT.Show:
+    case SWT.Hide:
+      syncDropDownVisible.apply( model, [ event.widget, event ] );
+    break;
+    case SWT.Selection:
+      syncDropDownSelection.apply( model, [ event.widget, event ] );
+    break;
+    case SWT.DefaultSelection:
+      forwardDropDownDefaultSelection.apply( model, [ event.widget, event ] );
+    break;
+  }
+}
+
+function handleTextEvent( model, event ) {
+  var userAction = getUserAction( event );
+  switch( event.type ) {
+    case SWT.Modify:
+      syncTextText.apply( model, [ event.widget, event, userAction ] );
+    break;
+  }
+  setUserAction( event );
+}
+
+////////////////////////////////
+// Synchronize Model <-> Widgets
+
+function syncTextText( textWidget, event, userAction ) {
+  var text = textWidget.getText();
+  this.set( "text", text, { "action" : "sync" } );
+  if( userAction ) {
+    this.set( "userText", text, { "action" : userAction } );
+  }
+}
+
+function syncDropDownVisible( dropDown, event ) {
+  this.set( "suggestionsVisible", dropDown.getVisible(), { "action" : "sync" }  );
+}
+
+function syncModelSuggestionsVisible( dropDown, event ) {
+  if( event.options.action !== "sync" ) {
+    dropDown.setVisible( event.value );
+  }
+}
+
+function syncDropDownSelection( dropDown, event ) {
+  this.set( "selectedSuggestionIndex", event.index, { "action" : "sync" }  );
+}
+
+function forwardDropDownDefaultSelection( dropDown, event ) {
+  this.notify( "accept", { type : "accept", "source" : this }  );
+}
+
+function syncModelCurrentSuggestionTexts( dropDown, event ) {
+  dropDown.setItems( this.get( "currentSuggestionTexts" ) );
+}
+
+function syncModelText( textWidget, event ) {
+  if( event.options.action !== "sync" ) {
+    textWidget.setText( event.value );
+  }
+}
+
+function syncModelTextSelection( textWidget, event ) {
+  textWidget.setSelection( event.value );
 }
 
 //////////////////
@@ -96,6 +199,7 @@ function onChangeReplacementText( event ) {
         this.set( "textSelection", [ 0, text.length ] );
       }
     } else {
+      // TODO : not always working?
       this.set( "textSelection", [ userText.length, text.length ] );
     }
   }
@@ -287,4 +391,18 @@ function map( array, func ) {
     }
     return result;
   }
+}
+
+function setUserAction( event ) {
+  if( event.type === SWT.Verify ) {
+    // See Bug 404896 - [ClientScripting] Verify event keyCode is always zero when replacing txt
+    var action = ( event.text !== "" /* && event.keyCode !== 0 */ ) ? "typing" : "deleting";
+    event.widget.setData( "userAction", action );
+  }
+}
+
+function getUserAction( event ) {
+  var action = event.widget.getData( "userAction" );
+  event.widget.setData( "userAction", null );
+  return action;
 }

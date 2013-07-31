@@ -19,7 +19,7 @@ import org.eclipse.rap.addons.autosuggest.internal.ClientModelListener;
 import org.eclipse.rap.addons.autosuggest.internal.Model;
 import org.eclipse.rap.addons.autosuggest.internal.ModelListener;
 import org.eclipse.rap.addons.autosuggest.internal.resources.AutoSuggestScript;
-import org.eclipse.rap.addons.autosuggest.internal.resources.DataBindingScript;
+import org.eclipse.rap.addons.autosuggest.internal.resources.EventDelegatorScript;
 import org.eclipse.rap.addons.dropdown.DropDown;
 import org.eclipse.rap.clientscripting.ClientListener;
 import org.eclipse.rap.clientscripting.Script;
@@ -150,9 +150,8 @@ public class AutoSuggest {
 
   protected void attachClientListeners() {
     int[] dropDownEventTypes = new int[] { SWT.Show, SWT.Hide, SWT.Selection, SWT.DefaultSelection };
-    attachClientListenerToDropDown( DataBindingScript.getInstance(), dropDownEventTypes );
-    attachClientListenerToText( DataBindingScript.getInstance(), SWT.Modify, SWT.Verify );
-    attachClientListenerToModel( DataBindingScript.getInstance(), "change" );
+    attachClientListenerToDropDown( EventDelegatorScript.getInstance(), dropDownEventTypes );
+    attachClientListenerToText( EventDelegatorScript.getInstance(), SWT.Modify, SWT.Verify );
     attachClientListenerToModel( AutoSuggestScript.getInstance(), "change", "accept" );
   }
 
@@ -179,6 +178,7 @@ public class AutoSuggest {
     for( String type : types ) {
       model.addListener( type, clientModelListener );
     }
+    model.set( "autoSuggestListenerId", clientModelListener.getId() );
   }
 
   private void connectClientObjects() {
