@@ -112,6 +112,10 @@ public class DropDownViewer extends ContentViewer {
     model.set( "readOnly", JsonValue.valueOf( value ) );
   }
 
+  public void showDropDown() {
+    dropDown.show();
+  }
+
   ////////////
   // Internals
 
