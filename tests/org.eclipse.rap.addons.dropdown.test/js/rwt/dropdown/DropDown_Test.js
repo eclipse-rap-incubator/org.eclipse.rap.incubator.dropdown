@@ -318,6 +318,37 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       assertEquals( 70, popup.getTop() );
     },
 
+    testShow_PositionsPopUpWhileParentIsInLayoutQueueForTop : function() {
+      widget.setTop( 50 );
+      showDropDown();
+
+      assertEquals( 20, popup.getLeft() );
+      assertEquals( 100, popup.getTop() );
+    },
+
+    testShow_PositionsPopUpWhileParentIsInLayoutQueueForLeft : function() {
+      widget.setLeft( 20 );
+      showDropDown();
+
+      assertEquals( 30, popup.getLeft() );
+      assertEquals( 70, popup.getTop() );
+    },
+
+    testShow_PositionsPopUpWhileParentIsInLayoutQueueForHeight : function() {
+      widget.setHeight( 50 );
+      showDropDown();
+
+      assertEquals( 20, popup.getLeft() );
+      assertEquals( 90, popup.getTop() );
+    },
+
+    testShow_LayoutsPopUpWhileParentIsInLayoutQueueForWidth : function() {
+      widget.setWidth( 150 );
+      showDropDown();
+
+      assertEquals( 150, popup.getWidth() );
+    },
+
     testShow_SendsVisible : function() {
       showDropDown();
       rwt.remote.Server.getInstance().send();
@@ -1049,6 +1080,13 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
 
       dropdown.destroy();
       widget.setVisibility( true );
+      // Succeeds by not crashing
+    },
+
+    testDestroy_DeregistersFlushListener : function() {
+      dropdown.destroy();
+      widget.setTop( 45 );
+      TestUtil.flush();
       // Succeeds by not crashing
     },
 
