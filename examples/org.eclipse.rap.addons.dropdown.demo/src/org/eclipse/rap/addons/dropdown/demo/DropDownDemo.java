@@ -137,11 +137,13 @@ public class DropDownDemo extends AbstractEntryPoint {
 
   private void createDisposeButton( Group group, final Text text, final DropDownViewer viewer ) {
     Button button = new Button( group, SWT.PUSH );
-    button.setText( "Dispose!" );
+    button.setText( "change!" );
     button.addListener( SWT.Selection, new Listener() {
       public void handleEvent( Event event ) {
-        viewer.setInput( KFZ.DE );
-        text.dispose();
+        text.getParent().setLayout( new GridLayout( 2, false) );
+        text.setLayoutData( new GridData( 300, 43 ) );
+        text.getParent().layout( true, true );
+        viewer.showDropDown();
       }
     } );
   }

@@ -63,6 +63,7 @@
     this._.inMouseSelection = false;
     this._.events = createEventsMap();
     this._.parent.addEventListener( "keypress", onTextKeyEvent, this );
+    this._.parent.addEventListener( "flush", onTextFlush, this );
     this._.viewer._sendSelectionChange = bind( this, onSelection );
     this._.viewer.addEventListener( "keypress", onKeyEvent, this );
     this._.viewer.addEventListener( "mousedown", onMouseDown, this );
@@ -223,6 +224,7 @@
           this._.parent.removeEventListener( "appear", onTextAppear, this );
           this._.parent.removeEventListener( "keydown", onTextKeyEvent, this );
           this._.parent.removeEventListener( "keypress", onTextKeyEvent, this );
+          this._.parent.removeEventListener( "flush", onTextFlush, this );
           this._.popup.destroy();
         }
         this._.hideTimer.dispose();
@@ -343,6 +345,13 @@
       } else {
         this._.viewer.dispatchEvent( event );
       }
+    }
+  };
+
+  var onTextFlush = function( event ) {
+    var changes = event.getData();
+    if( this._.visibility && ( changes.top || changes.left || changes.width || changes.height ) ) {
+      renderLayout.call( this );
     }
   };
 
