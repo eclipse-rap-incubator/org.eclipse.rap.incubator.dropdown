@@ -20,5 +20,5 @@ function handleEvent( event ) {
   var model = rap.getObject( event.widget.getData( MODEL_KEY ) );
   var autoSuggestListener
     = rwt.remote.ObjectRegistry.getObject( model.get( "autoSuggestListenerId" ) );
-  autoSuggestListener.call( event );
+  autoSuggestListener( event );
 }
