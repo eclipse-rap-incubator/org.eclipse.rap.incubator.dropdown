@@ -15,16 +15,18 @@ import static org.eclipse.rap.rwt.lifecycle.WidgetUtil.getId;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.rap.addons.autosuggest.internal.ClientModelListener;
-import org.eclipse.rap.addons.autosuggest.internal.Model;
-import org.eclipse.rap.addons.autosuggest.internal.ModelListener;
+import org.eclipse.rap.addons.autosuggest.internal.AutoSuggestClientListener;
 import org.eclipse.rap.addons.autosuggest.internal.resources.AutoSuggestScript;
 import org.eclipse.rap.addons.autosuggest.internal.resources.EventDelegatorScript;
+import org.eclipse.rap.addons.autosuggest.internal.resources.ModelResources;
 import org.eclipse.rap.addons.dropdown.DropDown;
 import org.eclipse.rap.clientscripting.ClientListener;
 import org.eclipse.rap.clientscripting.Script;
 import org.eclipse.rap.clientscripting.WidgetDataWhiteList;
 import org.eclipse.rap.json.JsonObject;
+import org.eclipse.rap.rwt.RWT;
+import org.eclipse.rap.rwt.remote.AbstractOperationHandler;
+import org.eclipse.rap.rwt.remote.RemoteObject;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -34,17 +36,16 @@ import org.eclipse.swt.widgets.Text;
 public class AutoSuggest {
 
   private static final String EVENT_TYPE_SELECTION = "suggestionSelected";
-  private static final String MODEL_ID_KEY
-    = "org.eclipse.rap.addons.autosuggest#Model";
+  private static final String REMOTE_TYPE = "rwt.remote.Model";
+  private static final String MODEL_ID_KEY = "org.eclipse.rap.addons.autosuggest#Model";
 
   private final Text text;
   private final DropDown dropDown;
-  private final Model model;
   private final List<SuggestionSelectedListener> selectionListeners;
-  private final ModelListener modelListener;
   private ClientListener textClientListener;
   private int[] textClientListenerTypes;
   private boolean isDisposed;
+  private final RemoteObject remoteObject;
 
   public AutoSuggest( Text text ) {
     if( text == null ) {
@@ -55,13 +56,17 @@ public class AutoSuggest {
     }
     this.text = text;
     dropDown = new DropDown( text );
-    model = new Model();
-    selectionListeners = new ArrayList<SuggestionSelectedListener>( 1 );
-    modelListener = new ModelListener() {
-      public void handleEvent( JsonObject argument ) {
-        notifySelectionListeners();
+    ModelResources.ensure();
+    remoteObject = RWT.getUISession().getConnection().createRemoteObject( REMOTE_TYPE );
+    remoteObject.setHandler( new AbstractOperationHandler() {
+      @Override
+      public void handleNotify( String event, JsonObject properties ) {
+        if( EVENT_TYPE_SELECTION.equals( event ) ) {
+          notifySelectionListeners();
+        }
       }
-    };
+    } );
+    selectionListeners = new ArrayList<SuggestionSelectedListener>( 1 );
     connectClientObjects();
     attachClientListeners();
     text.addListener( SWT.Dispose, new Listener() {
@@ -73,7 +78,7 @@ public class AutoSuggest {
 
   public void setDataSource( DataSource dataSource ) {
     checkDisposed();
-    model.set( "dataSourceId", dataSource != null ? dataSource.getId() : null );
+    remoteObject.set( "dataSourceId", dataSource != null ? dataSource.getId() : null );
     if( dataSource != null ) {
       ColumnTemplate template = dataSource.getTemplate();
       if( template != null ) {
@@ -94,7 +99,7 @@ public class AutoSuggest {
 
   public void setAutoComplete( boolean value ) {
     checkDisposed();
-    model.set( "autoComplete", value );
+    remoteObject.set( "autoComplete", value );
   }
 
   public void addSelectionListener( SuggestionSelectedListener listener ) {
@@ -106,7 +111,7 @@ public class AutoSuggest {
       selectionListeners.add( listener );
     }
     if( selectionListeners.size() == 1 ) {
-      model.addListener( EVENT_TYPE_SELECTION, modelListener );
+      remoteObject.listen( EVENT_TYPE_SELECTION, true );
     }
   }
 
@@ -116,15 +121,15 @@ public class AutoSuggest {
       throw new NullPointerException( "Parameter was null: listener" );
     }
     selectionListeners.remove( listener );
-    if( selectionListeners.isEmpty() ) {
-      model.removeListener( EVENT_TYPE_SELECTION, modelListener );
+    if( selectionListeners.size() == 0 ) {
+      remoteObject.listen( EVENT_TYPE_SELECTION, false );
     }
   }
 
   public void dispose() {
     isDisposed = true;
     dropDown.dispose();
-    model.dispose();
+    remoteObject.destroy();
     removeTextClientListeners();
   }
 
@@ -175,19 +180,21 @@ public class AutoSuggest {
   }
 
   private void attachClientListenerToModel( Script script, String... types ) {
-    ClientModelListener clientModelListener = new ClientModelListener( script );
+    AutoSuggestClientListener clientListener = new AutoSuggestClientListener( script );
+    String listenerId = clientListener.getId();
     for( String type : types ) {
-      model.addListener( type, clientModelListener );
+      remoteObject.call( "addListener",
+                         new JsonObject().add( "listener", listenerId ).add( "type", type ) );
     }
-    model.set( "autoSuggestListenerId", clientModelListener.getId() );
+    remoteObject.set( "autoSuggestListenerId", listenerId );
   }
 
   private void connectClientObjects() {
     WidgetDataWhiteList.addKey( MODEL_ID_KEY );
-    model.set( "textWidgetId", getId( text ) );
-    model.set( "dropDownWidgetId", getId( dropDown ) );
-    dropDown.setData( MODEL_ID_KEY, model.getId() );
-    text.setData( MODEL_ID_KEY, model.getId() );
+    remoteObject.set( "textWidgetId", getId( text ) );
+    remoteObject.set( "dropDownWidgetId", getId( dropDown ) );
+    dropDown.setData( MODEL_ID_KEY, remoteObject.getId() );
+    text.setData( MODEL_ID_KEY, remoteObject.getId() );
   }
 
   private void removeTextClientListeners() {

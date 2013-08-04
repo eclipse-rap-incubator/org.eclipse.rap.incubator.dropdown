@@ -80,16 +80,39 @@
       notifyInternal( this, event, properties );
     },
 
-    addListener : function( event, listener ) {
-      if( !this._.listeners[ event ] ) {
-        this._.listeners[ event ] = [];
+    addListener : function() {
+      var event, listener;
+      if( arguments.length === 1 ) {
+        listener = arguments[ 0 ].listener;
+        event = arguments[ 0 ].type;
+      } else {
+        event = arguments[ 0 ];
+        listener = arguments[ 1 ];
       }
-      if( this._.listeners[ event ].indexOf( listener ) === -1 ) {
-        this._.listeners[ event ].push( listener );
+      if( typeof listener === "string" ) {
+        var that = this;
+        rwt.remote.HandlerUtil.callWithTarget( listener, function( listener ) {
+          that.addListener( event, listener );
+        } );
+      } else {
+        if( !this._.listeners[ event ] ) {
+          this._.listeners[ event ] = [];
+        }
+        if( this._.listeners[ event ].indexOf( listener ) === -1 ) {
+          this._.listeners[ event ].push( listener );
+        }
       }
     },
 
-    removeListener : function( event, listener ) {
+    removeListener : function() {
+      var event, listener;
+      if( arguments.length === 1 ) {
+        listener = rwt.remote.ObjectRegistry.getObject( arguments[ 0 ].listener );
+        event = arguments[ 0 ].event;
+      } else {
+        event = arguments[ 0 ];
+        listener = arguments[ 1 ];
+      }
       if( this._ && this._.listeners[ event ] ) {
         var index = this._.listeners[ event ].indexOf( listener );
         rwt.util.Arrays.removeAt( this._.listeners[ event ], index );

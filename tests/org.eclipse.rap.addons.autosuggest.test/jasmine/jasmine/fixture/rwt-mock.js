@@ -33,6 +33,11 @@ rwt = {
       }
     }
   },
+  remote : {
+    HandlerUtil : {
+      callWithTarget : function() {}
+    }
+  },
   qx : {
     Class : {
       // NOTE: Rhino may create global objects such as "org" without asking. They can

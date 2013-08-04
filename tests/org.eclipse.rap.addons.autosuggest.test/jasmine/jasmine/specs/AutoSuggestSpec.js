@@ -14,10 +14,8 @@
   var createClientListener = function( name ) {
     // NOTE : Using + "" to convert Java string to JavaScript string. Alternatives?
     var listenerScript = TestUtil.getResource( name ) + "";
-    var listener = new org.eclipse.rap.clientscripting.Function( listenerScript );
-    return function() {
-      listener.call.apply( listener, arguments );
-    };
+    var listener = rwt.scripting.FunctionFactory.createFunction( listenerScript, "handleEvent" );
+    return listener;
   };
 
   var getVarFromScript = function( scriptName, functionName ) {

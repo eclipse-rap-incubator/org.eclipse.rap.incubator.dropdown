@@ -38,6 +38,19 @@
       expect( log.length ).toBe( 1 );
     } );
 
+    it( "resloves listener id", function() {
+      spyOn( rwt.remote.HandlerUtil, "callWithTarget" ).andCallFake( function( target, callback ) {
+        if( target === "fooid" ) {
+          callback( logger );
+        }
+      } );
+
+      model.addListener( { type : "Selection", listener : "fooid" } );
+      model.notify( "Selection", { "foo" : "bar" } );
+
+      expect( log.length ).toBe( 1 );
+    } );
+
   } );
 
   describe( "removeListener", function() {

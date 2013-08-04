@@ -10,9 +10,23 @@
  ******************************************************************************/
 package org.eclipse.rap.addons.autosuggest.internal;
 
-import org.eclipse.rap.json.JsonObject;
+import org.eclipse.rap.clientscripting.Script;
+import org.eclipse.rap.clientscripting.internal.ClientFunction;
 
 
-public interface ModelListener {
-  void handleEvent( JsonObject argument );
+@SuppressWarnings( "restriction" )
+public final class AutoSuggestClientListener extends ClientFunction {
+
+  public AutoSuggestClientListener( String scriptCode ) {
+    super( scriptCode );
+  }
+
+  public AutoSuggestClientListener( Script script ) {
+    super( script );
+  }
+
+  public String getId() {
+    return getRemoteId();
+  }
+
 }

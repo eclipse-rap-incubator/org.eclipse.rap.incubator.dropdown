@@ -42,8 +42,8 @@ public class AutoSuggestJs_Test {
   @Test
   public void testListenerSpec() {
     jasmine.addResource( "AutoSuggest.js", LOCAL, AUTO_SUGGEST_JS );
-    jasmine.parseScript( CLIENTSCRIPTING, "org/eclipse/rap/clientscripting/SWT.js" );
-    jasmine.parseScript( CLIENTSCRIPTING, "org/eclipse/rap/clientscripting/Function.js" );
+    jasmine.parseScript( CLIENTSCRIPTING, "rwt/scripting/SWT.js" );
+    jasmine.parseScript( CLIENTSCRIPTING, "rwt/scripting/FunctionFactory.js" );
     jasmine.parseScript( LOCAL, "jasmine/specs/AutoSuggestSpec.js" );
     jasmine.execute();
   }
