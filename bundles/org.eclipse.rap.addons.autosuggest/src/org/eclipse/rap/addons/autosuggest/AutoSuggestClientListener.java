@@ -8,21 +8,16 @@
  * Contributors:
  *    EclipseSource - initial API and implementation
  ******************************************************************************/
-package org.eclipse.rap.addons.autosuggest.internal;
+package org.eclipse.rap.addons.autosuggest;
 
-import org.eclipse.rap.clientscripting.Script;
 import org.eclipse.rap.clientscripting.internal.ClientFunction;
 
 
 @SuppressWarnings( "restriction" )
-public final class AutoSuggestClientListener extends ClientFunction {
+public class AutoSuggestClientListener extends ClientFunction {
 
   public AutoSuggestClientListener( String scriptCode ) {
     super( scriptCode );
-  }
-
-  public AutoSuggestClientListener( Script script ) {
-    super( script );
   }
 
   public String getId() {

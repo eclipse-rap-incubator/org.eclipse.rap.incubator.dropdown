@@ -15,13 +15,11 @@ import static org.eclipse.rap.rwt.lifecycle.WidgetUtil.getId;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.rap.addons.autosuggest.internal.AutoSuggestClientListener;
-import org.eclipse.rap.addons.autosuggest.internal.resources.AutoSuggestScript;
-import org.eclipse.rap.addons.autosuggest.internal.resources.EventDelegatorScript;
+import org.eclipse.rap.addons.autosuggest.internal.resources.AutoSuggestListener;
+import org.eclipse.rap.addons.autosuggest.internal.resources.EventDelegatorListener;
 import org.eclipse.rap.addons.autosuggest.internal.resources.ModelResources;
 import org.eclipse.rap.addons.dropdown.DropDown;
 import org.eclipse.rap.clientscripting.ClientListener;
-import org.eclipse.rap.clientscripting.Script;
 import org.eclipse.rap.clientscripting.WidgetDataWhiteList;
 import org.eclipse.rap.json.JsonObject;
 import org.eclipse.rap.rwt.RWT;
@@ -155,33 +153,31 @@ public class AutoSuggest {
 
   private void attachClientListeners() {
     int[] dropDownEventTypes = new int[] { SWT.Show, SWT.Hide, SWT.Selection, SWT.DefaultSelection };
-    attachClientListenerToDropDown( EventDelegatorScript.getInstance(), dropDownEventTypes );
-    attachClientListenerToText( EventDelegatorScript.getInstance(), SWT.Modify, SWT.Verify );
-    attachClientListenerToModel( getAutoSuggestScript(), "change", "accept" );
+    attachClientListenerToDropDown( EventDelegatorListener.getInstance(), dropDownEventTypes );
+    attachClientListenerToText( EventDelegatorListener.getInstance(), SWT.Modify, SWT.Verify );
+    attachClientListenerToModel( getAutoSuggestListener(), "change", "accept" );
   }
 
-  protected Script getAutoSuggestScript() {
-    return AutoSuggestScript.getInstance();
+  protected AutoSuggestClientListener getAutoSuggestListener() {
+    return AutoSuggestListener.getInstance();
   }
 
-  private void attachClientListenerToText( Script script, int... types ) {
+  private void attachClientListenerToText( ClientListener listener, int... types ) {
     textClientListenerTypes = types;
-    textClientListener = new ClientListener( script );
+    textClientListener = listener;
     for( int type : types ) {
-      text.addListener( type, textClientListener );
+      text.addListener( type, listener );
     }
   }
 
-  private void attachClientListenerToDropDown( Script script, int... types ) {
-    ClientListener clientListener = new ClientListener( script );
+  private void attachClientListenerToDropDown( ClientListener listener, int... types ) {
     for( int type : types ) {
-      dropDown.addListener( type, clientListener );
+      dropDown.addListener( type, listener );
     }
   }
 
-  private void attachClientListenerToModel( Script script, String... types ) {
-    AutoSuggestClientListener clientListener = new AutoSuggestClientListener( script );
-    String listenerId = clientListener.getId();
+  private void attachClientListenerToModel( AutoSuggestClientListener listener, String... types ) {
+    String listenerId = listener.getId();
     for( String type : types ) {
       remoteObject.call( "addListener",
                          new JsonObject().add( "listener", listenerId ).add( "type", type ) );

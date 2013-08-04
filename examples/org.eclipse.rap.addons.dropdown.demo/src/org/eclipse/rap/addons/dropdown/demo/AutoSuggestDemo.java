@@ -13,12 +13,12 @@ package org.eclipse.rap.addons.dropdown.demo;
 import java.util.Arrays;
 
 import org.eclipse.rap.addons.autosuggest.AutoSuggest;
+import org.eclipse.rap.addons.autosuggest.AutoSuggestClientListener;
 import org.eclipse.rap.addons.autosuggest.DataProvider;
 import org.eclipse.rap.addons.autosuggest.DataSource;
 import org.eclipse.rap.addons.autosuggest.SuggestionSelectedListener;
 import org.eclipse.rap.addons.dropdown.demo.data.KFZ;
-import org.eclipse.rap.addons.dropdown.demo.scripts.CustomAutoSuggestScript;
-import org.eclipse.rap.clientscripting.Script;
+import org.eclipse.rap.addons.dropdown.demo.scripts.CustomAutoSuggestClientListener;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.application.AbstractEntryPoint;
 import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteList;
@@ -48,8 +48,8 @@ public class AutoSuggestDemo extends AbstractEntryPoint {
     }
 
     @Override
-    protected Script getAutoSuggestScript() {
-      return CustomAutoSuggestScript.getInstance();
+    protected AutoSuggestClientListener getAutoSuggestListener() {
+      return CustomAutoSuggestClientListener.getInstance();
     }
 
   }

@@ -8,24 +8,24 @@
  * Contributors:
  *    EclipseSource - initial API and implementation
  ******************************************************************************/
-package org.eclipse.rap.addons.autosuggest.internal.resources;
+package org.eclipse.rap.addons.dropdown.demo.scripts;
 
-import org.eclipse.rap.clientscripting.Script;
+import org.eclipse.rap.addons.autosuggest.AutoSuggestClientListener;
 import org.eclipse.rap.rwt.SingletonUtil;
 
 
-public class EventDelegatorScript extends Script {
+public class CustomAutoSuggestClientListener extends AutoSuggestClientListener {
 
-  public static EventDelegatorScript getInstance() {
-    return SingletonUtil.getSessionInstance( EventDelegatorScript.class );
+  public static CustomAutoSuggestClientListener getInstance() {
+    return SingletonUtil.getSessionInstance( CustomAutoSuggestClientListener.class );
   }
 
-  private EventDelegatorScript() {
+  private CustomAutoSuggestClientListener() {
     super( getText() );
   }
 
   private static String getText() {
-    String path = "org/eclipse/rap/addons/autosuggest/internal/resources/EventDelegator.js";
+    String path = "org/eclipse/rap/addons/dropdown/demo/scripts/CustomAutoSuggest.js";
     return ResourceLoaderUtil.readTextContent( path );
   }
 

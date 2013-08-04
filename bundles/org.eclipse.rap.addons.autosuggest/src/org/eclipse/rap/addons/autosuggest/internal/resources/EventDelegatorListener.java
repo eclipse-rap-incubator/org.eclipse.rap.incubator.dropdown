@@ -10,22 +10,25 @@
  ******************************************************************************/
 package org.eclipse.rap.addons.autosuggest.internal.resources;
 
-import org.eclipse.rap.clientscripting.Script;
+import org.eclipse.rap.clientscripting.ClientListener;
 import org.eclipse.rap.rwt.SingletonUtil;
 
 
-public class AutoSuggestScript extends Script {
+public class EventDelegatorListener  {
 
-  public static AutoSuggestScript getInstance() {
-    return SingletonUtil.getSessionInstance( AutoSuggestScript.class );
+  private final ClientListener eventDeleatorListener;
+
+  // Can not extend ClientListener since Widget#addListner would not detect it
+  public static ClientListener getInstance() {
+    return SingletonUtil.getSessionInstance( EventDelegatorListener.class ).eventDeleatorListener;
   }
 
-  private AutoSuggestScript() {
-    super( getText() );
+  private EventDelegatorListener() {
+    eventDeleatorListener = new ClientListener( getText() );
   }
 
   private static String getText() {
-    String path = "org/eclipse/rap/addons/autosuggest/internal/resources/AutoSuggest.js";
+    String path = "org/eclipse/rap/addons/autosuggest/internal/resources/EventDelegator.js";
     return ResourceLoaderUtil.readTextContent( path );
   }
 
