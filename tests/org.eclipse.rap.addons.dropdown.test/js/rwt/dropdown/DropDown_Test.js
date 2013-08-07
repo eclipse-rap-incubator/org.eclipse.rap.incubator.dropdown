@@ -363,6 +363,17 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       assertEquals( 100, popup.getTop() );
     },
 
+    testShow_LayoutsPopUpOnTopOfParentIfNotEnoughSpace : function() {
+      var doc = rwt.widgets.base.ClientDocument.getInstance();
+      doc.getInnerHeight = function() { return 100; };
+
+      shell.setTop( 40 );
+      showDropDown();
+
+      assertEquals( 33, popup.getTop() );
+      delete doc.getInnerHeight;
+    },
+
     testShow_SendsVisible : function() {
       showDropDown();
       rwt.remote.Server.getInstance().send();
