@@ -287,14 +287,13 @@
   // Internals
 
   var renderLayout = function() {
-    var yOffset = this._.parent.getHeight();
     var font = this._.viewer.getFont();
     // NOTE: Guessing the lineheight to be 1.3
     var itemHeight = Math.floor( font.getSize() * 1.3 ) + PADDING[ 0 ] + PADDING[ 2 ];
     var visibleItems = Math.min( this._.visibleItemCount, this.getItemCount() );
     var viewerWidth = this._.parent.getWidth() - FRAMEWIDTH;
     var viewerHeight = visibleItems * itemHeight;
-    this._.popup.positionRelativeTo( this._.parent, 0, yOffset );
+    renderPosition.call( this );
     this._.popup.setWidth( this._.parent.getWidth() );
     this._.popup.setHeight( viewerHeight + FRAMEWIDTH );
     this._.viewer.setDimension( viewerWidth, viewerHeight );
@@ -310,6 +309,14 @@
       0, // checkLeft
       0 // checkWith
     );
+  };
+
+  var renderPosition = function() {
+    this._.popup.positionRelativeTo( this._.parent, 0, this._.parent.getHeight() );
+    var docHeight = rwt.widgets.base.ClientDocument.getInstance().getInnerHeight();
+    if( this._.popup.getTop() + this._.popup.getHeight() > docHeight ) {
+      this._.popup.positionRelativeTo( this._.parent, 0, -1 * this._.popup.getHeight() );
+    }
   };
 
   var renderGridItems = function() {
@@ -395,7 +402,7 @@
 
   var onAppear = function( event ) {
     // NOTE: widget absolute position can change without changing it's relative postion, therefore:
-    this._.popup.positionRelativeTo( this._.parent, 0, this._.parent.getHeight() );
+    renderPosition.call( this );
     fireEvent.call( this, "Show" );
   };
 
