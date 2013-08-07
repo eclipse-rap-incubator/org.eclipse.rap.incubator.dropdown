@@ -186,7 +186,8 @@
         rap.getRemoteObject( this ).set( "visible", false );
       }
       this._.visibility = false;
-      this._.popup.hide();
+      this._.popup.setVisibility( false ); // makes it disappear immediately
+      this._.popup.setDisplay( false ); // forces the popup to appear after all parents are layouted
     },
 
     setData : function( key, value ) {
@@ -462,6 +463,8 @@
   };
 
   var onAppear = function( event ) {
+    // NOTE: widget absolute position can change without changing it's relative postion, therefore:
+    this._.popup.positionRelativeTo( this._.parent, 0, this._.parent.getHeight() );
     fireEvent.call( this, "Show" );
   };
 
@@ -529,7 +532,7 @@
     result.addToDocument();
     result.setBorder( POPUP_BORDER );
     result.setBackgroundColor( "#ffffff" );
-    result.setVisibility( false );
+    result.setDisplay( false );
     result.setShadow( getShadow() );
     result.setRestrictToPageOnOpen( false );
     result.setAutoHide( false );

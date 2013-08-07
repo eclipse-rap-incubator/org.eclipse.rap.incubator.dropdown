@@ -319,6 +319,9 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
     },
 
     testShow_PositionsPopUpWhileParentIsInLayoutQueueForTop : function() {
+      // NOTE: this won't be effective if the text changes position soley because it's parent
+      // changes position. For this case the popup will re-layout in the appear event (see below),
+      // but this assumes that it is not visible while the text parent changes position.
       widget.setTop( 50 );
       showDropDown();
 
@@ -347,6 +350,17 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       showDropDown();
 
       assertEquals( 150, popup.getWidth() );
+    },
+
+    testShow_LayoutsPopUpWhenParentAppearsAfterShellChangesPosition : function() {
+      showDropDown();
+      dropdown.hide();
+
+      shell.setTop( 50 );
+      dropdown.show();
+      TestUtil.flush();
+
+      assertEquals( 100, popup.getTop() );
     },
 
     testShow_SendsVisible : function() {
