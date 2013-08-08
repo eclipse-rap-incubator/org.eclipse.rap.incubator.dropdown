@@ -10,19 +10,19 @@
  ******************************************************************************/
 package org.eclipse.rap.addons.dropdown;
 
-import java.util.Arrays;
-
 import org.eclipse.rap.addons.dropdown.internal.resources.DropDownResources;
 import org.eclipse.rap.json.JsonArray;
 import org.eclipse.rap.json.JsonObject;
 import org.eclipse.rap.json.JsonValue;
 import org.eclipse.rap.rwt.RWT;
-import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteList;
+import org.eclipse.rap.rwt.internal.lifecycle.WidgetDataUtil;
 import org.eclipse.rap.rwt.internal.protocol.JsonUtil;
+import org.eclipse.rap.rwt.internal.scripting.ClientListenerUtil;
 import org.eclipse.rap.rwt.lifecycle.WidgetAdapter;
 import org.eclipse.rap.rwt.lifecycle.WidgetUtil;
 import org.eclipse.rap.rwt.remote.AbstractOperationHandler;
 import org.eclipse.rap.rwt.remote.RemoteObject;
+import org.eclipse.rap.rwt.scripting.ClientListener;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.internal.events.EventLCAUtil;
@@ -286,7 +286,12 @@ public class DropDown extends Widget {
     super.addListener( eventType, listener );
     boolean isListening = EventLCAUtil.isListening( this, eventType );
     String remoteType = eventTypeToString( eventType );
-    if( remoteType != null && !wasListening && isListening ) {
+    if( listener instanceof ClientListener ) {
+      JsonObject parameters = new JsonObject()
+        .add( "eventType", ClientListenerUtil.getEventType( eventType ) )
+        .add( "listenerId", ClientListenerUtil.getRemoteId( ( ClientListener )listener ) );
+      remoteObject.call( "addListener", parameters );
+    } else if( remoteType != null && !wasListening && isListening ) {
       remoteObject.listen( remoteType, true );
     }
   }
@@ -297,7 +302,12 @@ public class DropDown extends Widget {
     super.removeListener( eventType, listener );
     boolean isListening = EventLCAUtil.isListening( this, eventType );
     String remoteType = eventTypeToString( eventType );
-    if( remoteType != null && wasListening && !isListening ) {
+    if( listener instanceof ClientListener ) {
+      JsonObject parameters = new JsonObject()
+        .add( "eventType", ClientListenerUtil.getEventType( eventType ) )
+        .add( "listenerId", ClientListenerUtil.getRemoteId( ( ClientListener )listener ) );
+      remoteObject.call( "removeListener", parameters );
+    } else if( remoteType != null && wasListening && !isListening ) {
       remoteObject.listen( remoteType, false );
     }
   }
@@ -374,9 +384,7 @@ public class DropDown extends Widget {
     // TODO [tb] : could be optimized using a PhaseListener
     //             This implementation assumes the client merges the new values with the existing
     //             ones, which is the case in the WebClient
-    WidgetDataWhiteList service = RWT.getClient().getService( WidgetDataWhiteList.class );
-    String[] dataKeys = service == null ? null : service.getKeys();
-    if( dataKeys != null && Arrays.asList( dataKeys ).contains( key ) ) {
+    if( WidgetDataUtil.getDataKeys().contains( key ) ) {
       @SuppressWarnings( "deprecation" )
       JsonObject data = new JsonObject().add( key, JsonUtil.createJsonValue( value ) );
       remoteObject.call( "setData", data );

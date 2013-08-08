@@ -10,11 +10,11 @@
  ******************************************************************************/
 package org.eclipse.rap.addons.autosuggest.internal.resources;
 
-import org.eclipse.rap.addons.autosuggest.AutoSuggestClientListener;
 import org.eclipse.rap.rwt.SingletonUtil;
+import org.eclipse.rap.rwt.scripting.ClientListener;
 
 
-public class AutoSuggestListener extends AutoSuggestClientListener {
+public class AutoSuggestListener extends ClientListener {
 
   public static AutoSuggestListener getInstance() {
     return SingletonUtil.getSessionInstance( AutoSuggestListener.class );

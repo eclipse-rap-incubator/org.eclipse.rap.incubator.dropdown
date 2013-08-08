@@ -19,18 +19,20 @@ import org.eclipse.rap.addons.autosuggest.internal.resources.AutoSuggestListener
 import org.eclipse.rap.addons.autosuggest.internal.resources.EventDelegatorListener;
 import org.eclipse.rap.addons.autosuggest.internal.resources.ModelResources;
 import org.eclipse.rap.addons.dropdown.DropDown;
-import org.eclipse.rap.clientscripting.ClientListener;
-import org.eclipse.rap.clientscripting.WidgetDataWhiteList;
 import org.eclipse.rap.json.JsonObject;
 import org.eclipse.rap.rwt.RWT;
+import org.eclipse.rap.rwt.internal.scripting.ClientListenerUtil;
+import org.eclipse.rap.rwt.lifecycle.WidgetUtil;
 import org.eclipse.rap.rwt.remote.AbstractOperationHandler;
 import org.eclipse.rap.rwt.remote.RemoteObject;
+import org.eclipse.rap.rwt.scripting.ClientListener;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 
 
+@SuppressWarnings( "restriction" )
 public class AutoSuggest {
 
   private static final String EVENT_TYPE_SELECTION = "suggestionSelected";
@@ -158,7 +160,7 @@ public class AutoSuggest {
     attachClientListenerToModel( getAutoSuggestListener(), "change", "accept" );
   }
 
-  protected AutoSuggestClientListener getAutoSuggestListener() {
+  protected ClientListener getAutoSuggestListener() {
     return AutoSuggestListener.getInstance();
   }
 
@@ -176,8 +178,8 @@ public class AutoSuggest {
     }
   }
 
-  private void attachClientListenerToModel( AutoSuggestClientListener listener, String... types ) {
-    String listenerId = listener.getId();
+  private void attachClientListenerToModel( ClientListener listener, String... types ) {
+    String listenerId = ClientListenerUtil.getRemoteId( listener );
     for( String type : types ) {
       remoteObject.call( "addListener",
                          new JsonObject().add( "listener", listenerId ).add( "type", type ) );
@@ -186,7 +188,7 @@ public class AutoSuggest {
   }
 
   private void connectClientObjects() {
-    WidgetDataWhiteList.addKey( MODEL_ID_KEY );
+    WidgetUtil.registerDataKeys( MODEL_ID_KEY );
     remoteObject.set( "textWidgetId", getId( text ) );
     remoteObject.set( "dropDownWidgetId", getId( dropDown ) );
     dropDown.setData( MODEL_ID_KEY, remoteObject.getId() );

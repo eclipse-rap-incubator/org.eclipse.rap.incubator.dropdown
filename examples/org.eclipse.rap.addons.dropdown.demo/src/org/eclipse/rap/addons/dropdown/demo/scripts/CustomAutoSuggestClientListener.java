@@ -10,11 +10,11 @@
  ******************************************************************************/
 package org.eclipse.rap.addons.dropdown.demo.scripts;
 
-import org.eclipse.rap.addons.autosuggest.AutoSuggestClientListener;
 import org.eclipse.rap.rwt.SingletonUtil;
+import org.eclipse.rap.rwt.scripting.ClientListener;
 
 
-public class CustomAutoSuggestClientListener extends AutoSuggestClientListener {
+public class CustomAutoSuggestClientListener extends ClientListener {
 
   public static CustomAutoSuggestClientListener getInstance() {
     return SingletonUtil.getSessionInstance( CustomAutoSuggestClientListener.class );

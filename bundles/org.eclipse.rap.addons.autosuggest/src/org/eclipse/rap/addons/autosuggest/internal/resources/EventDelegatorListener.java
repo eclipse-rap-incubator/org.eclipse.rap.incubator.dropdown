@@ -10,21 +10,21 @@
  ******************************************************************************/
 package org.eclipse.rap.addons.autosuggest.internal.resources;
 
-import org.eclipse.rap.clientscripting.ClientListener;
 import org.eclipse.rap.rwt.SingletonUtil;
+import org.eclipse.rap.rwt.scripting.ClientListener;
 
 
 public class EventDelegatorListener  {
 
-  private final ClientListener eventDeleatorListener;
+  private final ClientListener eventDelegatorListener;
 
   // Can not extend ClientListener since Widget#addListner would not detect it
   public static ClientListener getInstance() {
-    return SingletonUtil.getSessionInstance( EventDelegatorListener.class ).eventDeleatorListener;
+    return SingletonUtil.getSessionInstance( EventDelegatorListener.class ).eventDelegatorListener;
   }
 
   private EventDelegatorListener() {
-    eventDeleatorListener = new ClientListener( getText() );
+    eventDelegatorListener = new ClientListener( getText() );
   }
 
   private static String getText() {

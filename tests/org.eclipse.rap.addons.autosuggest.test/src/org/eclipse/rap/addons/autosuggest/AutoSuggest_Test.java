@@ -28,19 +28,16 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.rap.addons.dropdown.DropDown;
-import org.eclipse.rap.clientscripting.ClientListener;
 import org.eclipse.rap.rwt.RWT;
-import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteList;
-import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteListImpl;
+import org.eclipse.rap.rwt.internal.lifecycle.WidgetDataUtil;
 import org.eclipse.rap.rwt.lifecycle.PhaseId;
 import org.eclipse.rap.rwt.remote.Connection;
 import org.eclipse.rap.rwt.remote.OperationHandler;
 import org.eclipse.rap.rwt.remote.RemoteObject;
+import org.eclipse.rap.rwt.scripting.ClientListener;
 import org.eclipse.rap.rwt.testfixture.Fixture;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
@@ -156,38 +153,9 @@ public class AutoSuggest_Test {
 
   @Test
   public void testConstructor_addKeysToWidgetDataWhiteList() {
-    WidgetDataWhiteListImpl service
-      = ( WidgetDataWhiteListImpl )RWT.getClient().getService( WidgetDataWhiteList.class );
-    service.setKeys( new String[ 0 ] );
-
     new AutoSuggest( text );
 
-    List<String> list = Arrays.asList( service.getKeys() );
-    assertTrue( list.contains( MODEL_ID_KEY ) );
-  }
-
-  @Test
-  public void testConstructor_addKeysToWidgetDataWhiteListAndKeepExistingKeys() {
-    WidgetDataWhiteListImpl service
-      = ( WidgetDataWhiteListImpl )RWT.getClient().getService( WidgetDataWhiteList.class );
-    service.setKeys( new String[] { "foo" } );
-
-    new AutoSuggest( text );
-
-    List<String> list = Arrays.asList( service.getKeys() );
-    assertTrue( list.contains( "foo" ) );
-  }
-
-  @Test
-  public void testConstructor_addKeysToWidgetDataWhiteListOnlyOnce() {
-    WidgetDataWhiteListImpl service
-      = ( WidgetDataWhiteListImpl )RWT.getClient().getService( WidgetDataWhiteList.class );
-    service.setKeys( new String[] { MODEL_ID_KEY } );
-
-    new AutoSuggest( text );
-
-    List<String> list = Arrays.asList( service.getKeys() );
-    assertEquals( list.lastIndexOf( MODEL_ID_KEY ), list.indexOf( MODEL_ID_KEY ) );
+    assertTrue( WidgetDataUtil.getDataKeys().contains( MODEL_ID_KEY ) );
   }
 
   @Test

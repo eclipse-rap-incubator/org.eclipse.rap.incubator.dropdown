@@ -23,7 +23,20 @@
 
     events : [ "Selection", "DefaultSelection" ],
 
-    methods : [ "setData" ],
+    methods : [ "setData", "addListener", "removeListener" ],
+
+    methodHandler: {
+      "addListener": function( widget, properties ) {
+        rwt.remote.HandlerUtil.callWithTarget( properties.listenerId, function( targetFunction ) {
+          widget.addListener( properties.eventType, targetFunction );
+        } );
+      },
+      "removeListener": function( widget, properties ) {
+        rwt.remote.HandlerUtil.callWithTarget( properties.listenerId, function( targetFunction ) {
+          widget.removeListener( properties.eventType, targetFunction );
+        } );
+      }
+    },
 
     destructor : "destroy"
 

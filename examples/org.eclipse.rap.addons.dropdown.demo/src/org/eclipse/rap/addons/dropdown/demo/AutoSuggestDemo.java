@@ -13,7 +13,6 @@ package org.eclipse.rap.addons.dropdown.demo;
 import java.util.Arrays;
 
 import org.eclipse.rap.addons.autosuggest.AutoSuggest;
-import org.eclipse.rap.addons.autosuggest.AutoSuggestClientListener;
 import org.eclipse.rap.addons.autosuggest.DataProvider;
 import org.eclipse.rap.addons.autosuggest.DataSource;
 import org.eclipse.rap.addons.autosuggest.SuggestionSelectedListener;
@@ -21,8 +20,8 @@ import org.eclipse.rap.addons.dropdown.demo.data.KFZ;
 import org.eclipse.rap.addons.dropdown.demo.scripts.CustomAutoSuggestClientListener;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.application.AbstractEntryPoint;
-import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteList;
-import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteListImpl;
+import org.eclipse.rap.rwt.lifecycle.WidgetUtil;
+import org.eclipse.rap.rwt.scripting.ClientListener;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -37,22 +36,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
 
-@SuppressWarnings("restriction")
 public class AutoSuggestDemo extends AbstractEntryPoint {
-
-
-  private class CustomAutoSuggest extends AutoSuggest {
-
-    public CustomAutoSuggest( Text text ) {
-      super( text );
-    }
-
-    @Override
-    protected AutoSuggestClientListener getAutoSuggestListener() {
-      return CustomAutoSuggestClientListener.getInstance();
-    }
-
-  }
 
   private Text text;
   private AutoSuggest autoSuggest;
@@ -212,9 +196,20 @@ public class AutoSuggestDemo extends AbstractEntryPoint {
   }
 
   private static void setupWidgetDataWhiteList() {
-    WidgetDataWhiteListImpl list
-      = ( WidgetDataWhiteListImpl )RWT.getClient().getService( WidgetDataWhiteList.class );
-    list.setKeys( new String[]{ "dropdown", "text", "data" } );
+    WidgetUtil.registerDataKeys( "dropdown", "text", "data" );
+  }
+
+  private class CustomAutoSuggest extends AutoSuggest {
+
+    public CustomAutoSuggest( Text text ) {
+      super( text );
+    }
+
+    @Override
+    protected ClientListener getAutoSuggestListener() {
+      return CustomAutoSuggestClientListener.getInstance();
+    }
+
   }
 
 }

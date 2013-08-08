@@ -10,8 +10,8 @@
  ******************************************************************************/
 package jasmine;
 
-import org.eclipse.rap.clientscripting.ClientListener;
 import org.eclipse.rap.jstestrunner.jasmine.JasmineTestRunner;
+import org.eclipse.rap.rwt.scripting.ClientListener;
 import org.junit.Before;
 import org.junit.Test;
 

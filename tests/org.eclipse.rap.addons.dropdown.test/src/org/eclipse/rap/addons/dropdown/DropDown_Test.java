@@ -29,19 +29,18 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.rap.clientscripting.ClientListener;
 import org.eclipse.rap.json.JsonArray;
 import org.eclipse.rap.json.JsonObject;
 import org.eclipse.rap.json.JsonValue;
 import org.eclipse.rap.rwt.RWT;
-import org.eclipse.rap.rwt.client.Client;
-import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteList;
 import org.eclipse.rap.rwt.internal.protocol.JsonUtil;
+import org.eclipse.rap.rwt.internal.scripting.ClientListenerUtil;
 import org.eclipse.rap.rwt.lifecycle.PhaseId;
 import org.eclipse.rap.rwt.lifecycle.WidgetUtil;
 import org.eclipse.rap.rwt.remote.Connection;
 import org.eclipse.rap.rwt.remote.OperationHandler;
 import org.eclipse.rap.rwt.remote.RemoteObject;
+import org.eclipse.rap.rwt.scripting.ClientListener;
 import org.eclipse.rap.rwt.testfixture.Fixture;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
@@ -53,7 +52,6 @@ import org.eclipse.swt.widgets.Text;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -358,13 +356,10 @@ public class DropDown_Test {
   public void testSetData_RendersDataInWhiteList() {
     Fixture.fakePhase( PhaseId.PROCESS_ACTION );
 
-    fakeWidgetDataWhiteList( new String[]{ "foo", "bar" } );
+    WidgetUtil.registerDataKeys( "foo", "bar" );
     dropdown.setData( "foo", "bar" );
 
-    ArgumentCaptor<JsonObject> argument = ArgumentCaptor.forClass( JsonObject.class );
-    verify( remoteObject ).call( eq( "setData" ), argument.capture() );
-
-    assertEquals( "bar", argument.getValue().get( "foo" ).asString() );
+    verify( remoteObject ).call( eq( "setData" ), eq( new JsonObject().add( "foo", "bar" ) ) );
   }
 
   @Test
@@ -398,7 +393,7 @@ public class DropDown_Test {
   public void testSetData_DoesNotRenderDataNotInWhiteList() {
     Fixture.fakePhase( PhaseId.PROCESS_ACTION );
 
-    fakeWidgetDataWhiteList( new String[]{ "foo", "bar" } );
+    WidgetUtil.registerDataKeys( "foo", "bar" );
     dropdown.setData( "fool", "bar" );
 
     verify( remoteObject, never() ).set( eq( "data" ), any( JsonObject.class ) );
@@ -407,6 +402,7 @@ public class DropDown_Test {
   @Test
   public void testAddListener_SelectionRenderListenTrue() {
     Listener listener = mock( Listener.class );
+
     dropdown.addListener( SWT.Selection, listener );
 
     verify( remoteObject ).listen( eq( "Selection" ), eq( true ) );
@@ -415,9 +411,37 @@ public class DropDown_Test {
   @Test
   public void testAddListener_DefaultSelectionRenderListenTrue() {
     Listener listener = mock( Listener.class );
+
     dropdown.addListener( SWT.DefaultSelection, listener );
 
     verify( remoteObject ).listen( eq( "DefaultSelection" ), eq( true ) );
+  }
+
+  @Test
+  public void testAddListener_Selection_doesNotSendListenTwice() {
+    dropdown.addListener( SWT.Selection, mock( Listener.class ) );
+    dropdown.addListener( SWT.Selection, mock( Listener.class ) );
+
+    verify( remoteObject, times( 1 ) ).listen( eq( "Selection" ), eq( true ) );
+  }
+
+  @Test
+  public void testAddListener_Selection_doesNotSendListenForClientListener() {
+    dropdown.addListener( SWT.Selection, new ClientListener( "foo" ) );
+
+    verify( remoteObject, times( 0 ) ).listen( eq( "Selection" ), eq( true ) );
+  }
+
+  @Test
+  public void testAddListener_rendersClientListeners() {
+    ClientListener listener = new ClientListener( "" );
+    String listenerId = ClientListenerUtil.getRemoteId( listener );
+
+    dropdown.addListener( SWT.Show, listener );
+
+    JsonObject expectedParameters
+      = new JsonObject().add( "eventType", "Show" ).add( "listenerId", listenerId );
+    verify( remoteObject ).call( eq( "addListener" ), eq( expectedParameters ) );
   }
 
   @Test
@@ -440,18 +464,15 @@ public class DropDown_Test {
   }
 
   @Test
-  public void testAddListener_Selection_doesNotSendListenTwice() {
-    dropdown.addListener( SWT.Selection, mock( Listener.class ) );
-    dropdown.addListener( SWT.Selection, mock( Listener.class ) );
+  public void testRemoveListener_rendersClientListeners() {
+    ClientListener listener = new ClientListener( "" );
+    String listenerId = ClientListenerUtil.getRemoteId( listener );
 
-    verify( remoteObject, times( 1 ) ).listen( eq( "Selection" ), eq( true ) );
-  }
+    dropdown.removeListener( SWT.Show, listener );
 
-  @Test
-  public void testAddListener_Selection_doesNotSendListenForClientListener() {
-    dropdown.addListener( SWT.Selection, new ClientListener( "foo" ) );
-
-    verify( remoteObject, times( 0 ) ).listen( eq( "Selection" ), eq( true ) );
+    JsonObject expectedParameters
+      = new JsonObject().add( "eventType", "Show" ).add( "listenerId", listenerId );
+    verify( remoteObject ).call( eq( "removeListener" ), eq( expectedParameters ) );
   }
 
   @Test
@@ -522,17 +543,6 @@ public class DropDown_Test {
     assertEquals( 1, log.size() );
     assertEquals( 2, log.get( 0 ).index );
     assertEquals( "foo", log.get( 0 ).text );
-  }
-
-  ///////////
-  // Helper
-
-  public static void fakeWidgetDataWhiteList( String[] keys ) {
-    WidgetDataWhiteList service = mock( WidgetDataWhiteList.class );
-    when( service.getKeys() ).thenReturn( keys );
-    Client client = mock( Client.class );
-    when( client.getService( WidgetDataWhiteList.class ) ).thenReturn( service );
-    Fixture.fakeClient( client );
   }
 
 }
