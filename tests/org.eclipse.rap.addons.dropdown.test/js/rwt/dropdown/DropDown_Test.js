@@ -284,7 +284,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       showDropDown();
 
       dropdown.hide();
-      rwt.remote.Server.getInstance().send();
+      rwt.remote.Connection.getInstance().send();
 
       var message = TestUtil.getMessageObject();
       assertFalse( message.findSetProperty( "w3", "visible" ) );
@@ -297,7 +297,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       TestUtil.fakeResponse( true );
       dropdown.hide();
       TestUtil.fakeResponse( false );
-      rwt.remote.Server.getInstance().send();
+      rwt.remote.Connection.getInstance().send();
 
       var message = TestUtil.getMessageObject();
       assertNull( message.findSetOperation( "w3", "visible" ) );
@@ -305,7 +305,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
 
     testHide_DoesNotSendVisibleIfAlreadyInvisible : function() {
       dropdown.hide();
-      rwt.remote.Server.getInstance().send();
+      rwt.remote.Connection.getInstance().send();
 
       var message = TestUtil.getMessageObject();
       assertNull( message.findSetOperation( "w3", "visible" ) );
@@ -376,7 +376,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
 
     testShow_SendsVisible : function() {
       showDropDown();
-      rwt.remote.Server.getInstance().send();
+      rwt.remote.Connection.getInstance().send();
 
       var message = TestUtil.getMessageObject();
       assertTrue( message.findSetProperty( "w3", "visible" ) );
@@ -386,7 +386,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       TestUtil.fakeResponse( true );
       showDropDown();
       TestUtil.fakeResponse( false );
-      rwt.remote.Server.getInstance().send();
+      rwt.remote.Connection.getInstance().send();
 
       var message = TestUtil.getMessageObject();
       assertNull( message.findSetOperation( "w3", "visible" ) );
@@ -397,7 +397,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       TestUtil.clearRequestLog();
 
       dropdown.show();
-      rwt.remote.Server.getInstance().send();
+      rwt.remote.Connection.getInstance().send();
 
       var message = TestUtil.getMessageObject();
       assertNull( message.findSetOperation( "w3", "visible" ) );
@@ -853,7 +853,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       dropdown.setItems( [ "a", "b", "c" ] );
 
       dropdown.setSelectionIndex( 1 );
-      rwt.remote.Server.getInstance().send();
+      rwt.remote.Connection.getInstance().send();
 
       var message = TestUtil.getMessageObject();
       assertEquals( 1, message.findSetProperty( "w3", "selectionIndex" ) );
@@ -867,7 +867,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       TestUtil.fakeResponse( true );
       dropdown.setItems( [ "a", "b", "c" ] );
       TestUtil.fakeResponse( false );
-      rwt.remote.Server.getInstance().send();
+      rwt.remote.Connection.getInstance().send();
 
       var message = TestUtil.getMessageObject();
       assertNull( message.findSetOperation( "w3", "selectionIndex" ) );
