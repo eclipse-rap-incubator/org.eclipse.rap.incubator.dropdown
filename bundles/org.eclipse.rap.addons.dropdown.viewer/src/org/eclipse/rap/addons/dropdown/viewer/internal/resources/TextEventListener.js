@@ -51,8 +51,10 @@ function handleModify( event ) {
   var data = viewer.get( "elements" );
   var result = searchItems( data, createQuery( text ) );
   var userChange = widget.getData( "typing" ) || widget.getData( "deleting" );
+  var fallback = false;
   if( result.items.length === 0 ) {
     result = searchItems( data, /.*/ );
+    fallback = true;
     if( text.length >= 1 ) {
       showError( viewer, true )
     } else {
@@ -70,10 +72,10 @@ function handleModify( event ) {
         dropdown.show();
         var sel = widget.getSelection();
         var common = commonText( result.items );
-        if( widget.getData( "typing" ) && result.items.length === 1 ) {
+        if( !fallback && widget.getData( "typing" ) && result.items.length === 1 ) {
           dropdown.setSelectionIndex( 0 );
         }
-        if( widget.getData( "typing" ) && common && common.length > text.length ) {
+        if( !fallback && widget.getData( "typing" ) && common && common.length > text.length ) {
           var newSel = [ sel[ 0 ], common.length ];
           widget.setText( common );
           widget.setSelection( newSel );
