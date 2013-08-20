@@ -184,6 +184,9 @@ function onChangeSelectedSuggestionIndex( event ) {
     suggestion = this.get( "currentSuggestions" )[ event.value ] || "";
   }
   var replacementText = getReplacementText( suggestion );
+  if( replacementText != null ) {
+    this.set( "replacementText", null, { "action" : "sync" } );
+  }
   this.set( "replacementText", replacementText, { "action" : "selection" } );
 }
 
@@ -210,7 +213,9 @@ function onAcceptSuggestion( event ) {
   if( currentSuggestions ) {
     var index = this.get( "selectedSuggestionIndex" );
     var suggestionSelected = typeof index === "number" && index > -1;
-    var autoCompleteAccepted = this.get( "autoComplete" ) && currentSuggestions.length === 1;
+    var autoCompleteAccepted =    this.get( "autoComplete" )
+                               && currentSuggestions.length === 1
+                               && currentSuggestions[ 0 ] == this.get( "text" );
     if( suggestionSelected || autoCompleteAccepted ) {
       this.notify( "suggestionSelected" );
       this.set( "suggestionsVisible", false );

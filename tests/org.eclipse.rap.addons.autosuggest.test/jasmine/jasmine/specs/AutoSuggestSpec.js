@@ -384,7 +384,31 @@
 
         model.set( "selectedSuggestionIndex", 1 );
 
-        expect( log[ 0 ][ 0 ].options.action ).toBe( "selection" );
+        expect( log[ log.length - 1 ][ 0 ].options.action ).toBe( "selection" );
+      } );
+
+      it( "fires replacementText change event even if value is unchanged", function() {
+        model.addListener( "change:selectedSuggestionIndex", createClientListener( "AutoSuggest.js" ) );
+        model.set( "currentSuggestions", [ "bar", "banana" ] );
+        model.set( "replacementText", "banana" );
+        model.addListener( "change:replacementText", logger );
+
+        model.set( "selectedSuggestionIndex", 1 );
+
+        expect( model.get( "replacementText" ) ).toEqual( "banana" );
+        expect( log[ log.length - 1 ][ 0 ].options.action ).toBe( "selection" );
+      } );
+
+      it( "fires replacementText change event with action selection when restting", function() {
+        model.addListener( "change:selectedSuggestionIndex", createClientListener( "AutoSuggest.js" ) );
+        model.set( "currentSuggestions", [ "bar", "banana" ] );
+        model.set( "replacementText", "banana" );
+        model.addListener( "change:replacementText", logger );
+
+        model.set( "selectedSuggestionIndex", -1 );
+
+        expect( model.get( "replacementText" ) ).toBeNull();
+        expect( log[ log.length - 1 ][ 0 ].options.action ).toBe( "selection" );
       } );
 
     } );
@@ -582,11 +606,17 @@
 
     describe( "accept", function() {
 
-      it( "fires suggestionSelected for selectedSuggestionIndex", function() {
+      beforeEach( function() {
+        model.set( "suggestionsVisible", true );
+        model.set( "selectedSuggestionIndex", -1 );
         model.addListener( "accept", createClientListener( "AutoSuggest.js" ) );
+        model.addListener( "suggestionSelected", logger );
+
+      } );
+
+      it( "fires suggestionSelected for selectedSuggestionIndex", function() {
         model.set( "currentSuggestions", [ "bar", "banana" ] );
         model.set( "selectedSuggestionIndex", 1 );
-        model.addListener( "suggestionSelected", logger );
 
         model.notify( "accept", { source : model, type : "accept" } );
 
@@ -595,11 +625,10 @@
       } );
 
       it( "fires suggestionSelected when full auto complete is accepted", function() {
-        model.addListener( "accept", createClientListener( "AutoSuggest.js" ) );
         model.set( "currentSuggestions", [ "banana" ] );
-        model.set( "selectedSuggestionIndex", -1 );
         model.set( "autoComplete", true );
-        model.addListener( "suggestionSelected", logger );
+        model.set( "userText", "ban" );
+        model.set( "text", "banana" );
 
         model.notify( "accept", { source : model, type : "accept" } );
 
@@ -608,11 +637,21 @@
       } );
 
       it( "does nothing when attempting accepting without selected suggestion or auto complete", function() {
-        model.addListener( "accept", createClientListener( "AutoSuggest.js" ) );
         model.set( "currentSuggestions", [ "banana" ] );
-        model.set( "selectedSuggestionIndex", -1 );
-        model.set( "suggestionsVisible", true );
-        model.addListener( "suggestionSelected", logger );
+        model.set( "userText", "ban" );
+        model.set( "text", "ban" );
+
+        model.notify( "accept", { source : model, type : "accept" } );
+
+        expect( log.length ).toBe( 0 );
+        expect( model.get( "suggestionsVisible" ) ).toBe( true );
+      } );
+
+      it( "does nothing if inserted replacement text has been deleted", function() {
+        model.set( "currentSuggestions", [ "banana" ] );
+        model.set( "autoComplete", true );
+        model.set( "userText", "ban" );
+        model.set( "text", "Ban" );
 
         model.notify( "accept", { source : model, type : "accept" } );
 
@@ -621,7 +660,6 @@
       } );
 
       it( "clears text selection", function() {
-        model.addListener( "accept", createClientListener( "AutoSuggest.js" ) );
         model.set( "text", "foobar" );
 
         model.notify( "accept", { source : model, type : "accept" } );
