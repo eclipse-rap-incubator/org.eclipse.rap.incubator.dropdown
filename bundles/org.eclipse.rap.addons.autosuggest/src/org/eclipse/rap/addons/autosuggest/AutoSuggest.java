@@ -125,10 +125,12 @@ public class AutoSuggest {
   }
 
   public void dispose() {
-    isDisposed = true;
-    dropDown.dispose();
-    remoteObject.destroy();
-    removeTextClientListeners();
+    if( !isDisposed ) {
+      isDisposed = true;
+      dropDown.dispose();
+      remoteObject.destroy();
+      removeTextClientListeners();
+    }
   }
 
   public boolean isDisposed() {

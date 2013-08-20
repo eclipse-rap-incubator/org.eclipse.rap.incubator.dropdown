@@ -226,6 +226,16 @@ public class AutoSuggest_Test {
   }
 
   @Test
+  public void testDispose_callingTwicedestroysRemoteObjectOnce() {
+    AutoSuggest autoSuggest = new AutoSuggest( text );
+
+    autoSuggest.dispose();
+    autoSuggest.dispose();
+
+    verify( remoteObject, times( 1 ) ).destroy();
+  }
+
+  @Test
   public void testDispose_removesClientListenersFromText() {
     AutoSuggest autoSuggest = new AutoSuggest( text );
 
