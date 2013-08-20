@@ -162,6 +162,7 @@ public class AutoSuggestDemo extends AbstractEntryPoint {
         createLogger();
       }
     } );
+    customScripts.setEnabled( false ); // Broken in Demo due to Bug 415485
   }
 
   private void createLogArea( Composite parent ) {
