@@ -143,7 +143,7 @@
     },
 
     getVisible : function() {
-      return this._.popup.getVisibility();
+      return this._.visibility;
     },
 
     show : function() {
