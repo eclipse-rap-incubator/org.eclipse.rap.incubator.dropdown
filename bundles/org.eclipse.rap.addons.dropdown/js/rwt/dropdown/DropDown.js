@@ -60,6 +60,7 @@
     this._.visibleItemCount = 5;
     this._.parent = parent;
     this._.items = [];
+    this._.columns = null;
     this._.inMouseSelection = false;
     this._.events = createEventsMap();
     this._.parent.addEventListener( "keypress", onTextKeyEvent, this );
@@ -208,6 +209,13 @@
     },
 
     /**
+     * Experimental!
+     */
+    setColumns : function( columns ) {
+      this._.columns = columns;
+    },
+
+    /**
      * Not intended to be called by ClientScripting
      */
     destroy : function() {
@@ -291,10 +299,11 @@
     // NOTE: Guessing the lineheight to be 1.3
     var itemHeight = Math.floor( font.getSize() * 1.3 ) + PADDING[ 0 ] + PADDING[ 2 ];
     var visibleItems = Math.min( this._.visibleItemCount, this.getItemCount() );
-    var viewerWidth = this._.parent.getWidth() - FRAMEWIDTH;
+    var parentWidth = this._.columns ? this._.columns[ 0 ] : this._.parent.getWidth();
+    var viewerWidth = parentWidth - FRAMEWIDTH;
     var viewerHeight = visibleItems * itemHeight;
     renderPosition.call( this );
-    this._.popup.setWidth( this._.parent.getWidth() );
+    this._.popup.setWidth( parentWidth );
     this._.popup.setHeight( viewerHeight + FRAMEWIDTH );
     this._.viewer.setDimension( viewerWidth, viewerHeight );
     this._.viewer.setItemHeight( itemHeight );

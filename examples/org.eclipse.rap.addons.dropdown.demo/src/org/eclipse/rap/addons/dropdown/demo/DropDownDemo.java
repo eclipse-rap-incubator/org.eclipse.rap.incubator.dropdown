@@ -128,6 +128,7 @@ public class DropDownDemo extends AbstractEntryPoint {
     group.setLayout( new GridLayout( 2, false) );
     final Text text = createKFZExample_Text( group );
     final DropDownViewer viewer = createKFZExample_Viewer( text );
+    viewer.setDropDownWidth( 400 );
     createKFZExample_Location( group, viewer );
     createKFZExample_Log( group, viewer );
     createDisposeButton( group, text, viewer );

@@ -76,6 +76,10 @@ public class DropDownViewer extends ContentViewer {
     return text;
   }
 
+  public void setDropDownWidth( int width ) {
+    dropDown.setData( "columns", new int[]{ width } );
+  }
+
   @Override
   public ISelection getSelection() {
     return null;

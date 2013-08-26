@@ -19,7 +19,7 @@
       return new rwt.dropdown.DropDown( control, properties.markupEnabled );
     },
 
-    properties : [ "items", "visible", "visibleItemCount" ],
+    properties : [ "items", "visible", "visibleItemCount", "columns" ],
 
     events : [ "Selection", "DefaultSelection" ],
 

@@ -13,7 +13,7 @@ package org.eclipse.rap.addons.dropdown;
 import java.util.Arrays;
 
 import org.eclipse.rap.addons.dropdown.internal.resources.DropDownResources;
-import org.eclipse.rap.json.JsonObject;
+import org.eclipse.rap.json.*;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.internal.client.WidgetDataWhiteList;
 import org.eclipse.rap.rwt.internal.protocol.IClientObjectAdapter;
@@ -58,6 +58,7 @@ import org.eclipse.swt.widgets.*;
 @SuppressWarnings("restriction")
 public class DropDown extends Widget {
 
+  private static final String COLUMNS = "columns";
   private static final String REMOTE_TYPE = "rwt.dropdown.DropDown";
   private static final String SELECTION = "Selection";
   private static final String DEFAULT_SELECTION = "DefaultSelection";
@@ -263,6 +264,13 @@ public class DropDown extends Widget {
     renderData( key, value );
     if( RWT.MARKUP_ENABLED.equals( key ) && value instanceof Boolean ) {
       remoteObject.set( "markupEnabled", ( ( Boolean )value ).booleanValue() );
+    } else if( COLUMNS.equals( key ) ) {
+      if( value instanceof int[] ) {
+        int arr[] = ( int[] )value;
+        remoteObject.set( COLUMNS, createJsonArray( arr ) );
+      } else {
+        remoteObject.set( COLUMNS, JsonValue.NULL );
+      }
     }
   }
 
@@ -393,6 +401,14 @@ public class DropDown extends Widget {
       result = SWT.DefaultSelection;
     }
     return result;
+  }
+
+  private static JsonArray createJsonArray( int[] arr ) {
+    JsonArray array = new JsonArray();
+    for( int i = 0; i < arr.length; i++ ) {
+      array.add( arr[ i ] );
+    }
+    return array;
   }
 
 }
