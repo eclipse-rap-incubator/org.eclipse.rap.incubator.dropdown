@@ -657,7 +657,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       assertIdentical( dropdown, event.widget );
       assertIdentical( "b", event.text );
       assertIdentical( 1, event.index );
-      assertIdentical( 13, event.type );
+      assertIdentical( SWT.Selection, event.type );
     },
 
     testSelectionEventFields_Unescaped : function() {
@@ -777,7 +777,7 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       assertIdentical( dropdown, event.widget );
       assertIdentical( "b", event.text );
       assertIdentical( 1, event.index );
-      assertIdentical( 14, event.type );
+      assertIdentical( SWT.DefaultSelection, event.type );
     },
 
     testGetSelectionIndex_InitialValueIsMinusOne : function() {

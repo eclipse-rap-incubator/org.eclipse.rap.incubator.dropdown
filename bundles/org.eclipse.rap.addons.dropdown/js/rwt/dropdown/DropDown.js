@@ -27,13 +27,11 @@
     return stylemap.shadow || null;
   };
 
-
-  // Values identical to SWT
   var eventTypes = {
-    Selection : 13,
-    DefaultSelection : 14,
-    Show : 22,
-    Hide : 23
+    Selection : SWT.Selection,
+    DefaultSelection : SWT.DefaultSelection,
+    Show : SWT.Show,
+    Hide : SWT.Hide
   };
 
   var forwardedKeys = {
