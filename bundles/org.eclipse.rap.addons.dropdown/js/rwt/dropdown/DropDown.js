@@ -213,6 +213,9 @@
      */
     setColumns : function( columns ) {
       this._.columns = columns;
+      if( this._.visibility ) {
+        renderLayout.call( this );
+      }
     },
 
     /**
