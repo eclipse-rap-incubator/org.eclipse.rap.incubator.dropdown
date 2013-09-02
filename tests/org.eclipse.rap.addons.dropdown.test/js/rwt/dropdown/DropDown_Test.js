@@ -546,6 +546,14 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       assertEquals( 400, popup.getInnerWidth() );
     },
 
+    testSetColumns_setsPopUpWidthAfterAppear : function() {
+      showDropDown();
+      dropdown.setColumns( [ 100, 200, 100 ] );
+      TestUtil.flush();
+
+      assertEquals( 400, popup.getInnerWidth() );
+    },
+
     testSetColumns_setsDoesNotSetPopUpWidthIfSmaller : function() {
       dropdown.setColumns( [ 30 ] );
       showDropDown();
