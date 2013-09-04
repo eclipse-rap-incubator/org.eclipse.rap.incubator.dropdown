@@ -19,7 +19,7 @@ import org.junit.Test;
 public class AutoSuggestJs_Test {
 
   private static final ClassLoader LOCAL = AutoSuggestJs_Test.class.getClassLoader();
-  private static final ClassLoader CLIENTSCRIPTING = ClientListener.class.getClassLoader();
+  private static final ClassLoader SCRIPTING = ClientListener.class.getClassLoader();
   private static final String AUTO_SUGGEST_JS
     = "org/eclipse/rap/addons/autosuggest/internal/resources/AutoSuggest.js";
 
@@ -42,8 +42,8 @@ public class AutoSuggestJs_Test {
   @Test
   public void testListenerSpec() {
     jasmine.addResource( "AutoSuggest.js", LOCAL, AUTO_SUGGEST_JS );
-    jasmine.parseScript( CLIENTSCRIPTING, "rwt/scripting/SWT.js" );
-    jasmine.parseScript( CLIENTSCRIPTING, "rwt/scripting/FunctionFactory.js" );
+    jasmine.parseScript( SCRIPTING, "SWT.js" );
+    jasmine.parseScript( SCRIPTING, "rwt/scripting/FunctionFactory.js" );
     jasmine.parseScript( LOCAL, "jasmine/specs/AutoSuggestSpec.js" );
     jasmine.execute();
   }
