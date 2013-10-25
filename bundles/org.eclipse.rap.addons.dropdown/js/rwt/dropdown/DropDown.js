@@ -13,8 +13,6 @@
 
 (function(){
 
-  var POPUP_BORDER = new rwt.html.Border( 1, "solid", "#000000" );
-  var FRAMEWIDTH = 2;
   var TAB = String.fromCharCode( 9 );
   var getPadding = function() {
     var manager = rwt.theme.AppearanceManager.getInstance();
@@ -25,6 +23,21 @@
     var manager = rwt.theme.AppearanceManager.getInstance();
     var stylemap = manager.styleFrom( "combo-list", {} );
     return stylemap.shadow || null;
+  };
+  var styleMap = null;
+  var getStyleMap = function() {
+    if( styleMap == null ) {
+      var manager = rwt.theme.AppearanceManager.getInstance();
+      styleMap = {};
+      try {
+        styleMap = manager.styleFrom( "dropdown", {} );
+      } catch( ex ) {
+        styleMap.border = new rwt.html.Border( 1, "solid", "#000000" );
+      }
+      styleMap.padding = getPadding();
+      styleMap.shadow = getShadow();
+    }
+   return styleMap;
   };
 
   var eventTypes = {
@@ -317,14 +330,15 @@
   var renderLayout = function() {
     var font = this._.grid.getFont();
     // NOTE: Guessing the lineheight to be 1.3
-    var padding = getPadding();
+    var padding = getStyleMap().padding;
     var itemHeight = Math.floor( font.getSize() * 1.3 ) + padding[ 0 ] + padding[ 2 ];
     var visibleItems = Math.min( this._.visibleItemCount, this.getItemCount() );
     var gridWidth = calcGridWidth.apply( this );
     var gridHeight = visibleItems * itemHeight;
     renderPosition.call( this );
-    this._.popup.setWidth( gridWidth + FRAMEWIDTH );
-    this._.popup.setHeight( gridHeight + FRAMEWIDTH );
+    var frameWidth = getStyleMap().border.getWidthLeft() * 2;
+    this._.popup.setWidth( gridWidth + frameWidth );
+    this._.popup.setHeight( gridHeight + frameWidth );
     this._.grid.setDimension( gridWidth, gridHeight );
     renderItemMetrics.apply( this, [ itemHeight, gridWidth, padding ] );
   };
@@ -338,7 +352,8 @@
   };
 
   var calcGridWidth = function() {
-    var result = this._.parent.getWidth() - FRAMEWIDTH;
+    var frameWidth = getStyleMap().border.getWidthLeft() * 2;
+    var result = this._.parent.getWidth() - frameWidth;
     if( this._.columns ) {
       var columnsSum = 0;
       for( var i = 0; i < this._.columns.length; i++ ) {
@@ -538,10 +553,10 @@
   var createPopup = function() {
     var result = new rwt.widgets.base.Popup();
     result.addToDocument();
-    result.setBorder( POPUP_BORDER );
+    result.setBorder( getStyleMap().border );
     result.setBackgroundColor( "#ffffff" );
     result.setDisplay( false );
-    result.setShadow( getShadow() );
+    result.setShadow( getStyleMap().shadow );
     result.setRestrictToPageOnOpen( false );
     result.setAutoHide( false );
     return result;
