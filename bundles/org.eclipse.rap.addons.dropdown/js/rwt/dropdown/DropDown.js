@@ -92,7 +92,7 @@
       this.setSelectionIndex( -1 );
       this._.items = rwt.util.Arrays.copy( items );
       renderGridItems.call( this );
-      if( this._.visibility && this._.parent.isCreated() ) {
+      if( this._.grid.isSeeable() ) {
         renderLayout.call( this );
       }
       updateScrollBars.call( this );
@@ -112,7 +112,7 @@
      */
     setVisibleItemCount : function( itemCount ) {
       this._.visibleItemCount = itemCount;
-      if( this._.visibility && this._.parent.isCreated() ) {
+      if( this._.grid.isSeeable() ) {
         renderLayout.call( this );
       }
       updateScrollBars.call( this );
@@ -230,7 +230,7 @@
     setColumns : function( columns ) {
       this._.columns = columns;
       this._.grid.setColumnCount( columns.length );
-      if( this._.visibility && this._.parent.isCreated() ) {
+      if( this._.grid.isSeeable() ) {
         renderLayout.call( this );
       }
     },
