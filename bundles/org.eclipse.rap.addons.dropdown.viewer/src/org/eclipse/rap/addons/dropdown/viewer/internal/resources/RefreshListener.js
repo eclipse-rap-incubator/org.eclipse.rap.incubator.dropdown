@@ -31,4 +31,6 @@ function handleEvent( viewer ) {
   dropdown.setItems( result.items );
   dropdown.setData( "refreshing", false );
   dropdown.setData( "indexMapping", result.indicies );
+  text.setText( "" );
+  text.setText( str );
 }
