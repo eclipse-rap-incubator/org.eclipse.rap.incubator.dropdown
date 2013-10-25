@@ -115,9 +115,11 @@ public class DropDownDemo extends AbstractEntryPoint {
     } );
     dropdown.addListener( SWT.DefaultSelection, new Listener() {
       public void handleEvent( Event event ) {
-        text.setText( event.text );
-        text.setSelection( event.text.length() );
-        dropdown.hide();
+        if( event.index != -1 ) {
+          text.setText( event.text );
+          text.setSelection( event.text.length() );
+          dropdown.hide();
+        }
       }
     } );
   }

@@ -11,13 +11,25 @@
 
 (function(){
 
-  var POPUP_BORDER = new rwt.html.Border( 1, "solid", "#000000" );
-  var FRAMEWIDTH = 2;
-  var PADDING = ( function() {
+  var getPadding = function() {
     var manager = rwt.theme.AppearanceManager.getInstance();
     var stylemap = manager.styleFrom( "list-item", {} );
     return stylemap.padding || [ 5, 5, 5, 5 ];
-  }() );
+  };
+  var styleMap = null;
+  var getStyleMap = function() {
+    if( styleMap == null ) {
+      var manager = rwt.theme.AppearanceManager.getInstance();
+      styleMap = {};
+      try {
+        styleMap = manager.styleFrom( "dropdown", {} );
+      } catch( ex ) {
+        styleMap.border = new rwt.html.Border( 1, "solid", "#000000" );
+      }
+      styleMap.padding = getPadding();
+    }
+   return styleMap;
+  };
 
 
   // Values identical to SWT
@@ -300,14 +312,16 @@
   var renderLayout = function() {
     var font = this._.viewer.getFont();
     // NOTE: Guessing the lineheight to be 1.3
-    var itemHeight = Math.floor( font.getSize() * 1.3 ) + PADDING[ 0 ] + PADDING[ 2 ];
+    var padding = getStyleMap().padding;
+    var itemHeight = Math.floor( font.getSize() * 1.3 ) + padding[ 0 ] + padding[ 2 ];
     var visibleItems = Math.min( this._.visibleItemCount, this.getItemCount() );
+    var frameWidth = getStyleMap().border.getWidthLeft() * 2;    
     var parentWidth = this._.columns ? this._.columns[ 0 ] : this._.parent.getWidth();
-    var viewerWidth = parentWidth - FRAMEWIDTH;
+    var viewerWidth = parentWidth - frameWidth;
     var viewerHeight = visibleItems * itemHeight;
     renderPosition.call( this );
     this._.popup.setWidth( parentWidth );
-    this._.popup.setHeight( viewerHeight + FRAMEWIDTH );
+    this._.popup.setHeight( viewerHeight + frameWidth );
     this._.viewer.setDimension( viewerWidth, viewerHeight );
     this._.viewer.setItemHeight( itemHeight );
     this._.viewer.setItemMetrics(
@@ -316,8 +330,8 @@
       viewerWidth, // width
       0, // imageLeft
       0, // imageWidth
-      PADDING[ 3 ], // textLeft
-      viewerWidth - PADDING[ 1 ] - PADDING[ 3 ], // textWidth
+      padding[ 3 ], // textLeft
+      viewerWidth - padding[ 1 ] - padding[ 3 ], // textWidth
       0, // checkLeft
       0 // checkWith
     );
@@ -482,7 +496,7 @@
   var createPopup = function() {
     var result = new rwt.widgets.base.Popup();
     result.addToDocument();
-    result.setBorder( POPUP_BORDER );
+    result.setBorder( getStyleMap().border );
     result.setBackgroundColor( "#ffffff" );
     result.setDisplay( false );
     result.setRestrictToPageOnOpen( false );
