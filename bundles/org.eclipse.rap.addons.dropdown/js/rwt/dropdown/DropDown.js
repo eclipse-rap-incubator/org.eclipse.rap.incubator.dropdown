@@ -28,10 +28,12 @@
   var getStyleMap = function() {
     if( styleMap == null ) {
       var manager = rwt.theme.AppearanceManager.getInstance();
-      styleMap = {};
       try {
         styleMap = manager.styleFrom( "dropdown", {} );
       } catch( ex ) {
+      }
+      if( styleMap == null ) {
+        styleMap = {};
         styleMap.border = new rwt.html.Border( 1, "solid", "#000000" );
       }
       styleMap.padding = getPadding();
