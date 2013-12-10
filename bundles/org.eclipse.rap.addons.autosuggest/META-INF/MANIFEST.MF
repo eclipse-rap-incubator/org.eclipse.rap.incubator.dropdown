@@ -6,5 +6,5 @@ Bundle-Version: 0.2.0.qualifier
 Bundle-Vendor: Eclipse.org - RAP Incubator
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Export-Package: org.eclipse.rap.addons.autosuggest;version="0.2.0"
-Require-Bundle: org.eclipse.rap.rwt;bundle-version="2.2.0"
+Require-Bundle: org.eclipse.rap.rwt;bundle-version="2.3.0"
 Import-Package: org.eclipse.rap.addons.dropdown;version="0.2.0"
