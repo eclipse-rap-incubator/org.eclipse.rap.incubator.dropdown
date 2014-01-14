@@ -45,7 +45,7 @@ public class AutoSuggest {
   private ClientListener textClientListener;
   private int[] textClientListenerTypes;
   private boolean isDisposed;
-  private final RemoteObject remoteObject;
+  protected final RemoteObject remoteObject;
 
   public AutoSuggest( Text text ) {
     if( text == null ) {
@@ -158,8 +158,12 @@ public class AutoSuggest {
   private void attachClientListeners() {
     int[] dropDownEventTypes = new int[] { SWT.Show, SWT.Hide, SWT.Selection, SWT.DefaultSelection };
     attachClientListenerToDropDown( EventDelegatorListener.getInstance(), dropDownEventTypes );
-    attachClientListenerToText( EventDelegatorListener.getInstance(), SWT.Modify, SWT.Verify );
+    attachClientListenerToText( EventDelegatorListener.getInstance(), getTextEventTypes() );
     attachClientListenerToModel( getAutoSuggestListener(), "change", "accept" );
+  }
+
+  protected int[] getTextEventTypes() {
+    return new int[]{ SWT.Modify, SWT.Verify };
   }
 
   protected ClientListener getAutoSuggestListener() {
