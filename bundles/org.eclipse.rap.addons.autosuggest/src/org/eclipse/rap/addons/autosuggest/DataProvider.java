@@ -10,25 +10,29 @@
  ******************************************************************************/
 package org.eclipse.rap.addons.autosuggest;
 
+
 /**
- * This is the default interface to be implemented to attach data to a {@link DataSource}
+ * Instances of this interface represent a data set used as suggestions.
+ * It provides a set of suggestions and their textual representation.
  *
+ * @param <S> the type that represents a single suggestion
  * @see DataSource#setDataProvider(DataProvider)
+ * @see ColumnDataProvider
  */
-public interface DataProvider {
+public interface DataProvider<S> {
 
   /**
-   * Provides the raw suggestions data
+   * Provides the list of all possible suggestions.
    *
-   * @return an iterable object containing all suggestions in any arbitrary format
+   * @return the list of suggestions, may be empty but not <code>null</code>
    */
-  Iterable<?> getSuggestions();
+  Iterable<S> getSuggestions();
 
   /**
-   * Provides a single suggestion text for a raw suggestion
+   * Provides the text that will be inserted when the given suggestion is selected.
    *
-   * @return a string to be suggested as text input
+   * @return the text to be inserted, never <code>null</code>
    */
-  String getValue( Object element );
+  String getValue( S suggestion );
 
 }

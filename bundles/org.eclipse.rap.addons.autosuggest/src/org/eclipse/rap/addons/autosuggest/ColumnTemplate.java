@@ -14,11 +14,7 @@ package org.eclipse.rap.addons.autosuggest;
  * Instances of this class can be used to configure a {@link DataSource} to format the suggestions
  * provided by a {@link ColumnDataProvider} as a table.
  *
- *  <p>
- *    If used, the first string of a suggestion will not be displayed in the list, while the
- *    remaining strings will be placed in their natural order into each column defined by this
- *    template.
- *  </p>
+ * @see ColumnDataProvider#getTexts(Object)
  */
 public class ColumnTemplate {
 
@@ -27,7 +23,7 @@ public class ColumnTemplate {
   /**
    * Constructs a new instance of this class given any number of integers.
    *
-   * @param widths the width of all columns in pixels
+   * @param widths the width of each column in pixel. Any number of widths are allowed, but not negative values
    */
   public ColumnTemplate( int... widths ) {
     this.widths = widths;

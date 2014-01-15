@@ -17,7 +17,7 @@ package org.eclipse.rap.addons.autosuggest;
 public interface SuggestionSelectedListener {
 
   /**
-   * Sent when the user selects a suggestion
+   * Called when the user selects a suggestion
    */
   void suggestionSelected();
 

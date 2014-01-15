@@ -16,8 +16,8 @@ import org.eclipse.rap.rwt.remote.Connection;
 import org.eclipse.rap.rwt.remote.RemoteObject;
 
 /**
- * Instances of this class represents a set of suggestions that can be used by an
- * {@link AutoSuggest} instance.
+ * Instances of this class represent a set of suggestions that can be used by
+ * {@link AutoSuggest} instances.
  *
  * <p>
  *   A single instance can be used by multiple <code>AutoSuggest</code> instances simultaneously.
@@ -41,7 +41,7 @@ public class DataSource {
   private static final String REMOTE_TYPE = "rwt.remote.Model";
 
   private final RemoteObject remoteObject;
-  private DataProvider dataProvider;
+  private DataProvider<Object> dataProvider;
   private ColumnTemplate template;
 
   /**
@@ -61,7 +61,7 @@ public class DataSource {
    *
    * The type of DataProvider set also determines which <code>Template</code> types can be used
    * with the same <code>DataSource</code> instance. (i.e. a {@link ColumnDataProvider} can be
-   * used with a {@link ColumnTemplate}.) It also changes how the format of the suggestion
+   * used with a {@link ColumnTemplate}.) It also changes the format of the suggestion
    * given to a filterScript.
    *
    * @param dataProvider the DataProvider instance (may not be null)
@@ -71,11 +71,12 @@ public class DataSource {
    * @see DataSource#setTemplate(ColumnTemplate)
    * @see DataSource#setFilterScript(String)
    */
-  public void setDataProvider( DataProvider dataProvider ) {
+  @SuppressWarnings( "unchecked" )
+  public void setDataProvider( DataProvider<?> dataProvider ) {
     if( dataProvider == null ) {
       throw new NullPointerException( "Parameter must not be null: dataProvider" );
     }
-    this.dataProvider = dataProvider;
+    this.dataProvider = ( DataProvider<Object> )dataProvider;
     setInitialData();
   }
 
@@ -83,17 +84,16 @@ public class DataSource {
    * Sets a simple script (JavaScript function returning a boolean)
    * used to determine if a given suggestion matches a text typed by the user.
    *
-   * <p>The Script has to be in the following format (example assumes suggestion is given as string):</p>
+   * <p>The script has to be in the following format (example assumes suggestion is given as string):</p>
    * <pre>function( suggestion, userText ) {
-   *  return suggestion.indexOf( userText ) !== -1;"
+   *  return suggestion.indexOf( userText ) !== -1;
    *}</pre>
    * <p>
    *   The default script is not case-sensitive and can handle suggestions provided by
-   *   {@link DataProvider} and {@link ColumnDataProvider} interfaces. In case of
-   *   <code>ColumnDataProvider</code> only the first column is queried.
+   *   {@link DataProvider} and {@link ColumnDataProvider} interfaces.
    * </p>
    *
-   * @param script the filterScript (may be null)
+   * @param script the filterScript, or <code>null</code> to use default script
    *
    * @see DataSource#setDataProvider(DataProvider)
    */
@@ -102,11 +102,11 @@ public class DataSource {
   }
 
   /**
-   * Sets a template that determines how suggestions are presented in the dropDown list.
+   * Sets a template that determines how suggestions are presented in the drop-down list.
    *
    * <p>
    *   The template has to be able to process the format of suggestions provided by the type of
-   *   dataProvider {@link DataSource#setDataProvider(DataProvider) attached} to the receiver.
+   *   the <code>DataProvider</code> {@link DataSource#setDataProvider(DataProvider) attached} to the receiver.
    * </p>
    * <p>
    *   No template is required for the default {@link DataProvider}.
@@ -143,7 +143,7 @@ public class DataSource {
 
   private JsonArray getColumnData() {
     JsonArray array = new JsonArray();
-    ColumnDataProvider columnDataProvider = ( ColumnDataProvider )dataProvider;
+    ColumnDataProvider<Object> columnDataProvider = ( ColumnDataProvider<Object> )dataProvider;
     for( Object element : dataProvider.getSuggestions() ) {
       JsonArray row = new JsonArray().add( dataProvider.getValue( element ) );
       String[] texts = columnDataProvider.getTexts( element );

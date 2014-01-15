@@ -35,7 +35,7 @@ import org.eclipse.swt.widgets.Text;
 /**
  * Instances of this class provide a complete text input suggestion mechanism
  * for a given {@link Text} widget. Suggestions may be displayed below the <code>Text</code> widget
- * via a {@link DropDown} widget and optionally inserted automatically on uniqueness.
+ * in a drop-down and optionally auto-completed.
  *
  * <p>
  *   All possible suggestions have to be provided by a {@link DataSource}. The
@@ -72,7 +72,7 @@ public class AutoSuggest {
   protected final RemoteObject remoteObject;
 
   /**
-   * Constructs a new instance of this class given a <code>Text</code> instance.
+   * Constructs a new <code>AutoSuggest</code> for a given <code>Text</code> widget.
    *
    * @param text the <code>Text</code> widget for which suggestions are provided (cannot be null)
    *
@@ -112,8 +112,9 @@ public class AutoSuggest {
       }
     } );
   }
+
   /**
-   * Sets the receiver's dataSource that provides, filters, and formats suggestions
+   * Sets the receiver's dataSource that provides, filters, and formats suggestions.
    *
    * @param dataSource the DataSource (can be null)
    *
@@ -135,7 +136,7 @@ public class AutoSuggest {
   }
 
   /**
-   * Sets the maximum number of suggestion items that can be visible simultaneously
+   * Sets the maximum number of suggestion items that can be visible simultaneously.
    *
    * @param itemCount the new number of items to be visible (default is 5)
    *
@@ -150,7 +151,7 @@ public class AutoSuggest {
   }
 
   /**
-   * Gets the maximum number of suggestion items that can be visible simultaneously
+   * Gets the maximum number of suggestion items that can be visible simultaneously.
    *
    * @return the number of items to be visible
    *
@@ -165,8 +166,9 @@ public class AutoSuggest {
   }
 
   /**
-   * Controls whether a single remaining suggestion or the common part of multiple remaining
-   * suggestions are to be inserted into the text automatically. The inserted part will be selected.
+   * Controls whether a single matching suggestion or the common part of multiple matching
+   * suggestions are to be inserted into the text widget automatically.
+   * The inserted text will be selected.
    *
    * @param value true to enable the feature (default is false)
    *
@@ -205,7 +207,7 @@ public class AutoSuggest {
   }
 
   /**
-   * Unregisters a {@link SuggestionSelectedListener} to no longer be notified by the receiver.
+   * Unregisters a {@link SuggestionSelectedListener}.
    * If the listener is not registered, nothing happens.
    *
    * @param listener the listener to be removed (may not be null)
@@ -273,7 +275,7 @@ public class AutoSuggest {
   }
 
   /**
-   * May be overwritten to control which event types the internal ClientListner receives from
+   * May be overwritten to control which event types the internal ClientListener receives from
    * the <code>Text</code> widget. Default are <code>SWT.Modify</code> and <code>SWT.Verify</code>
    *
    * @see AutoSuggest#getAutoSuggestListener()
