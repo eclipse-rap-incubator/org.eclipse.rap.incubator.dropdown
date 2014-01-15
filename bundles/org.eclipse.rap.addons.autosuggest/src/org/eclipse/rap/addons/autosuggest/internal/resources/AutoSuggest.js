@@ -278,6 +278,7 @@ var defaultTemplate = function( suggestion ) {
 function ensureTemplate() {
   if( this.get( "template" ) == null ) {
     var dataSource = getDataSource.apply( this );
+    // TODO [tb] : tempalteScript is never set by the server
     if( dataSource != null && dataSource.get( "templateScript" ) != null ) {
       try {
         this.set( "template",

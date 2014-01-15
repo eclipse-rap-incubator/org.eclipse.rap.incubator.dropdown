@@ -76,7 +76,7 @@
     this._ = {};
     this._.hideTimer = new rwt.client.Timer( 0 );
     this._.hideTimer.addEventListener( "interval", checkFocus, this );
-    this._.popup = createPopup();
+    this._.popup = createPopup(); // TODO: create on demand
     this._.grid = createGrid( this._.popup, markupEnabled );
     this._.visibleItemCount = 5;
     this._.parent = parent;
@@ -130,6 +130,7 @@
       if( this._.grid.isSeeable() ) {
         renderLayout.call( this );
       }
+      // TODO: hide dropdown completely if no items are visible
       updateScrollBars.call( this );
     },
 

@@ -164,7 +164,7 @@ public class DropDown extends Widget {
   /**
    * Sets the maximum number of items that are visible in the receiver's list.
    *
-   * @param itemCount the new number of items to be visible
+   * @param itemCount the new number of items to be visible (default is 5)
    *
    * @exception SWTException <ul>
    *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
