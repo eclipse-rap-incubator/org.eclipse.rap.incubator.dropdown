@@ -10,9 +10,15 @@
  ******************************************************************************/
 package org.eclipse.rap.addons.autosuggest;
 
-
+/**
+ * A listener interface to be used with
+ * {@link AutoSuggest#addSelectionListener(SuggestionSelectedListener) AutoSuggest}.
+ */
 public interface SuggestionSelectedListener {
 
+  /**
+   * Sent when the user selects a suggestion
+   */
   void suggestionSelected();
 
 }

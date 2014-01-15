@@ -56,11 +56,11 @@ public class DataSource {
   }
 
   /**
-   * Sets the <code>DataProvider</code> instance to be used to collect the suggestions data. The
-   * data is collected by <code>DataProvider</code> only once.
+   * Sets the <code>DataProvider</code> to be used to collect the suggestions data. The
+   * data is collected from <code>DataProvider</code> only once.
    *
    * The type of DataProvider set also determines which <code>Template</code> types can be used
-   * with the same <code>DataSource</code> instance. (e.g. a {@link ColumnDataProvider} can be
+   * with the same <code>DataSource</code> instance. (i.e. a {@link ColumnDataProvider} can be
    * used with a {@link ColumnTemplate}.) It also changes how the format of the suggestion
    * given to a filterScript.
    *
@@ -89,7 +89,7 @@ public class DataSource {
    *}</pre>
    * <p>
    *   The default script is not case-sensitive and can handle suggestions provided by
-   *   {@link DataProvider} and {@link ColumnDataProvider}. In case of
+   *   {@link DataProvider} and {@link ColumnDataProvider} interfaces. In case of
    *   <code>ColumnDataProvider</code> only the first column is queried.
    * </p>
    *
