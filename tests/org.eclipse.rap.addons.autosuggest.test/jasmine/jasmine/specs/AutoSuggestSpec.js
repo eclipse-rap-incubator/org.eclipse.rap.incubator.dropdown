@@ -498,7 +498,7 @@
         model.set( "autoComplete", true );
         model.addListener( "change:currentSuggestions", createClientListener( "AutoSuggest.js" ) );
 
-        model.set( "currentSuggestions", [ "banana" ], { "action" : "typing" } );
+        model.set( "currentSuggestions", [ [ "banana", "foo" ] ], { "action" : "typing" } );
 
         expect( model.get( "replacementText" ) ).toEqual( "banana" );
       } );
@@ -509,7 +509,7 @@
         model.set( "autoComplete", true );
         model.addListener( "change:currentSuggestions", createClientListener( "AutoSuggest.js" ) );
 
-        model.set( "currentSuggestions", [ [ "banana" ] ], { "action" : "typing" } );
+        model.set( "currentSuggestions", [ [ "banana", "foo" ] ], { "action" : "typing" } );
 
         expect( model.get( "replacementText" ) ).toEqual( "banana" );
       } );
@@ -611,7 +611,6 @@
         model.set( "selectedSuggestionIndex", -1 );
         model.addListener( "accept", createClientListener( "AutoSuggest.js" ) );
         model.addListener( "suggestionSelected", logger );
-
       } );
 
       it( "fires suggestionSelected for selectedSuggestionIndex", function() {
@@ -624,16 +623,31 @@
         expect( model.get( "suggestionsVisible" ) ).toBe( false );
       } );
 
-      it( "fires suggestionSelected when full auto complete is accepted", function() {
-        model.set( "currentSuggestions", [ "banana" ] );
-        model.set( "autoComplete", true );
-        model.set( "userText", "ban" );
-        model.set( "text", "banana" );
+      describe( "for full auto complete", function() {
 
-        model.notify( "accept", { source : model, type : "accept" } );
+        beforeEach( function() {
+          model.set( "autoComplete", true );
+          model.set( "userText", "ban" );
+          model.set( "text", "banana" );
+        } );
 
-        expect( log.length ).toBe( 1 );
-        expect( model.get( "suggestionsVisible" ) ).toBe( false );
+        it( "fires suggestionSelected for simple suggestion", function() {
+          model.set( "currentSuggestions", [ "banana" ] );
+
+          model.notify( "accept", { source : model, type : "accept" } );
+
+          expect( log.length ).toBe( 1 );
+          expect( model.get( "suggestionsVisible" ) ).toBe( false );
+        } );
+
+        it( "fires suggestionSelected for array suggestion", function() {
+          model.set( "currentSuggestions", [ [ "banana", "foo" ] ] );
+          model.notify( "accept", { source : model, type : "accept" } );
+
+          expect( log.length ).toBe( 1 );
+          expect( model.get( "suggestionsVisible" ) ).toBe( false );
+        } );
+
       } );
 
       it( "does nothing when attempting accepting without selected suggestion or auto complete", function() {

@@ -215,7 +215,7 @@ function onAcceptSuggestion( event ) {
     var suggestionSelected = typeof index === "number" && index > -1;
     var autoCompleteAccepted =    this.get( "autoComplete" )
                                && currentSuggestions.length === 1
-                               && currentSuggestions[ 0 ] == this.get( "text" );
+                               && getReplacementText( currentSuggestions[ 0 ] ) === this.get( "text" );
     if( suggestionSelected || autoCompleteAccepted ) {
       this.notify( "suggestionSelected" );
       this.set( "suggestionsVisible", false );
