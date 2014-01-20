@@ -59,8 +59,14 @@ public class AutoSuggest {
   private static final String REMOTE_TYPE = "rwt.remote.Model";
   private static final String MODEL_ID_KEY = "org.eclipse.rap.addons.autosuggest#Model";
 
-  private final Text text;
-  private final DropDown dropDown;
+  /**
+   * The <code>Text</code> widget that this <code>AutoSuggest</code> is attached to
+   */
+  protected final Text text;
+  /**
+   * The <code>DropDown</code> widget that this <code>AutoSuggest</code> creates
+   */
+  protected final DropDown dropDown;
   private final List<SuggestionSelectedListener> selectionListeners;
   private ClientListener textClientListener;
   private int[] textClientListenerTypes;
@@ -255,7 +261,10 @@ public class AutoSuggest {
     return dropDown;
   }
 
-  void notifySelectionListeners() {
+  /**
+   * Notifies all selection listener currently registered
+   */
+  protected void notifySelectionListeners() {
     for( SuggestionSelectedListener listener : selectionListeners ) {
       listener.suggestionSelected();
     }
