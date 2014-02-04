@@ -91,7 +91,6 @@
     this._.grid.addEventListener( "mousedown", onMouseDown, this );
     this._.grid.addEventListener( "mouseup", onMouseUp, this );
     this._.popup.addEventListener( "appear", onAppear, this );
-    this._.popup.addEventListener( "disappear", onDisappear, this );
     this._.popup.getFocusRoot().addEventListener( "changeFocusedChild", onFocusChange, this );
     this._.parentFocusRoot = parent.getFocusRoot();
     this._.parentFocusRoot.addEventListener( "changeFocusedChild", onFocusChange, this );
@@ -180,10 +179,13 @@
 
     show : function() {
       checkDisposed( this );
-      if( !this._.visibility && !rwt.remote.EventUtil.getSuspended() ) {
-        rap.getRemoteObject( this ).set( "visible", true );
+      if( !this._.visibility ) {
+        this._.visibility = true;
+        fireEvent.call( this, "Show" );
+        if( !rwt.remote.EventUtil.getSuspended() ) {
+          rap.getRemoteObject( this ).set( "visible", true );
+        }
       }
-      this._.visibility = true;
       if( this._.items.length > 0 && this._.parent.isCreated() && !this._.popup.isSeeable() ) {
         this._.grid.setFont( this._.parent.getFont() );
         renderLayout.call( this );
@@ -196,10 +198,13 @@
 
     hide : function() {
       checkDisposed( this );
-      if( this._.visibility && !rwt.remote.EventUtil.getSuspended() ) {
-        rap.getRemoteObject( this ).set( "visible", false );
+      if( this._.visibility ) {
+        this._.visibility = false;
+        fireEvent.call( this, "Hide" );
+        if( !rwt.remote.EventUtil.getSuspended() ) {
+          rap.getRemoteObject( this ).set( "visible", false );
+        }
       }
-      this._.visibility = false;
       this._.popup.setVisibility( false ); // makes it disappear immediately
       this._.popup.setDisplay( false ); // forces the popup to appear after all parents are layouted
     },
@@ -491,12 +496,6 @@
   var onAppear = function( event ) {
     // NOTE: widget absolute position can change without changing it's relative postion, therefore:
     renderPosition.call( this );
-    fireEvent.call( this, "Show" );
-  };
-
-  var onDisappear = function( event ) {
-    fireEvent.call( this, "Hide" );
-    //this._.parent.setFocused( true );
   };
 
   var onFocusChange = function( event ) {

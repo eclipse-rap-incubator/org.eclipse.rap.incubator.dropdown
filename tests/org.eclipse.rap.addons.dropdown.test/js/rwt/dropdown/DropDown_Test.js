@@ -621,6 +621,15 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
       assertEquals( 1, logger.getLog().length );
     },
 
+    testAddShowListener_notifiesEventForEmptyItems : function() {
+      var logger = TestUtil.getLogger();
+      dropdown.addListener( "Show", logger.log );
+
+      showDropDown( [] );
+
+      assertEquals( 1, logger.getLog().length );
+    },
+
     testRemoveShowListener : function() {
       var logger = TestUtil.getLogger();
       dropdown.addListener( "Show", logger.log );
@@ -633,6 +642,16 @@ rwt.qx.Class.define( "rwt.dropdown.DropDown_Test", {
 
     testAddHideListener : function() {
       showDropDown();
+      var logger = TestUtil.getLogger();
+      dropdown.addListener( "Hide", logger.log );
+
+      dropdown.hide();
+
+      assertEquals( 1, logger.getLog().length );
+    },
+
+    testAddHideListener_notifiesEventForEmptyItems : function() {
+      showDropDown( [] );
       var logger = TestUtil.getLogger();
       dropdown.addListener( "Hide", logger.log );
 
