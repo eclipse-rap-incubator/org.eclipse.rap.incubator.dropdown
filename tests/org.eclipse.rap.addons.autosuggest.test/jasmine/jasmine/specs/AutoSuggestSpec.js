@@ -145,6 +145,8 @@
 
     beforeEach( function() {
       rap = new RapMock();
+      spyOn( rap, "on" );
+      spyOn( rap, "off" );
       model = rap.typeHandler[ "rwt.remote.Model" ].factory(); // make model "public"
       model.set( "suggestions", [ "foo", "bar", "foobar", "banana", "apple", "cherry" ] );
       log = [];
@@ -159,13 +161,36 @@
 
     describe( "change:dataSourceId", function() {
 
-      it( "sets suggestions to null", function() {
+      it( "does nothing before the  next render event", function() {
         model.addListener( "change:dataSourceId", createClientListener( "AutoSuggest.js" ) );
         model.set( "suggestions", [] );
 
         model.set( "dataSourceId", "fooId" );
 
+        expect( model.get( "suggestions" ) ).not.toBeNull();
+      } );
+
+      it( "sets suggestions to null on the next render event", function() {
+        model.addListener( "change:dataSourceId", createClientListener( "AutoSuggest.js" ) );
+        model.set( "suggestions", [] );
+
+        model.set( "dataSourceId", "fooId" );
+        expect( rap.on ).toHaveBeenCalledWith( "render", jasmine.any( Function ) );
+        var listener = rap.on.argsForCall[ 0 ][ 1 ];
+        listener();
+
         expect( model.get( "suggestions" ) ).toBeNull();
+      } );
+
+      it( "sets suggestions to null only once", function() {
+        model.addListener( "change:dataSourceId", createClientListener( "AutoSuggest.js" ) );
+        model.set( "suggestions", [] );
+
+        model.set( "dataSourceId", "fooId" );
+        var listener = rap.on.argsForCall[ 0 ][ 1 ];
+        listener();
+
+        expect( rap.off ).toHaveBeenCalledWith( "render", listener );
       } );
 
     } );

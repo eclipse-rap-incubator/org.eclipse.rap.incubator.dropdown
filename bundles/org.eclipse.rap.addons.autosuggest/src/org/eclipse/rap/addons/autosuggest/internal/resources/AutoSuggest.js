@@ -148,7 +148,12 @@ function syncModelTextSelection( textWidget, event ) {
 // Event Handling
 
 function onChangeDataSourceId( event ) {
-  this.set( "suggestions", null );
+  var self = this;
+  var callback = function() {
+    self.set( "suggestions", null );
+    rap.off( "render", callback );
+  };
+  rap.on( "render", callback );
 }
 
 function onChangeSuggestions( event ) {

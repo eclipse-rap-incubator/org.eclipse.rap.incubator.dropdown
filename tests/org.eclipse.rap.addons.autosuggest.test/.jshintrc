@@ -1,0 +1,29 @@
+{
+  "curly": true,
+  "immed": true,
+  "newcap": true,
+  "eqnull": true,
+  "shadow": true,
+  "funcscope": true,
+  "undef": true,
+  "browser": true,
+  "laxbreak": true,
+  "evil": true,
+  "onecase": true,
+  "sub": true,
+  "globals": {
+    "rwt": true,
+    "rap": true,
+    "org": true,
+    "SWT": false,
+    "describe": false,
+    "it": false,
+    "expect": false,
+    "beforeEach": false,
+    "afterEach": false,
+    "spyOn": false,
+    "TestUtil": false,
+    "RapMock": true,
+    "jasmine": false
+  }
+}
