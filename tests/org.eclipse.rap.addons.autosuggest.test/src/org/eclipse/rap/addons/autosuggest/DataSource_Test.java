@@ -11,10 +11,13 @@
 package org.eclipse.rap.addons.autosuggest;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -32,10 +35,9 @@ import org.junit.Test;
 public class DataSource_Test {
 
   private static final String REMOTE_TYPE = "rwt.remote.Model";
-
   private Connection connection;
-
   private RemoteObject remoteObject;
+  private DataSource dataSource;
 
   @Before
   public void setUp() {
@@ -45,6 +47,7 @@ public class DataSource_Test {
     when( connection.createRemoteObject( anyString() ) ).thenReturn( remoteObject );
     when( remoteObject.getId() ).thenReturn( "idFoo" );
     Fixture.fakeConnection( connection );
+    dataSource = new DataSource();
   }
 
   @After
@@ -54,38 +57,36 @@ public class DataSource_Test {
 
   @Test
   public void testConstructor_createsRemoteObject() {
-    new DataSource();
-
     verify( connection ).createRemoteObject( eq( REMOTE_TYPE ) );
   }
 
   @Test
   public void testGetId() {
-    DataSource dataSource = new DataSource();
     assertEquals( "idFoo", dataSource.getId() );
   }
 
   @Test ( expected = NullPointerException.class )
   public void testSetDataProvider_failsWithNullArgument() {
-    DataSource dataSource = new DataSource();
-
     dataSource.setDataProvider( null );
   }
 
   @Test
   public void testSetDataProvider_setsDataOnRemoteObject() {
-    DataSource dataSource = new DataSource();
-
     dataSource.setDataProvider( new ArrayDataProvider( "foo", "bar" ) );
 
     JsonArray array = new JsonArray().add( "foo" ).add( "bar" );
     verify( remoteObject ).set( eq( "data" ), eq( array ) );
   }
 
+  @Test( expected = IllegalStateException.class )
+  public void testSetDataProvider_failsIfDisposed() {
+    dataSource.dispose();
+
+    dataSource.setDataProvider( new ArrayDataProvider( "foo", "bar" ) );
+  }
+
   @Test
   public void testSetDataProvider_setsDataOnRemoteObject_forColumnDataProvider() {
-    DataSource dataSource = new DataSource();
-
     dataSource.setDataProvider( new ColumnDataProvider() {
       public Iterable<?> getSuggestions() {
         return Arrays.asList( "foo", "bar" );
@@ -106,16 +107,20 @@ public class DataSource_Test {
 
   @Test
   public void testSetFilterScript_setsFilterScriptOnRemoteObject() {
-    DataSource dataSource = new DataSource();
-
     dataSource.setFilterScript( "foobar" );
 
     verify( remoteObject ).set( eq( "filterScript" ), eq( "foobar" ) );
   }
 
+  @Test( expected = IllegalStateException.class )
+  public void testSetFilterScript_failsIfDisposed() {
+    dataSource.dispose();
+
+    dataSource.setFilterScript( "foobar" );
+  }
+
   @Test
   public void testSetTemplate() {
-    DataSource dataSource = new DataSource();
     ColumnTemplate template = mock( ColumnTemplate.class );
 
     dataSource.setTemplate( template );
@@ -123,4 +128,37 @@ public class DataSource_Test {
     assertSame( template, dataSource.getTemplate() );
   }
 
+  @Test( expected = IllegalStateException.class )
+  public void testSetTemplate_failsIfDisposed() {
+    dataSource.dispose();
+
+    dataSource.setTemplate( mock( ColumnTemplate.class ) );
+  }
+
+  @Test
+  public void testIsDisposed_returnsFalse() {
+    assertFalse( dataSource.isDisposed() );
+  }
+
+  @Test
+  public void testIsDisposed_returnsTrueAfterDispose() {
+    dataSource.dispose();
+
+    assertTrue( dataSource.isDisposed() );
+  }
+
+  @Test
+  public void testDispose_destroyRemoteObject() {
+    dataSource.dispose();
+
+    verify( remoteObject ).destroy();
+  }
+
+  @Test
+  public void testDispose_callingTwicedestroysRemoteObjectOnce() {
+    dataSource.dispose();
+    dataSource.dispose();
+
+    verify( remoteObject, times( 1 ) ).destroy();
+  }
 }

@@ -284,6 +284,15 @@ public class AutoSuggest_Test {
     autoSuggest.setDataSource( mock( DataSource.class ) );
   }
 
+  @Test( expected = IllegalArgumentException.class )
+  public void testSetDataSource_failsIfDataSourceIsDisposed() {
+    AutoSuggest autoSuggest = new AutoSuggest( text );
+    DataSource dataSource = mock( DataSource.class );
+    when( new Boolean( dataSource.isDisposed() ) ).thenReturn( Boolean.TRUE );
+
+    autoSuggest.setDataSource( dataSource );
+  }
+
   @Test
   public void testSetDataSource_setsDataSourceOnRemoteObject() {
     AutoSuggest autoSuggest = new AutoSuggest( text );

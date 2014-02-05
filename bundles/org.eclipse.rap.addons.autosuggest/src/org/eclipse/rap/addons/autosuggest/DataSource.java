@@ -21,8 +21,8 @@ import org.eclipse.rap.rwt.remote.RemoteObject;
  *
  * <p>
  *   A single instance can be used by multiple <code>AutoSuggest</code> instances simultaneously.
- *   Each new DataSource is linked to the lifecycle of the UISession,
- *   therefore no duplicates should be created.
+ *   DataSources should be disposed when no longer needed. Disposing the <code>AutoSuggest</code>
+ *   has no effect on the <code>DataSource</code>.
  * </p>
  *
  * <p>
@@ -43,6 +43,7 @@ public class DataSource {
   private final RemoteObject remoteObject;
   private DataProvider<Object> dataProvider;
   private ColumnTemplate template;
+  private boolean isDisposed;
 
   /**
    * Constructs a new instance of this class. A {@link DataProvider} has to be set before it can be
@@ -67,12 +68,14 @@ public class DataSource {
    * @param dataProvider the DataProvider instance (may not be null)
    *
    * @exception NullPointerException when dataProvider is null
+   * @exception IllegalStateException when the receiver is disposed
    *
    * @see DataSource#setTemplate(ColumnTemplate)
    * @see DataSource#setFilterScript(String)
    */
   @SuppressWarnings( "unchecked" )
   public void setDataProvider( DataProvider<?> dataProvider ) {
+    checkDisposed();
     if( dataProvider == null ) {
       throw new NullPointerException( "Parameter must not be null: dataProvider" );
     }
@@ -95,9 +98,12 @@ public class DataSource {
    *
    * @param script the filterScript, or <code>null</code> to use default script
    *
+   * @exception IllegalStateException when the receiver is disposed
+   *
    * @see DataSource#setDataProvider(DataProvider)
    */
   public void setFilterScript( String script ) {
+    checkDisposed();
     remoteObject.set( "filterScript", script );
   }
 
@@ -114,10 +120,33 @@ public class DataSource {
    *
    * @param template the template (may be null)
    *
+   * @exception IllegalStateException when the receiver is disposed
+   *
    * @see DataSource#setDataProvider(DataProvider)
    */
   public void setTemplate( ColumnTemplate template ) {
+    checkDisposed();
     this.template = template;
+  }
+
+  /**
+   * Disposes the receiver with all resources it created, but not the <code>DataProvider</code>
+   * that may be attached to it. If the instance is already disposed, nothing happens.
+   */
+  public void dispose() {
+    if( !isDisposed ) {
+      isDisposed = true;
+      remoteObject.destroy();
+    }
+  }
+
+  /**
+   * Indicates whether the receiver has been disposed.
+   *
+   * @return true if the receiver is disposed
+   */
+  public boolean isDisposed() {
+    return isDisposed;
   }
 
   String getId() {
@@ -126,6 +155,12 @@ public class DataSource {
 
   ColumnTemplate getTemplate() {
     return template;
+  }
+
+  private void checkDisposed() {
+    if( isDisposed ) {
+      throw new IllegalStateException( "AutoSuggest is disposed" );
+    }
   }
 
   private void setInitialData() {

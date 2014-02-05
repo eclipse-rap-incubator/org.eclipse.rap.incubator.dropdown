@@ -125,6 +125,7 @@ public class AutoSuggest {
    * @param dataSource the DataSource (can be null)
    *
    * @exception IllegalStateException when the receiver is disposed
+   * @exception IllegalArgumentException when the argument is disposed
    *
    * <p>
    * NOTE: The dataSource may be changed at any time
@@ -132,6 +133,9 @@ public class AutoSuggest {
    */
   public void setDataSource( DataSource dataSource ) {
     checkDisposed();
+    if( dataSource != null && dataSource.isDisposed() ) {
+      throw new IllegalArgumentException( "DataSource is disposed" );
+    }
     remoteObject.set( "dataSourceId", dataSource != null ? dataSource.getId() : null );
     if( dataSource != null ) {
       ColumnTemplate template = dataSource.getTemplate();
