@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 EclipseSource.
+ * Copyright (c) 2013, 2014 EclipseSource and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,7 +10,6 @@
  ******************************************************************************/
 package org.eclipse.rap.addons.dropdown;
 
-import org.eclipse.rap.addons.dropdown.internal.resources.DropDownResources;
 import org.eclipse.rap.json.JsonArray;
 import org.eclipse.rap.json.JsonObject;
 import org.eclipse.rap.json.JsonValue;
@@ -61,7 +60,9 @@ import org.eclipse.swt.widgets.Widget;
  * </p>
  *
  */
-@SuppressWarnings("restriction")
+@SuppressWarnings({
+  "restriction", "deprecation"
+})
 public class DropDown extends Widget {
 
   private static final String COLUMNS = "columns";
@@ -97,7 +98,6 @@ public class DropDown extends Widget {
   public DropDown( Control parent ) {
     super( parent, 0 );
     this.parent = parent;
-    DropDownResources.ensure();
     getRemoteObject().set( "parent", WidgetUtil.getId( parent ) );
     getRemoteObject().setHandler( new InternalOperationHandler() );
     disposeListener = new Listener() {
@@ -385,9 +385,8 @@ public class DropDown extends Widget {
     //             This implementation assumes the client merges the new values with the existing
     //             ones, which is the case in the WebClient
     if( WidgetDataUtil.getDataKeys().contains( key ) ) {
-      @SuppressWarnings( "deprecation" )
       JsonObject data = new JsonObject().add( key, JsonUtil.createJsonValue( value ) );
-      remoteObject.call( "setData", data );
+      remoteObject.set( "data", data );
     }
   }
 
