@@ -6,5 +6,5 @@ Bundle-Version: 0.3.0.qualifier
 Bundle-Vendor: Eclipse.org - RAP Incubator
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Import-Package: org.osgi.framework;version="1.3.0"
-Export-Package: org.eclipse.rap.addons.dropdown;version="0.2.0"
+Export-Package: org.eclipse.rap.addons.dropdown;version="0.3.0"
 Require-Bundle: org.eclipse.rap.rwt;bundle-version="2.3.0"
