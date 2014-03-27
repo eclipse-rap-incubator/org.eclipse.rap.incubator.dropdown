@@ -66,7 +66,7 @@ import org.eclipse.swt.widgets.Widget;
 public class DropDown extends Widget {
 
   private static final String COLUMNS = "columns";
-  private static final String REMOTE_TYPE = "rwt.dropdown.DropDown";
+  private static final String REMOTE_TYPE = "rwt.widgets.DropDown";
   private static final String SELECTION = "Selection";
   private static final String DEFAULT_SELECTION = "DefaultSelection";
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 EclipseSource.
+ * Copyright (c) 2013, 2014 EclipseSource.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -19,7 +19,7 @@ var MODEL_KEY = "org.eclipse.rap.addons.autosuggest#Model";
 function handleEvent( event ) {
   if( event.widget ) {
     var model = rap.getObject( event.widget.getData( MODEL_KEY ) );
-    if( event.widget.classname === "rwt.dropdown.DropDown" ) {
+    if( event.widget.classname === "rwt.widgets.DropDown" ) {
       handleDropDownEvent( model, event );
     } else {
       handleTextEvent( model, event );

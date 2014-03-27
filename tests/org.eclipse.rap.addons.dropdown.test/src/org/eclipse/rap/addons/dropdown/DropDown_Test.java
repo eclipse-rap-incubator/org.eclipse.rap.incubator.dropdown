@@ -94,7 +94,7 @@ public class DropDown_Test {
 
   @Test
   public void testContructor_CreatesRemoteObjectWithCorrentType() {
-    verify( connection ).createRemoteObject( "rwt.dropdown.DropDown" );
+    verify( connection ).createRemoteObject( "rwt.widgets.DropDown" );
   }
 
   @Test
