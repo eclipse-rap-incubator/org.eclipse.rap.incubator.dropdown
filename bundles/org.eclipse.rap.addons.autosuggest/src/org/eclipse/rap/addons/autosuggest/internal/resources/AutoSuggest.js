@@ -180,7 +180,7 @@ function onChangeCurrentSuggestions( event ) {
   }
   ensureTemplate.apply( this );
   var template = this.get( "template" );
-  this.set( "currentSuggestionTexts", currentSuggestions.map( template ) );
+  this.set( "currentSuggestionTexts", map( currentSuggestions, template ) );
 }
 
 function onChangeSelectedSuggestionIndex( event ) {
