@@ -13,10 +13,10 @@ package org.eclipse.rap.addons.dropdown.demo;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.rap.addons.dropdown.DropDown;
 import org.eclipse.rap.addons.dropdown.demo.data.Movies;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.application.AbstractEntryPoint;
+import org.eclipse.rap.rwt.widgets.DropDown;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -52,12 +52,17 @@ public class DropDownDemo extends AbstractEntryPoint {
         if( text.getData( "selecting" ) != Boolean.TRUE ) {
           userText = text.getText();
           if( userText.length() >= 2 ) {
-            dropdown.show();
+            dropdown.setVisible( true );
             String searchStr = userText.toLowerCase();
             currentTexts = filter( Movies.VALUES, searchStr, 10 );
             dropdown.setItems( format( currentTexts, searchStr ) );
+            if( currentTexts.length > 10 ) {
+              dropdown.setSelectionIndex( -1 );
+            } else if( currentTexts.length == 1 ) {
+              dropdown.setSelectionIndex( 0 );
+            }
           } else {
-            dropdown.hide();
+            dropdown.setVisible( false );
           }
         }
       }
@@ -87,7 +92,7 @@ public class DropDownDemo extends AbstractEntryPoint {
         if( event.index != -1 ) {
           text.setText( currentTexts[ event.index ] );
           text.setSelection( event.text.length() );
-          dropdown.hide();
+          dropdown.setVisible( false );
         }
       }
     } );

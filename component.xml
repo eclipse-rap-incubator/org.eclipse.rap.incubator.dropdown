@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component>
   <name>
-    Dropdown Widget
+    DropDown & AutoSuggest
   </name>
   <maintainer>
     Tim Buschtöns
   </maintainer>
   <description>
-    The dropdown widget can display a list below a Text field in order to
-    display dynamic proposals while typing. A JFace viewer allows to connect
-    a content provider and a label provider to extract the proposals from a
-    data model.
+    <p>
+      The DropDown widget can display a list below a Text field in order to
+      display dynamic proposals while typing. As of RAP 2.3 this widget has been migrated to RAP.
+    </p>
+    <p>
+      AutoSuggest is a component that builds on DropDown. It provides a JFace-like viewer API and
+      auto-completion without latency.
+    </p>
   </description>
 </component>

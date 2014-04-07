@@ -13,13 +13,13 @@ package org.eclipse.rap.addons.dropdown.demo.internal;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.rap.addons.dropdown.DropDown;
 import org.eclipse.rap.addons.dropdown.demo.AutoSuggestDemo;
 import org.eclipse.rap.addons.dropdown.demo.DropDownDemo;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.application.Application;
 import org.eclipse.rap.rwt.application.ApplicationConfiguration;
 import org.eclipse.rap.rwt.client.WebClient;
+import org.eclipse.rap.rwt.widgets.DropDown;
 
 
 public class DropDownApplication implements ApplicationConfiguration {

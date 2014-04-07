@@ -2,11 +2,10 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: DropDown Demo
 Bundle-SymbolicName: org.eclipse.rap.addons.dropdown.demo
-Bundle-Version: 0.2.0.qualifier
+Bundle-Version: 0.3.0.qualifier
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Require-Bundle: org.eclipse.rap.rwt;bundle-version="2.2.0"
 Service-Component: OSGI-INF/*.xml
 Bundle-Vendor: Eclipse.org - RAP Incubator
-Import-Package: org.eclipse.rap.addons.autosuggest;version="0.2.0",
- org.eclipse.rap.addons.dropdown;version="0.2.0"
-Export-Package: org.eclipse.rap.addons.dropdown.demo;version="0.2.0"
+Import-Package: org.eclipse.rap.addons.autosuggest;version="0.3.0"
+Export-Package: org.eclipse.rap.addons.dropdown.demo;version="0.3.0"

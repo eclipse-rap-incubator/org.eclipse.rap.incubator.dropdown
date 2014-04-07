@@ -10,8 +10,8 @@
  ******************************************************************************/
 package org.eclipse.rap.addons.dropdown.demo;
 
-import org.eclipse.rap.addons.dropdown.DropDown;
 import org.eclipse.rap.rwt.application.AbstractEntryPoint;
+import org.eclipse.rap.rwt.widgets.DropDown;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
@@ -38,12 +38,12 @@ public class ComboVsDropDown extends AbstractEntryPoint {
       public void handleEvent( Event event ) {
         text.setText( event.text );
         text.setText( event.text );
-        dropDown.hide();
+        dropDown.setVisible( false );
       }
     } );
     text.addListener( SWT.MouseDown, new Listener() {
       public void handleEvent( Event event ) {
-        dropDown.show();
+        dropDown.setVisible( true );
       }
     } );
 
