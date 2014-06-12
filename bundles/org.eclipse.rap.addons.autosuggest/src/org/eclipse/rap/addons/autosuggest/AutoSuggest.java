@@ -10,7 +10,7 @@
  ******************************************************************************/
 package org.eclipse.rap.addons.autosuggest;
 
-import static org.eclipse.rap.rwt.lifecycle.WidgetUtil.getId;
+import static org.eclipse.rap.rwt.widgets.WidgetUtil.getId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,11 +21,11 @@ import org.eclipse.rap.addons.autosuggest.internal.resources.ModelResources;
 import org.eclipse.rap.json.JsonObject;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.internal.scripting.ClientListenerUtil;
-import org.eclipse.rap.rwt.lifecycle.WidgetUtil;
 import org.eclipse.rap.rwt.remote.AbstractOperationHandler;
 import org.eclipse.rap.rwt.remote.RemoteObject;
 import org.eclipse.rap.rwt.scripting.ClientListener;
 import org.eclipse.rap.rwt.widgets.DropDown;
+import org.eclipse.rap.rwt.widgets.WidgetUtil;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.widgets.Event;
