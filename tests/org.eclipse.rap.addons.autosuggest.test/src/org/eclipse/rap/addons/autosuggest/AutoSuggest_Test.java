@@ -31,8 +31,8 @@ import static org.mockito.Mockito.when;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.rap.rwt.RWT;
+import org.eclipse.rap.rwt.internal.lifecycle.PhaseId;
 import org.eclipse.rap.rwt.internal.lifecycle.WidgetDataUtil;
-import org.eclipse.rap.rwt.lifecycle.PhaseId;
 import org.eclipse.rap.rwt.remote.Connection;
 import org.eclipse.rap.rwt.remote.OperationHandler;
 import org.eclipse.rap.rwt.remote.RemoteObject;
@@ -50,7 +50,9 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 
-@SuppressWarnings( "restriction" )
+@SuppressWarnings( {
+  "restriction", "deprecation"
+} )
 public class AutoSuggest_Test {
 
   private static final String REMOTE_SELECTION_EVENT = "suggestionSelected";
