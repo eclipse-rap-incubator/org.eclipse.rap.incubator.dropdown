@@ -30,14 +30,11 @@ function handleEvent( event ) {
 }
 
 function handleModelEvent( model, event ) {
-  var textWidget;
-  try {
-    textWidget = rap.getObject( model.get( "textWidgetId" ) );
-  } catch( ex ) {
-    // When Text is disposed, AutoSuggest may perform a set operation before it is also disposed
-    return;
-  }
+  var textWidget = rap.getObject( model.get( "textWidgetId" ) );
   var dropDown = rap.getObject( model.get( "dropDownWidgetId" ) );
+  // Note: Text or DropDown could be disposed (undefined) at this point.
+  // AutoSuggest may perform a set operation before it is also disposed.
+  // Add null check in the corresponding property handler.
   if( event.type === "accept" ) {
     onAcceptSuggestion.apply( model, [ event ] );
   } else {
@@ -117,7 +114,7 @@ function syncDropDownVisible( dropDown, event ) {
 }
 
 function syncModelSuggestionsVisible( dropDown, event ) {
-  if( event.options.action !== "sync" ) {
+  if( dropDown && event.options.action !== "sync" ) {
     dropDown.setVisible( event.value );
   }
 }
@@ -131,17 +128,21 @@ function forwardDropDownDefaultSelection( dropDown, event ) {
 }
 
 function syncModelCurrentSuggestionTexts( dropDown, event ) {
-  dropDown.setItems( this.get( "currentSuggestionTexts" ) );
+  if( dropDown ) {
+    dropDown.setItems( this.get( "currentSuggestionTexts" ) );
+  }
 }
 
 function syncModelText( textWidget, event ) {
-  if( event.options.action !== "sync" ) {
+  if( textWidget && event.options.action !== "sync" ) {
     textWidget.setText( event.value );
   }
 }
 
 function syncModelTextSelection( textWidget, event ) {
-  textWidget.setSelection( event.value );
+  if( textWidget ) {
+    textWidget.setSelection( event.value );
+  }
 }
 
 //////////////////
