@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 EclipseSource and others.
+ * Copyright (c) 2013, 2014 EclipseSource and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -173,6 +173,24 @@
       spyOn( rap.fakeRemoteObject, "notify" );
 
       model.set( "foo", true, { "nosync" : true } );
+
+      expect( rap.fakeRemoteObject.notify ).not.toHaveBeenCalled();
+    } );
+
+    it( "does not notify change listener with disposed model", function() {
+      model.addListener( "change:foo", logger );
+      model.destroy();
+
+      model.set( "foo", 23 );
+
+      expect( log.length ).toBe( 0 );
+    } );
+
+    it( "does not call notify on remoteObject with disposed model", function() {
+      spyOn( rap.fakeRemoteObject, "notify" );
+      model.destroy();
+
+      model.set( "foo", 23 );
 
       expect( rap.fakeRemoteObject.notify ).not.toHaveBeenCalled();
     } );
