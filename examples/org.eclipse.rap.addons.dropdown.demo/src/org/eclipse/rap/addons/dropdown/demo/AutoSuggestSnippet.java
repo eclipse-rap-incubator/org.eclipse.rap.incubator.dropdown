@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 EclipseSource and others.
+ * Copyright (c) 2013, 2015 EclipseSource and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -46,6 +46,7 @@ public class AutoSuggestSnippet extends AbstractEntryPoint {
     autoSuggest1.setAutoComplete( true );
     autoSuggest1.setDataSource( simpleDataSource );
     autoSuggest1.addSelectionListener( new SuggestionSelectedListener() {
+      @Override
       public void suggestionSelected() {
         System.out.println( "selected: " + text1.getText() );
       }
@@ -62,17 +63,18 @@ public class AutoSuggestSnippet extends AbstractEntryPoint {
     simpleDataSource.setDataProvider( new ArrayDataProvider( Movies.VALUES ) );
     columnDataSource = new DataSource();
     columnDataSource.setTemplate( new ColumnTemplate( 50, 150, 150 ) );
-    columnDataSource.setDataProvider( new ColumnDataProvider() {
-      public Iterable<?> getSuggestions() {
+    columnDataSource.setDataProvider( new ColumnDataProvider<String[]>() {
+      @Override
+      public Iterable<String[]> getSuggestions() {
         return Arrays.asList( KFZ.DE );
       }
-      public String getValue( Object element ) {
-        String[] value = ( String[] )element;
-        return value[ 0 ];
+      @Override
+      public String getValue( String[] suggestion ) {
+        return suggestion[ 0 ];
       }
-      public String[] getTexts( Object element ) {
-        String[] value = ( String[] )element;
-        return new String[] { value[ 0 ], value[ 2 ], value[ 3 ] };
+      @Override
+      public String[] getTexts( String[] suggestion ) {
+        return new String[] { suggestion[ 0 ], suggestion[ 2 ], suggestion[ 3 ] };
       }
     } );
   }

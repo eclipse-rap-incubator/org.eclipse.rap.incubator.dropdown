@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2014 EclipseSource and others.
+ * Copyright (c) 2013, 2015 EclipseSource and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -50,9 +50,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 
-@SuppressWarnings( {
-  "restriction", "deprecation"
-} )
+@SuppressWarnings({ "restriction", "deprecation" })
 public class AutoSuggest_Test {
 
   private static final String REMOTE_SELECTION_EVENT = "suggestionSelected";
@@ -493,8 +491,9 @@ public class AutoSuggest_Test {
   }
 
   private AtomicReference<OperationHandler> captureOperationHandler() {
-    final AtomicReference<OperationHandler> captor = new AtomicReference<OperationHandler>();
+    final AtomicReference<OperationHandler> captor = new AtomicReference<>();
     doAnswer( new Answer<Object>() {
+      @Override
       public Object answer( InvocationOnMock invocation ) throws Throwable {
         captor.set( ( OperationHandler )invocation.getArguments()[ 0 ] );
         return null;

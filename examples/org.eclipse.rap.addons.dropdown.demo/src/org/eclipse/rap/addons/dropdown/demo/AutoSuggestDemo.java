@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2014 EclipseSource and others.
+ * Copyright (c) 2013, 2015 EclipseSource and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -64,23 +64,25 @@ public class AutoSuggestDemo extends AbstractEntryPoint {
 
   private void createDataSources() {
     de = new DataSource();
-    de.setDataProvider( new DataProvider() {
-      public Iterable< ? > getSuggestions() {
+    de.setDataProvider( new DataProvider<String[]>() {
+      @Override
+      public Iterable<String[]> getSuggestions() {
         return Arrays.asList( KFZ.DE );
       }
-      public String getValue( Object element ) {
-        String[] array = (String[])element;
-        return array[ 2 ] + " (" + array[ 0 ] + ")";
+      @Override
+      public String getValue( String[] suggestion ) {
+        return suggestion[ 2 ] + " (" + suggestion[ 0 ] + ")";
       }
     } );
     at = new DataSource();
-    at.setDataProvider( new DataProvider() {
-      public Iterable< ? > getSuggestions() {
+    at.setDataProvider( new DataProvider<String[]>() {
+      @Override
+      public Iterable<String[]> getSuggestions() {
         return Arrays.asList( KFZ.AT );
       }
-      public String getValue( Object element ) {
-        String[] array = (String[])element;
-        return array[ 1 ] + " (" + array[ 0 ] + ")";
+      @Override
+      public String getValue( String[] suggestion ) {
+        return suggestion[ 1 ] + " (" + suggestion[ 0 ] + ")";
       }
     } );
     currentDataSource = de;
@@ -118,6 +120,7 @@ public class AutoSuggestDemo extends AbstractEntryPoint {
     germany.setText( "Germany" );
     germany.setSelection( true );
     germany.addListener( SWT.Selection, new Listener() {
+      @Override
       public void handleEvent( Event event ) {
         if( germany.getSelection() ) {
           currentDataSource = de;
@@ -128,6 +131,7 @@ public class AutoSuggestDemo extends AbstractEntryPoint {
     final Button austria = new Button( location, SWT.RADIO );
     austria.setText( "Austria" );
     austria.addListener( SWT.Selection, new Listener() {
+      @Override
       public void handleEvent( Event event ) {
         if( austria.getSelection() ) {
           currentDataSource = at;
@@ -147,6 +151,7 @@ public class AutoSuggestDemo extends AbstractEntryPoint {
     final Button autoComplete = new Button( location, SWT.CHECK );
     autoComplete.setText( "AutoComplete" );
     autoComplete.addListener( SWT.Selection, new Listener() {
+      @Override
       public void handleEvent( Event event ) {
         useAutoComplete = autoComplete.getSelection();
         autoSuggest.setAutoComplete( useAutoComplete );
@@ -155,6 +160,7 @@ public class AutoSuggestDemo extends AbstractEntryPoint {
     final Button customScripts = new Button( location, SWT.CHECK );
     customScripts.setText( "Custom Scripts" );
     customScripts.addListener( SWT.Selection, new Listener() {
+      @Override
       public void handleEvent( Event event ) {
         autoSuggest.dispose();
         useCustomScripts = customScripts.getSelection();
@@ -177,6 +183,7 @@ public class AutoSuggestDemo extends AbstractEntryPoint {
 
   private void createLogger() {
     autoSuggest.addSelectionListener( new SuggestionSelectedListener() {
+      @Override
       public void suggestionSelected() {
         TableItem item = new TableItem( table, SWT.NONE );
         item.setText( text.getText() );
@@ -189,6 +196,7 @@ public class AutoSuggestDemo extends AbstractEntryPoint {
     Button button = new Button( parent, SWT.PUSH );
     button.setText( "Dispose!" );
     button.addListener( SWT.Selection, new Listener() {
+      @Override
       public void handleEvent( Event event ) {
         autoSuggest.setDataSource( at );
         text.dispose();

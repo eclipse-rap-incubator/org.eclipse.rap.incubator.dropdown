@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 EclipseSource.
+ * Copyright (c) 2013, 2015 EclipseSource.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -48,6 +48,7 @@ public class DropDownDemo extends AbstractEntryPoint {
 
   public void addModifyListener( final Text text, final DropDown dropdown ) {
     text.addListener( SWT.Modify, new Listener() {
+      @Override
       public void handleEvent( Event event ) {
         if( text.getData( "selecting" ) != Boolean.TRUE ) {
           userText = text.getText();
@@ -71,6 +72,7 @@ public class DropDownDemo extends AbstractEntryPoint {
 
   public void addSelectionListener( final Text text, final DropDown dropdown ) {
     dropdown.addListener( SWT.Selection, new Listener() {
+      @Override
       public void handleEvent( Event event ) {
         if( event.index != -1 ) {
           text.setData( "selecting", Boolean.TRUE );
@@ -88,6 +90,7 @@ public class DropDownDemo extends AbstractEntryPoint {
 
   public void addDefaultSelectionListener( final Text text, final DropDown dropdown ) {
     dropdown.addListener( SWT.DefaultSelection, new Listener() {
+      @Override
       public void handleEvent( Event event ) {
         if( event.index != -1 ) {
           text.setText( currentTexts[ event.index ] );
@@ -99,7 +102,7 @@ public class DropDownDemo extends AbstractEntryPoint {
   }
 
   private static String[] filter( String[] values, String text, int limit ) {
-    List<String> result = new ArrayList<String>( limit );
+    List<String> result = new ArrayList<>( limit );
     for( int i = 0; result.size() < limit && i < values.length; i++ ) {
       String item = values[ i ];
       if( item.toLowerCase().startsWith( text ) ) {

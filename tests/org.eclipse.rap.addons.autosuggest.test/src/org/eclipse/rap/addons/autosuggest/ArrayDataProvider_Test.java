@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 EclipseSource and others.
+ * Copyright (c) 2013, 2015 EclipseSource and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -29,7 +29,7 @@ public class ArrayDataProvider_Test {
 
   @Test
   public void testGetSuggestions_returnsElements() {
-    DataProvider dataProvider = new ArrayDataProvider( new String[]{ "foo", "bar" } );
+    DataProvider<?> dataProvider = new ArrayDataProvider( new String[]{ "foo", "bar" } );
 
     Iterable<?> suggestions = dataProvider.getSuggestions();
 
@@ -38,7 +38,7 @@ public class ArrayDataProvider_Test {
 
   @Test( expected = UnsupportedOperationException.class )
   public void testGetSuggestions_returnsUnmodifiableIterator() {
-    DataProvider dataProvider = new ArrayDataProvider( new String[]{ "foo", "bar" } );
+    DataProvider<?> dataProvider = new ArrayDataProvider( new String[]{ "foo", "bar" } );
 
     Iterable<?> suggestions = dataProvider.getSuggestions();
 
@@ -48,7 +48,7 @@ public class ArrayDataProvider_Test {
   }
 
   private static List<Object> getElements( Iterable<?> suggestions ) {
-    List<Object> elements = new ArrayList<Object>();
+    List<Object> elements = new ArrayList<>();
     for( Object object : suggestions ) {
       elements.add( object );
     }

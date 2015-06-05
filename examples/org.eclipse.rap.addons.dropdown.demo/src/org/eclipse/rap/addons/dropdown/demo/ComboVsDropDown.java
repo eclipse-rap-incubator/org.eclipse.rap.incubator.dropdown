@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 EclipseSource and others.
+ * Copyright (c) 2013, 2015 EclipseSource and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -35,6 +35,7 @@ public class ComboVsDropDown extends AbstractEntryPoint {
     final DropDown dropDown = new DropDown( text );
     dropDown.setItems( getItems() );
     dropDown.addListener( SWT.Selection, new Listener() {
+      @Override
       public void handleEvent( Event event ) {
         text.setText( event.text );
         text.setText( event.text );
@@ -42,6 +43,7 @@ public class ComboVsDropDown extends AbstractEntryPoint {
       }
     } );
     text.addListener( SWT.MouseDown, new Listener() {
+      @Override
       public void handleEvent( Event event ) {
         dropDown.setVisible( true );
       }
@@ -61,4 +63,5 @@ public class ComboVsDropDown extends AbstractEntryPoint {
     }
     return result;
   }
+
 }

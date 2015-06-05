@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2014 EclipseSource and others.
+ * Copyright (c) 2013, 2015 EclipseSource and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,7 +18,7 @@ import java.util.List;
  * This class provides a simple implementation of the default {@link DataProvider} interface
  * based on a String array.
  */
-public class ArrayDataProvider implements DataProvider {
+public class ArrayDataProvider implements DataProvider<String> {
 
   private final List<String> elements;
 
@@ -32,12 +32,14 @@ public class ArrayDataProvider implements DataProvider {
     this.elements = Arrays.asList( elements );
   }
 
-  public Iterable<?> getSuggestions() {
+  @Override
+  public Iterable<String> getSuggestions() {
     return elements;
   }
 
-  public String getValue( Object element ) {
-    return ( String )element;
+  @Override
+  public String getValue( String suggestion ) {
+    return suggestion;
   }
 
 }

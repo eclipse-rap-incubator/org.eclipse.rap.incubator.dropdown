@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2014 EclipseSource and others.
+ * Copyright (c) 2013, 2015 EclipseSource and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,8 +24,9 @@ import org.eclipse.rap.rwt.widgets.DropDown;
 
 public class DropDownApplication implements ApplicationConfiguration {
 
+  @Override
   public void configure( Application application ) {
-    Map<String, String> properties = new HashMap<String, String>();
+    Map<String, String> properties = new HashMap<>();
     properties.put( WebClient.PAGE_TITLE, "DropDown Demo" );
     application.addEntryPoint( "/dropdown", DropDownDemo.class, properties );
     application.addEntryPoint( "/autosuggest", AutoSuggestDemo.class, properties );

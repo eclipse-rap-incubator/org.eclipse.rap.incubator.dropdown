@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 EclipseSource and others.
+ * Copyright (c) 2013, 2015 EclipseSource and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -57,7 +57,7 @@ public class CountryInfo {
     File file = new File( getGeoDataDirectory(), "countries.txt" );
     InputStream stream = new FileInputStream( file );
     BufferedReader reader = new BufferedReader( new InputStreamReader( stream, CHARSET ) );
-    List<Country> countries = new ArrayList<Country>( 252 );
+    List<Country> countries = new ArrayList<>( 252 );
     try {
       String line = reader.readLine();
       while( line != null ) {
@@ -76,7 +76,7 @@ public class CountryInfo {
     File file = new File( getGeoDataDirectory(), "cities/" + country.iso + ".txt" );
     InputStream stream = new FileInputStream( file );
     BufferedReader reader = new BufferedReader( new InputStreamReader( stream, CHARSET ) );
-    List<City> cities = new ArrayList<City>( 250 );
+    List<City> cities = new ArrayList<>( 250 );
     try {
       String line = reader.readLine();
       while( line != null ) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 EclipseSource and others.
+ * Copyright (c) 2013, 2015 EclipseSource and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -23,15 +23,19 @@ public final class JasmineJUnitReporter implements JasmineReporter {
   private Suite currentSuite;
   private String indent = "";
 
+  @Override
   public void reportRunnerStarting() {
   }
 
+  @Override
   public void reportRunnerResults() {
   }
 
+  @Override
   public void reportSuiteResults( Suite suite ) {
   }
 
+  @Override
   public void reportSpecStarting( Spec spec ) {
     if( !spec.getSuite().equals( currentSuite ) ) {
       indent = "";
@@ -50,6 +54,7 @@ public final class JasmineJUnitReporter implements JasmineReporter {
     }
   }
 
+  @Override
   public void reportSpecResults( Spec spec ) {
     executedSpecs++;
     log.append( indent );
@@ -66,6 +71,7 @@ public final class JasmineJUnitReporter implements JasmineReporter {
     }
   }
 
+  @Override
   public void log( String message ) {
     log.append( message );
     log.append( '\n' );

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 EclipseSource and others.
+ * Copyright (c) 2013, 2015 EclipseSource and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -39,6 +39,7 @@ public class DropDownExamplePage implements IExamplePage {
   private AutoSuggest cityAutoSuggest;
   private Country currentCountry = null;
 
+  @Override
   public void createControl( Composite parent ) {
     parent.setLayout( ExampleUtil.createMainLayout( 2 ) );
     createCitySelection( parent );
@@ -77,6 +78,7 @@ public class DropDownExamplePage implements IExamplePage {
     countryAutoSuggest.setAutoComplete( true );
     countryAutoSuggest.setDataSource( createCountriesDataSource() );
     countryAutoSuggest.addSelectionListener( new SuggestionSelectedListener() {
+      @Override
       public void suggestionSelected() {
         setCurrentCountry( countryText.getText() );
       }
@@ -94,6 +96,7 @@ public class DropDownExamplePage implements IExamplePage {
     cityAutoSuggest = new AutoSuggest( cityText );
     cityAutoSuggest.setAutoComplete( true );
     cityAutoSuggest.addSelectionListener( new SuggestionSelectedListener() {
+      @Override
       public void suggestionSelected() {
         String name = cityText.getText();
         City city = currentCountry.findCity( name );
@@ -114,30 +117,34 @@ public class DropDownExamplePage implements IExamplePage {
   // TODO [tb] : re-use data sources
   private static DataSource createCountriesDataSource() {
     DataSource countriesDataSource = new DataSource();
-    countriesDataSource.setDataProvider( new DataProvider() {
-      public Iterable<?> getSuggestions() {
+    countriesDataSource.setDataProvider( new DataProvider<Country>() {
+      @Override
+      public Iterable<Country> getSuggestions() {
         return Arrays.asList( CountryInfo.getInstance().getCountries() );
       }
-      public String getValue( Object element ) {
-        return ( ( Country )element ).name;
+      @Override
+      public String getValue( Country country ) {
+        return country.name;
       }
     } );
     return countriesDataSource;
   }
 
-   // TODO [tb] : re-use data sources
-   private static DataSource createDataSource( Country country ) {
-     DataSource dataSource = new DataSource();
-     final City[] cities = country.getCities();
-     dataSource.setDataProvider( new DataProvider() {
-       public Iterable< ? > getSuggestions() {
-         return Arrays.asList( cities );
-       }
-       public String getValue( Object element ) {
-         return element.toString();
-       }
+  // TODO [tb] : re-use data sources
+  private static DataSource createDataSource( Country country ) {
+    DataSource dataSource = new DataSource();
+    final City[] cities = country.getCities();
+    dataSource.setDataProvider( new DataProvider<City>() {
+      @Override
+      public Iterable<City> getSuggestions() {
+        return Arrays.asList( cities );
+      }
+      @Override
+      public String getValue( City city ) {
+        return city.toString();
+      }
     } );
-     return dataSource;
-   }
+    return dataSource;
+  }
 
 }

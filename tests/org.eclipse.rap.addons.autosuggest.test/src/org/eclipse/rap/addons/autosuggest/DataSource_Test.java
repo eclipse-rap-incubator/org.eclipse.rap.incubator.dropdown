@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2014 EclipseSource and others.
+ * Copyright (c) 2013, 2015 EclipseSource and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -88,14 +88,17 @@ public class DataSource_Test {
 
   @Test
   public void testSetDataProvider_setsDataOnRemoteObject_forColumnDataProvider() {
-    dataSource.setDataProvider( new ColumnDataProvider() {
-      public Iterable<?> getSuggestions() {
+    dataSource.setDataProvider( new ColumnDataProvider<String>() {
+      @Override
+      public Iterable<String> getSuggestions() {
         return Arrays.asList( "foo", "bar" );
       }
-      public String getValue( Object element ) {
-        return ( String )element;
+      @Override
+      public String getValue( String element ) {
+        return element;
       }
-      public String[] getTexts( Object element ) {
+      @Override
+      public String[] getTexts( String element ) {
         return new String[] { element + "-1", element + "-2" };
       }
     } );
