@@ -31,26 +31,25 @@ import static org.mockito.Mockito.when;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.rap.rwt.RWT;
-import org.eclipse.rap.rwt.internal.lifecycle.PhaseId;
 import org.eclipse.rap.rwt.internal.lifecycle.WidgetDataUtil;
 import org.eclipse.rap.rwt.remote.Connection;
 import org.eclipse.rap.rwt.remote.OperationHandler;
 import org.eclipse.rap.rwt.remote.RemoteObject;
 import org.eclipse.rap.rwt.scripting.ClientListener;
-import org.eclipse.rap.rwt.testfixture.internal.Fixture;
+import org.eclipse.rap.rwt.testfixture.TestContext;
 import org.eclipse.rap.rwt.widgets.DropDown;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 
-@SuppressWarnings({ "restriction", "deprecation" })
+@SuppressWarnings({ "restriction" })
 public class AutoSuggest_Test {
 
   private static final String REMOTE_SELECTION_EVENT = "suggestionSelected";
@@ -61,19 +60,15 @@ public class AutoSuggest_Test {
   private RemoteObject remoteObject;
   private Connection connection;
 
+  @Rule
+  public TestContext context = new TestContext();
+
   @Before
   public void setUp() {
-    Fixture.setUp();
-    Fixture.fakePhase( PhaseId.PROCESS_ACTION );
     Display display = new Display();
     Shell shell = new Shell( display );
     text = new Text( shell, SWT.NONE );
     mockRemoteObject();
-  }
-
-  @After
-  public void tearDown() {
-    Fixture.tearDown();
   }
 
   @Test( expected = NullPointerException.class )
@@ -507,7 +502,7 @@ public class AutoSuggest_Test {
     when( remoteObject.getId() ).thenReturn( "foo" );
     connection = spy( RWT.getUISession().getConnection() );
     when( connection.createRemoteObject( REMOTE_TYPE ) ).thenReturn( remoteObject );
-    Fixture.fakeConnection( connection );
+    context.replaceConnection( connection );
   }
 
 }

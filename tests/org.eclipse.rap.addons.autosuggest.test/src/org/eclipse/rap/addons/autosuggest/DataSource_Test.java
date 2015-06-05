@@ -26,13 +26,12 @@ import java.util.Arrays;
 import org.eclipse.rap.json.JsonArray;
 import org.eclipse.rap.rwt.remote.Connection;
 import org.eclipse.rap.rwt.remote.RemoteObject;
-import org.eclipse.rap.rwt.testfixture.internal.Fixture;
-import org.junit.After;
+import org.eclipse.rap.rwt.testfixture.TestContext;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
 
-@SuppressWarnings( "restriction" )
 public class DataSource_Test {
 
   private static final String REMOTE_TYPE = "rwt.remote.Model";
@@ -40,20 +39,17 @@ public class DataSource_Test {
   private RemoteObject remoteObject;
   private DataSource dataSource;
 
+  @Rule
+  public TestContext context = new TestContext();
+
   @Before
   public void setUp() {
-    Fixture.setUp();
     connection = mock( Connection.class );
     remoteObject = mock( RemoteObject.class );
     when( connection.createRemoteObject( anyString() ) ).thenReturn( remoteObject );
     when( remoteObject.getId() ).thenReturn( "idFoo" );
-    Fixture.fakeConnection( connection );
+    context.replaceConnection( connection );
     dataSource = new DataSource();
-  }
-
-  @After
-  public void tearDown() {
-    Fixture.tearDown();
   }
 
   @Test
@@ -165,4 +161,5 @@ public class DataSource_Test {
 
     verify( remoteObject, times( 1 ) ).destroy();
   }
+
 }
