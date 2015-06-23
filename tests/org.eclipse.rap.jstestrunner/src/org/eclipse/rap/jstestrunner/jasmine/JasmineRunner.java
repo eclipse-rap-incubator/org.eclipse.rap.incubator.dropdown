@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013 EclipseSource and others.
+ * Copyright (c) 2013, 2015 EclipseSource and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,7 +24,7 @@ class JasmineRunner {
   private static final String CHARSET = "UTF-8";
   private final ScriptableObject scope;
   private final ScriptableObject jasmineEnv;
-  private final Map<String, Object> resources = new HashMap<String, Object>();
+  private final Map<String, Object> resources = new HashMap<>();
   private JasmineReporter publicReporter;
 
   public JasmineRunner() {
@@ -109,8 +109,8 @@ class JasmineRunner {
   private static String readContent( ClassLoader loader, String resource ) {
     try {
       return readTextContentChecked( loader, resource );
-    } catch( IOException e ) {
-      throw new IllegalArgumentException( "Failed to read resource: " + resource );
+    } catch( IOException ioe ) {
+      throw new IllegalArgumentException( "Failed to read resource: " + resource, ioe );
     }
   }
 
@@ -140,11 +140,11 @@ class JasmineRunner {
 
   public class InternalReporter {
 
-    public void reportRunnerStarting( ScriptableObject runner ) {
+    public void reportRunnerStarting() {
       publicReporter.reportRunnerStarting();
     }
 
-    public void reportRunnerResults( ScriptableObject runner ) {
+    public void reportRunnerResults() {
       publicReporter.reportRunnerResults();
     }
 

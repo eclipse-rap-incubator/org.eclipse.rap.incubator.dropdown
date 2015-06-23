@@ -89,7 +89,7 @@ public final class JasmineJUnitReporter implements JasmineReporter {
   }
 
   private static String[] getSuitePath( Suite suite ) {
-    List<String> path = new ArrayList<String>();
+    List<String> path = new ArrayList<>();
     Suite current = suite;
     while( current != null ) {
       path.add( current.getDescription() );
