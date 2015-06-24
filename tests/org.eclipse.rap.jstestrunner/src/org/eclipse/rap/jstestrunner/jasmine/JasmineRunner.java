@@ -138,13 +138,17 @@ class JasmineRunner {
     return builder.toString();
   }
 
+  /*
+   * Made available to JS code by Rhino, unused parameters are therefore required.
+   */
+  @SuppressWarnings( "unused" )
   public class InternalReporter {
 
-    public void reportRunnerStarting() {
+    public void reportRunnerStarting( ScriptableObject runner ) {
       publicReporter.reportRunnerStarting();
     }
 
-    public void reportRunnerResults() {
+    public void reportRunnerResults( ScriptableObject runner ) {
       publicReporter.reportRunnerResults();
     }
 
