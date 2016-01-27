@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015 EclipseSource and others.
+ * Copyright (c) 2013, 2016 EclipseSource and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -18,19 +18,18 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.eclipse.rap.rwt.RWT;
 import org.eclipse.rap.rwt.internal.lifecycle.WidgetDataUtil;
 import org.eclipse.rap.rwt.remote.Connection;
 import org.eclipse.rap.rwt.remote.OperationHandler;
@@ -500,8 +499,17 @@ public class AutoSuggest_Test {
   private void mockRemoteObject() {
     remoteObject = mock( RemoteObject.class );
     when( remoteObject.getId() ).thenReturn( "foo" );
-    connection = spy( RWT.getUISession().getConnection() );
-    when( connection.createRemoteObject( REMOTE_TYPE ) ).thenReturn( remoteObject );
+    connection = mock( Connection.class );
+    doAnswer( new Answer<Object>() {
+      @Override
+      public Object answer( InvocationOnMock invocation ) throws Throwable {
+        String type = ( String )invocation.getArguments()[ 0 ];
+        if( type.equals( REMOTE_TYPE ) ) {
+          return remoteObject;
+        }
+        return mock( RemoteObject.class );
+      }
+    } ).when( connection ).createRemoteObject( anyString() );
     context.replaceConnection( connection );
   }
 
