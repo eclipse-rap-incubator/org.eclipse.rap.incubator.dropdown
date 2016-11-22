@@ -153,6 +153,13 @@ public class AutoSuggest_Test {
   }
 
   @Test
+  public void testConstructor_propagateStyleToDropDown() {
+    AutoSuggest autoSuggest = new AutoSuggest( text, SWT.H_SCROLL );
+
+    assertEquals( SWT.H_SCROLL, autoSuggest.getDropDown().getStyle() & SWT.H_SCROLL );
+  }
+
+  @Test
   public void testIsDisposed_returnsFalse() {
     AutoSuggest autoSuggest = new AutoSuggest( text );
 

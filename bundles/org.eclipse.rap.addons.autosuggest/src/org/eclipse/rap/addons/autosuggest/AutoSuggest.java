@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015 EclipseSource and others.
+ * Copyright (c) 2013, 2016 EclipseSource and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -51,6 +51,13 @@ import org.eclipse.swt.widgets.Text;
  * <p>
  *   This class may be subclassed to provide a different JavaScript implementation.
  * </p>
+ *
+ * <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>H_SCROLL</dd>
+ * <dt><b>Events:</b></dt>
+ * <dd>Selection</dd>
+ * </dl>
  */
 @SuppressWarnings( "restriction" )
 public class AutoSuggest {
@@ -91,6 +98,26 @@ public class AutoSuggest {
    * @see Text
    **/
   public AutoSuggest( Text text ) {
+    this( text, SWT.NONE );
+  }
+
+  /**
+   * Constructs a new <code>AutoSuggest</code> for a given <code>Text</code> widget.
+   *
+   * @param text the <code>Text</code> widget for which suggestions are provided (cannot be null)
+   * @param style the style of component to construct
+   *
+   * @exception NullPointerException when text is null
+   * @exception IllegalArgumentException when text is disposed
+   * @exception SWTException <ul>
+   *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created text</li>
+   * </ul>
+   *
+   * @see Text
+   *
+   * @since 3.2
+   **/
+  public AutoSuggest( Text text, int style ) {
     if( text == null ) {
       throw new NullPointerException( "Text must not be null" );
     }
@@ -98,7 +125,7 @@ public class AutoSuggest {
       throw new IllegalArgumentException( "Text must not be disposed" );
     }
     this.text = text;
-    dropDown = new DropDown( text );
+    dropDown = new DropDown( text, style );
     ModelResources.ensure();
     remoteObject = RWT.getUISession().getConnection().createRemoteObject( REMOTE_TYPE );
     remoteObject.setHandler( new AbstractOperationHandler() {
